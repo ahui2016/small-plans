@@ -38,10 +38,16 @@
             background-color: lightblue;
         }
         details.done summary {
-            background-color: white;
+            background-color: #e4f3f8;
         }
         details[open] {
             background-color: #eee;
+            border: 1px solid black;
+        }
+        details[open] summary {
+            border-width: 0 0 1px 0;
+            border-style: solid;
+            border-color: black;
         }
         section {
             width: 640px;
@@ -76,12 +82,31 @@
         .SummaryInput {
             width: 100%
         }
+        dialog {
+            width: 80%;
+            height: 300px;
+            position: absolute;
+            top: 30px;
+        }
     </style>
 </head>
 <body>
-<h1>Detail and Summary</h1>
+<h1>Detail and Summary <button id="openBtn">edit</button></h1>
 
 <h2>Read more about the wizarding schools:</h2>
+
+<dialog id="title-dialog">
+    <form autocomplete="off">
+        <label class="projectLabel" for="projectTitle">项目名称:</label>
+        <input type="text" id="projectTitle" name="projectTitle" class="field" />
+        <label class="projectLabel" for="description">项目概要:</label>
+        <textarea name="description" id="description" class="field"></textarea>
+        <p>
+            <input type="submit" value="ok">
+            <button title="放弃本次编辑内容, 恢复上次保存内容." id="cancelBtn">cancel</button>
+        </p>
+    </form>
+</dialog>
 
 <section>
     <details open class="undone">
@@ -93,12 +118,12 @@
             <div class="cell date"><a href="#">(done)</a></div>
             <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
         </div>
-        <textarea>If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
-        </textarea>
+        <p>If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
+        </p>
     </details>
 
     <details class="undone">
-        <summary><input type="text" class="SummaryInput" value="Durmstrang Institute"></summary>
+        <summary>Durmstrang Institute</summary>
         <div class="DateAndButtons">
             <div class="cell date"><a href="#">(done)</a></div>
             <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
@@ -173,5 +198,19 @@
             about itself, and round every corner is a new delight. </p>
     </details>
 </section>
+
+<script>
+    const dialog = document.getElementById('title-dialog');
+    const openBtn = document.getElementById('openBtn');
+    const closeBtn = document.getElementById('cancelBtn');
+
+    openBtn.addEventListener('click', function() {
+        dialog.setAttribute('open', '');
+    })
+
+    closeBtn.addEventListener('click', function() {
+        dialog.removeAttribute('open');
+    });
+</script>
 </body>
 </html>
