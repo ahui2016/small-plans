@@ -23,7 +23,6 @@
             /*padding: 20px 20px 20px 38px;*/
             /*text-indent: -18px;*/
             padding: 20px;
-            background-color: #9fb6ce;
             border: 1px solid #9fb6ce;
             outline: none;
             list-style: none;
@@ -33,29 +32,49 @@
         }
         summary:hover,
         summary:focus {
-            border: 1px solid red;
+            border: 1px solid black;
         }
-        details[open] summary {
-            background-color: lightslategray;
-            border: 1px solid lightslategray;
+        details.undone summary {
+            background-color: lightblue;
+        }
+        details.done summary {
+            background-color: white;
         }
         details[open] {
-            background-color: antiquewhite;
+            background-color: #eee;
         }
         section {
             width: 640px;
         }
-        .buttons {
+        .cell.buttons {
             text-align: right;
+        }
+        .cell.buttons a {
+            text-decoration: none;
+            color: lightseagreen;
         }
         textarea {
             width: 100%;
         }
-        .OptionsAndButtons {
+        .DateAndButtons {
             display: flex;
         }
         .cell {
             flex: 1;
+        }
+        .cell.date {
+            color: gray;
+            font-size: smaller;
+        }
+        .cell.date a {
+            color: #ddd;
+            text-decoration: none;
+        }
+        .cell.date a:hover {
+            color: blue;
+        }
+        .SummaryInput {
+            width: 100%
         }
     </style>
 </head>
@@ -65,77 +84,83 @@
 <h2>Read more about the wizarding schools:</h2>
 
 <section>
-    <details open>
-        <summary>Beauxbatons Academy of Magic Academy of Magic Academy of Magic Academy of Magic Beauxbatons Academy of Magic</summary>
-        <div class="OptionsAndButtons">
-            <div class="cell options">
-                <select>
-                    <option>其他</option>
-                    <option>新增</option>
-                    <option>改进</option>
-                    <option>bug</option>
-                </select>
-            </div>
+    <details open class="undone">
+        <summary>
+            Beauxbatons Academy of Magic Academy of Magic Academy of Magic Academy of Magic Beauxbatons Academy of Magic
+            <a href="#">edit</a>
+        </summary>
+        <div class="DateAndButtons">
+            <div class="cell date"><a href="#">(done)</a></div>
             <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
         </div>
         <textarea>If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
         </textarea>
     </details>
 
-    <details>
-        <summary>Durmstrang Institute</summary>
+    <details class="undone">
+        <summary><input type="text" class="SummaryInput" value="Durmstrang Institute"></summary>
+        <div class="DateAndButtons">
+            <div class="cell date"><a href="#">(done)</a></div>
+            <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
+        </div>
         <p>You’ll certainly hear a few interesting stories at Durmstrang, seeing as this is the school that Dark wizard Gellert Grindelwald was expelled from. </p>
     </details>
 
-    <details>
+    <details class="done">
         <summary>Ilvermorny School of Witchcraft and Wizardry
         </summary>
+        <div class="DateAndButtons">
+            <div class="cell date">
+                done at: 2020-02-20 <a href="#">(undone)</a>
+            </div>
+            <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
+        </div>
         <p>If you fancy living a Hogwarts-style life across the pond. The founder of Ilvermorny, Isolt Sayre, always wished she could go to Hogwarts, and the school definitely seems to embody some of its traditions. </p>
     </details>
 
-    <details>
+    <details class="done">
         <summary>Hogwarts School of Witchcraft and Wizardry
         </summary>
         <p>Because you love it. But also because of its detailed history, secret passages, eccentric professors, wisecracking ghosts, lovely house-elves, talking portraits and much, much more besides. Most importantly, Hogwarts seems to have a sense of humour
             about itself, and round every corner is a new delight. </p>
     </details>
-    <details open>
+    <details open class="done">
         <summary>Beauxbatons Academy of Magic</summary>
         <p>
             If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
         </p>
     </details>
 
-    <details>
+    <details class="done">
         <summary>Durmstrang Institute</summary>
         <p>You’ll certainly hear a few interesting stories at Durmstrang, seeing as this is the school that Dark wizard Gellert Grindelwald was expelled from. </p>
     </details>
 
-    <details>
+    <details class="done">
         <summary>Ilvermorny School of Witchcraft and Wizardry
         </summary>
         <p>If you fancy living a Hogwarts-style life across the pond. The founder of Ilvermorny, Isolt Sayre, always wished she could go to Hogwarts, and the school definitely seems to embody some of its traditions. </p>
     </details>
 
-    <details>
+    <details class="done">
         <summary>Hogwarts School of Witchcraft and Wizardry
         </summary>
         <p>Because you love it. But also because of its detailed history, secret passages, eccentric professors, wisecracking ghosts, lovely house-elves, talking portraits and much, much more besides. Most importantly, Hogwarts seems to have a sense of humour
             about itself, and round every corner is a new delight. </p>
     </details>
-    <details open>
+    <details open class="done">
         <summary>Beauxbatons Academy of Magic</summary>
         <p>
             If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
         </p>
     </details>
 
-    <details>
+    <details class="done">
         <summary>Durmstrang Institute</summary>
         <p>You’ll certainly hear a few interesting stories at Durmstrang, seeing as this is the school that Dark wizard Gellert Grindelwald was expelled from. </p>
     </details>
 
-    <details>
+    <details class="done">
         <summary>Ilvermorny School of Witchcraft and Wizardry
         </summary>
         <p>If you fancy living a Hogwarts-style life across the pond. The founder of Ilvermorny, Isolt Sayre, always wished she could go to Hogwarts, and the school definitely seems to embody some of its traditions. </p>
