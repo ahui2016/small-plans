@@ -16,8 +16,10 @@
             width: 100%;
             font-family: sans-serif;
         }
-        details p {
+        details pre {
             padding: 10px 20px 20px 20px;
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
         }
         summary {
             /*padding: 20px 20px 20px 38px;*/
@@ -35,10 +37,13 @@
             border: 1px solid black;
         }
         details.undone summary {
-            background-color: lightblue;
+            background-color: #99d9ea;
         }
         details.done summary {
-            background-color: #e4f3f8;
+            background-color: white;
+        }
+        details.done[open] summary {
+            background-color: #f2f9fb;
         }
         details[open] {
             background-color: #eee;
@@ -101,10 +106,10 @@
         <input type="text" id="projectTitle" name="projectTitle" class="field" />
         <label class="projectLabel" for="description">项目概要:</label>
         <textarea name="description" id="description" class="field"></textarea>
-        <p>
+        <pre>
             <input type="submit" value="ok">
             <button title="放弃本次编辑内容, 恢复上次保存内容." id="cancelBtn">cancel</button>
-        </p>
+        </pre>
     </form>
 </dialog>
 
@@ -118,8 +123,8 @@
             <div class="cell date"><a href="#">(done)</a></div>
             <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
         </div>
-        <p>If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
-        </p>
+        <pre>If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
+        </pre>
     </details>
 
     <details class="undone">
@@ -128,7 +133,18 @@
             <div class="cell date"><a href="#">(done)</a></div>
             <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
         </div>
-        <p>You’ll certainly hear a few interesting stories at Durmstrang, seeing as this is the school that Dark wizard Gellert Grindelwald was expelled from. </p>
+        <pre>You’ll certainly hear a few interesting stories at Durmstrang, seeing as this is the school that Dark wizard Gellert Grindelwald was expelled from. </pre>
+    </details>
+
+    <details class="done" data-index=2>
+        <summary>Durmstrang Institute</summary>
+        <div class="DateAndButtons">
+            <div class="cell date">
+                done at: 2020-02-20 <a href="#">(undone)</a>
+            </div>
+            <div class="cell buttons"><a href="#" class="editDetails">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
+        </div>
+        <pre>You’ll certainly hear a few interesting stories at Durmstrang, seeing as this is the school that Dark wizard Gellert Grindelwald was expelled from. </pre>
     </details>
 
     <details class="done">
@@ -140,7 +156,10 @@
             </div>
             <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
         </div>
-        <p>If you fancy living a Hogwarts-style life across the pond. The founder of Ilvermorny, Isolt Sayre, always wished she could go to Hogwarts, and the school definitely seems to embody some of its traditions. </p>
+        <pre>If you fancy living a Hogwarts-style life across the pond.
+            - The founder of Ilvermorny, Isolt Sayre,
+            - always wished she could go to Hogwarts,
+            - and the school definitely seems to embody some of its traditions. </pre>
     </details>
 
     <details class="done">
@@ -178,11 +197,6 @@
         <p>
             If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
         </p>
-    </details>
-
-    <details class="done">
-        <summary>Durmstrang Institute</summary>
-        <p>You’ll certainly hear a few interesting stories at Durmstrang, seeing as this is the school that Dark wizard Gellert Grindelwald was expelled from. </p>
     </details>
 
     <details class="done">
@@ -206,11 +220,24 @@
 
     openBtn.addEventListener('click', function() {
         dialog.setAttribute('open', '');
-    })
+    });
 
     closeBtn.addEventListener('click', function() {
         dialog.removeAttribute('open');
     });
+
+    const details = document.getElementsByTagName('details');
+    for (let i = 0; i < details.length; i++) {
+        let detail = details[i];
+        let detailsPre = detail.getElementsByTagName('pre')[0];
+        let edit = detail.getElementsByClassName('editDetails')[0];
+        if (edit !== undefined) {
+            edit.addEventListener('click', function() {
+                console.log(detailsPre);
+                detailsPre.innerText = 'Ha ha ha';
+            });
+        }
+    }
 </script>
 </body>
 </html>
