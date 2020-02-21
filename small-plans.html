@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Small Plans</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <script>
+        // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+        function storageAvailable(type) {
+            let storage;
+            try {
+                storage = window[type];
+                let x = '__storage_test__';
+                storage.setItem(x, x);
+                storage.removeItem(x);
+                return true;
+            }
+            catch(e) {
+                return e instanceof DOMException && (
+                        // everything except Firefox
+                    e.code === 22 ||
+                    // Firefox
+                    e.code === 1014 ||
+                    // test name field too, because code might not be present
+                    // everything except Firefox
+                    e.name === 'QuotaExceededError' ||
+                    // Firefox
+                    e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+                    // acknowledge QuotaExceededError only if there's something already stored
+                    (storage && storage.length !== 0);
+            }
+        }
+        function newItem(summary, details) {
+            let now = new Date();
+            return {
+                id: now.getTime(),
+                summary: summary,
+                details: details,
+                createAt: now,
+                updateAt: now,
+                deletedAt: null,
+            }
+        }
+    </script>
+</head>
+<body>
+
+<h1><span id="project-title">Small Plans</span><button id="proj-title-btn">edit</button></h1>
+<h2 id="project-description"></h2>
+
+<dialog id="proj-title-dialog"
+        style="width: 80%; height: 300px; position: absolute; top: 30px;">
+    <form autocomplete="off">
+        <p>
+            <label class="projectLabel" for="project-title-input">项目名称:</label>
+            <input type="text" id="project-title-input" class="field" />
+        </p>
+        <p>
+            <label class="projectLabel" for="description-input">项目概要:</label>
+            <textarea id="description-input" class="field"></textarea>
+        </p>
+        <p>
+            <input id="proj-title-ok" type="submit" value="ok">
+            <button id="proj-title-cancel" title="放弃本次编辑内容, 恢复上次保存内容.">cancel</button>
+        </p>
+    </form>
+</dialog>
+
+<form autocomplete="off">
+    <label for="todo-input"></label>
+    <textarea id="todo-input" rows="3"></textarea>
+    <input type="submit" value="ok" />
+</form>
+
+<script>
+    if (!storageAvailable('localStorage')) {
+        window.alert("当前浏览器不支持 localStorage, 因此, 关闭浏览器前请先保存数据.")
+    }
+    const projTitle = document.getElementById('project-title');
+    const projTitleInput =  document.getElementById('project-title-input');
+    const projDescription = document.getElementById('project-description');
+    const projDescriptionInput = document.getElementById('description-input');
+    if (localStorage.getItem('projectTitle')) {
+        projTitle.innerText = localStorage.getItem('projectTitle');
+        projDescription.innerText = localStorage.getItem('projectDescription');
+    }
+    const projTitleDialog = document.getElementById('proj-title-dialog');
+    const projTitleBtn = document.getElementById('proj-title-btn');
+    const projTitleOk = document.getElementById('proj-title-ok');
+    const projTitleCancel = document.getElementById('proj-title-cancel');
+    projTitleBtn.addEventListener('click', function() {
+        projTitleInput.value = projTitle.innerText;
+        projDescriptionInput.value = projDescription.innerText;
+        projTitleDialog.setAttribute('open', '');
+    });
+    projTitleCancel.addEventListener('click', function() {
+        projTitleDialog.removeAttribute('open');
+    });
+    projTitleOk.addEventListener('click', function() {
+        projTitle.innerText = projTitleInput.value;
+        localStorage.setItem('projectTitle', projTitle.innerText);
+        projDescription.innerText = projDescriptionInput.value;
+        localStorage.setItem('projectDescription', projDescription.innerText);
+    })
+</script>
+</body>
+</html>
