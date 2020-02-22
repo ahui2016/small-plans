@@ -37,16 +37,20 @@
                     (storage && storage.length !== 0);
             }
         }
-        function newItem(summary, details) {
+        function newItemSummary(summary) {
             let now = new Date();
             return {
-                id: now.getTime(),
+                id: now.getTime().toString(36),
                 summary: summary,
-                details: details,
+                details: '',
                 createAt: now,
                 updateAt: now,
+                doneAt: null,
                 deletedAt: null,
             }
+        }
+        function summaryKey(id) {
+            return `summary-${id}`;
         }
     </script>
 </head>
@@ -59,16 +63,16 @@
         style="width: 80%; height: 300px; position: absolute; top: 30px;">
     <form autocomplete="off">
         <p>
-            <label class="projectLabel" for="project-title-input">项目名称:</label>
+            <label class="projectLabel" for="project-title-input">Project Title:</label>
             <input type="text" id="project-title-input" class="field" />
         </p>
         <p>
-            <label class="projectLabel" for="description-input">项目概要:</label>
+            <label class="projectLabel" for="description-input">Description:</label>
             <textarea id="description-input" class="field"></textarea>
         </p>
         <p>
-            <input id="proj-title-ok" type="submit" value="ok">
-            <button id="proj-title-cancel" title="放弃本次编辑内容, 恢复上次保存内容.">cancel</button>
+            <input id="proj-title-ok" type="button" value="ok">
+            <button id="proj-title-cancel">cancel</button>
         </p>
     </form>
 </dialog>
@@ -76,8 +80,23 @@
 <form autocomplete="off">
     <label for="todo-input"></label>
     <textarea id="todo-input" rows="3"></textarea>
-    <input type="submit" value="ok" />
+    <input type="button" value="ok" id="add-todo-btn" />
 </form>
+
+<template id="todo-details-template">
+    <details class="undone">
+        <summary>
+            Beauxbatons Academy of Magic Academy of Magic Academy of Magic Academy of Magic Beauxbatons Academy of Magic
+            <a href="#">edit</a>
+        </summary>
+        <div class="DateAndButtons">
+            <div class="cell date"><a href="#">(done)</a></div>
+            <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
+        </div>
+        <pre>If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
+        </pre>
+    </details>
+</template>
 
 <script>
     if (!storageAvailable('localStorage')) {
@@ -100,7 +119,8 @@
         projDescriptionInput.value = projDescription.innerText;
         projTitleDialog.setAttribute('open', '');
     });
-    projTitleCancel.addEventListener('click', function() {
+    projTitleCancel.addEventListener('click', function(event) {
+        event.preventDefault();
         projTitleDialog.removeAttribute('open');
     });
     projTitleOk.addEventListener('click', function() {
@@ -108,7 +128,18 @@
         localStorage.setItem('projectTitle', projTitle.innerText);
         projDescription.innerText = projDescriptionInput.value;
         localStorage.setItem('projectDescription', projDescription.innerText);
-    })
+        projTitleDialog.removeAttribute('open');
+    });
+    const todoInput = document.getElementById('todo-input');
+    const addTodoBtn = document.getElementById('add-todo-btn');
+    addTodoBtn.addEventListener('click', function(event) {
+        event.preventDefault();
+        let todo = todoInput.value.trim();
+        if (todo) {
+            let item = newItemSummary(todo);
+            localStorage.setItem(summaryKey(item.id), todoInput.value);
+        }
+    });
 </script>
 </body>
 </html>
