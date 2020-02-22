@@ -10,6 +10,83 @@
             justify-content: center;
             align-items: center;
         }
+        #todo-input {
+            width: 640px;
+            height: 2em;
+        }
+        details {
+            margin-bottom: 20px;
+            width: 100%;
+            font-family: sans-serif;
+        }
+        details pre {
+            padding: 10px 20px 20px 20px;
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
+        }
+        summary {
+            /*padding: 20px 20px 20px 38px;*/
+            /*text-indent: -18px;*/
+            padding: 20px;
+            border: 1px solid #9fb6ce;
+            outline: none;
+            list-style: none;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary:hover,
+        summary:focus {
+            border: 1px solid black;
+        }
+        details.undone summary {
+            background-color: #99d9ea;
+        }
+        details.done summary {
+            background-color: white;
+        }
+        details.done[open] summary {
+            background-color: #f2f9fb;
+        }
+        details[open] {
+            background-color: #eee;
+            border: 1px solid black;
+        }
+        details[open] summary {
+            border-width: 0 0 1px 0;
+            border-style: solid;
+            border-color: black;
+        }
+        section {
+            width: 640px;
+        }
+        .cell.buttons {
+            text-align: right;
+        }
+        .cell.buttons a {
+            text-decoration: none;
+            color: lightseagreen;
+        }
+        textarea {
+            width: 100%;
+        }
+        .DateAndButtons {
+            display: flex;
+        }
+        .cell {
+            flex: 1;
+        }
+        .cell.date {
+            color: gray;
+            font-size: smaller;
+        }
+        .cell.date a {
+            color: #ddd;
+            text-decoration: none;
+        }
+        .cell.date a:hover {
+            color: blue;
+        }
     </style>
     <script>
         // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
@@ -77,31 +154,34 @@
     </form>
 </dialog>
 
-<form autocomplete="off">
+<form id="add-todo-form" autocomplete="off" style="margin-top: 1em;margin-bottom: 3em;">
     <label for="todo-input"></label>
-    <textarea id="todo-input" rows="3"></textarea>
-    <input type="button" value="ok" id="add-todo-btn" />
+    <input type="text" id="todo-input" placeholder="input here, press Enter to submit." />
 </form>
 
-<template id="todo-details-template">
+<template id="todo-template">
     <details class="undone">
         <summary>
-            Beauxbatons Academy of Magic Academy of Magic Academy of Magic Academy of Magic Beauxbatons Academy of Magic
+            <span class="todo-summary">NEED SUMMARY</span>
             <a href="#">edit</a>
         </summary>
         <div class="DateAndButtons">
             <div class="cell date"><a href="#">(done)</a></div>
             <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
         </div>
-        <pre>If you like your magic served with a dash of savoir faire, this school is for you. Beauxbatons welcomes a multitude of students of different nationalities, mainly French, but also Spanish, Portuguese, Dutch, Luxembourgian and Belgian.
-        </pre>
+        <pre class="todo-details"></pre>
     </details>
 </template>
+
+<section id="all-items"></section>
 
 <script>
     if (!storageAvailable('localStorage')) {
         window.alert("当前浏览器不支持 localStorage, 因此, 关闭浏览器前请先保存数据.")
     }
+    const todoInput = document.getElementById('todo-input');
+    todoInput.focus();
+
     const projTitle = document.getElementById('project-title');
     const projTitleInput =  document.getElementById('project-title-input');
     const projDescription = document.getElementById('project-description');
@@ -130,14 +210,21 @@
         localStorage.setItem('projectDescription', projDescription.innerText);
         projTitleDialog.removeAttribute('open');
     });
-    const todoInput = document.getElementById('todo-input');
-    const addTodoBtn = document.getElementById('add-todo-btn');
-    addTodoBtn.addEventListener('click', function(event) {
+    const addTodoForm = document.getElementById('add-todo-form');
+    const todoTemplate = document.querySelector('#todo-template');
+    const allItems = document.querySelector('#all-items');
+    addTodoForm.addEventListener('submit', function(event) {
         event.preventDefault();
         let todo = todoInput.value.trim();
         if (todo) {
             let item = newItemSummary(todo);
             localStorage.setItem(summaryKey(item.id), todoInput.value);
+            let todoElem = todoTemplate.content.cloneNode(true);
+            todoElem.querySelector('details').setAttribute('id', item.id);
+            todoElem.querySelector('.todo-summary').innerText = item.summary;
+            allItems.appendChild(todoElem);
+            todoInput.value = '';
+            todoInput.focus();
         }
     });
 </script>
