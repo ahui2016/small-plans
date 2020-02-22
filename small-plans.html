@@ -40,7 +40,8 @@
             border: 1px solid black;
         }
         details.undone summary {
-            background-color: #99d9ea;
+            color: blue;
+            background-color: #f2f9fb;
         }
         details.done summary {
             background-color: white;
@@ -114,20 +115,26 @@
                     (storage && storage.length !== 0);
             }
         }
-        function newItemSummary(summary) {
-            let now = new Date();
+        function newTodoItem(summary) {
+            let now = Date.now();
             return {
-                id: now.getTime().toString(36),
+                id: `todoitem-${now.toString(36)}`,
                 summary: summary,
                 details: '',
-                createAt: now,
-                updateAt: now,
+                createdAt: now,
+                updatedAt: now,
                 doneAt: null,
                 deletedAt: null,
             }
         }
-        function summaryKey(id) {
-            return `summary-${id}`;
+        function simpleDate(timestamp) {
+            const date = new Date(timestamp);
+            let year = '' + date.getFullYear(),
+                month = '' + (date.getMonth() + 1),
+                day = '' + date.getDate();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
         }
     </script>
 </head>
@@ -173,7 +180,8 @@
     </details>
 </template>
 
-<section id="all-items"></section>
+<section id="all-undone-elem"></section>
+<section id="all-done-elem"></section>
 
 <script>
     if (!storageAvailable('localStorage')) {
@@ -186,9 +194,47 @@
     const projTitleInput =  document.getElementById('project-title-input');
     const projDescription = document.getElementById('project-description');
     const projDescriptionInput = document.getElementById('description-input');
+    let undoneItems = [];
+    let doneItems = [];
+    const allUndoneElem = document.querySelector('#all-undone-elem');
+    const allDoneElem = document.querySelector('#all-done-elem');
+    const todoTemplate = document.querySelector('#todo-template');
+    function insertTodoElem(todoitem) {
+        let todoElem = todoTemplate.content.cloneNode(true);
+        todoElem.querySelector('details').setAttribute('id', todoitem.id);
+        todoElem.querySelector('.todo-summary').innerText = todoitem.summary;
+        todoElem.querySelector('.todo-details').innerText = todoitem.details;
+        if (todoitem.doneAt) {
+            todoElem.querySelector('details').setAttribute('class', 'done');
+            todoElem.querySelector('.cell.date').innerHTML
+                = `<a href="#">done at: ${simpleDate(todoitem.doneAt)} (undone)</a>`;
+            allDoneElem.insertBefore(todoElem, allDoneElem.firstChild);
+        } else {
+            allUndoneElem.appendChild(todoElem);
+        }
+    }
     if (localStorage.getItem('projectTitle')) {
         projTitle.innerText = localStorage.getItem('projectTitle');
         projDescription.innerText = localStorage.getItem('projectDescription');
+        for (let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i);
+            if (key.startsWith('todoitem-')) {
+                let todoitem = JSON.parse(localStorage.getItem(key));
+                if (todoitem.doneAt) {
+                    doneItems.push(todoitem);
+                } else {
+                    undoneItems.push(todoitem);
+                }
+            }
+        }
+        undoneItems.sort((a, b) => {
+            return a.createdAt - b.createdAt;
+        });
+        doneItems.sort((a, b) => {
+            return a.doneAt - b.doneAt;
+        });
+        for (const item of undoneItems) insertTodoElem(item);
+        for (const item of doneItems) insertTodoElem(item);
     }
     const projTitleDialog = document.getElementById('proj-title-dialog');
     const projTitleBtn = document.getElementById('proj-title-btn');
@@ -211,18 +257,13 @@
         projTitleDialog.removeAttribute('open');
     });
     const addTodoForm = document.getElementById('add-todo-form');
-    const todoTemplate = document.querySelector('#todo-template');
-    const allItems = document.querySelector('#all-items');
     addTodoForm.addEventListener('submit', function(event) {
         event.preventDefault();
         let todo = todoInput.value.trim();
         if (todo) {
-            let item = newItemSummary(todo);
-            localStorage.setItem(summaryKey(item.id), todoInput.value);
-            let todoElem = todoTemplate.content.cloneNode(true);
-            todoElem.querySelector('details').setAttribute('id', item.id);
-            todoElem.querySelector('.todo-summary').innerText = item.summary;
-            allItems.appendChild(todoElem);
+            let item = newTodoItem(todo);
+            localStorage.setItem(item.id, JSON.stringify(item));
+            insertTodoElem(item);
             todoInput.value = '';
             todoInput.focus();
         }
