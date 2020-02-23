@@ -12,7 +12,7 @@
         }
         #todo-input {
             width: 640px;
-            height: 2em;
+            height: 2.5em;
         }
         details {
             margin-bottom: 20px;
@@ -142,6 +142,7 @@
 
 <h1><span id="project-title">Small Plans</span><button id="proj-title-btn">edit</button></h1>
 <h2 id="project-description"></h2>
+<p id="json-url"></p>
 
 <dialog id="proj-title-dialog"
         style="width: 80%; height: 300px; position: absolute; top: 30px;">
@@ -173,7 +174,7 @@
             <a href="#">edit</a>
         </summary>
         <div class="DateAndButtons">
-            <div class="cell date"><a href="#">(done)</a></div>
+            <div class="cell date"><a href="#" class="doneBtn">(done)</a></div>
             <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
         </div>
         <pre class="todo-details"></pre>
@@ -199,20 +200,55 @@
     const allUndoneElem = document.querySelector('#all-undone-elem');
     const allDoneElem = document.querySelector('#all-done-elem');
     const todoTemplate = document.querySelector('#todo-template');
+
+    function getDB() {
+        return {
+            projectTitle: localStorage.getItem('projectTitle'),
+            projectDescription: localStorage.getItem('projectDescription'),
+            undoneItems: undoneItems,
+            doneItems: doneItems,
+        }
+    }
+
+    function showJsonUrl() {
+        let dbBlob = new Blob([JSON.stringify(getDB(), null, 2)], {type: 'application/json'});
+        let jsonUrl = window.URL.createObjectURL(dbBlob);
+        document.querySelector('#json-url').innerHTML
+            = `<a href="${jsonUrl}" download="small-plans.json">右键点击这里, 另存为</a>`
+    }
+
     function insertTodoElem(todoitem) {
         let todoElem = todoTemplate.content.cloneNode(true);
+        let todoDetails = todoElem.querySelector('details');
+        let doneOrUndone = todoElem.querySelector('.cell.date');
+        todoElem.querySelector('.doneBtn').addEventListener('click', function(event) {
+            event.preventDefault();
+            let i = undoneItems.findIndex(item => item.id === todoitem.id);
+            let item = undoneItems[i];
+            item.doneAt = Date.now();
+            undoneItems.splice(i, 1);
+            doneItems.push(item);
+            localStorage.setItem(todoitem.id, JSON.stringify(item));
+            todoDetails.setAttribute('class', 'done');
+            todoDetails.removeAttribute('open');
+            doneOrUndone.innerHTML
+                = `<a href="#" class="undoneBtn">done at: ${simpleDate(todoitem.doneAt)} (undone)</a>`;
+            let elem = allUndoneElem.removeChild(document.querySelector(`#${todoitem.id}`));
+            allDoneElem.insertBefore(elem, allDoneElem.firstChild);
+        });
         todoElem.querySelector('details').setAttribute('id', todoitem.id);
         todoElem.querySelector('.todo-summary').innerText = todoitem.summary;
         todoElem.querySelector('.todo-details').innerText = todoitem.details;
         if (todoitem.doneAt) {
-            todoElem.querySelector('details').setAttribute('class', 'done');
-            todoElem.querySelector('.cell.date').innerHTML
-                = `<a href="#">done at: ${simpleDate(todoitem.doneAt)} (undone)</a>`;
+            todoDetails.setAttribute('class', 'done');
+            doneOrUndone.innerHTML
+                = `<a href="#" class="undoneBtn">done at: ${simpleDate(todoitem.doneAt)} (undone)</a>`;
             allDoneElem.insertBefore(todoElem, allDoneElem.firstChild);
         } else {
             allUndoneElem.appendChild(todoElem);
         }
     }
+
     if (localStorage.getItem('projectTitle')) {
         projTitle.innerText = localStorage.getItem('projectTitle');
         projDescription.innerText = localStorage.getItem('projectDescription');
