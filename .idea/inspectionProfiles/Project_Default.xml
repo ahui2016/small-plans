@@ -17,5 +17,6 @@
       </option>
       <option name="myCustomValuesEnabled" value="true" />
     </inspection_tool>
+    <inspection_tool class="JSCheckFunctionSignatures" enabled="true" level="TYPO" enabled_by_default="true" />
   </profile>
 </component>

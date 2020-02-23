@@ -136,6 +136,17 @@
             if (day.length < 2) day = '0' + day;
             return [year, month, day].join('-');
         }
+        function clearAndFillLocalStorage(db) {
+            localStorage.clear();
+            localStorage.setItem('projectTitle', db.projectTitle);
+            localStorage.setItem('projectDescription', db.projectDescription);
+            for (let item of db.undoneItems) {
+                localStorage.setItem(item.id, JSON.stringify(item));
+            }
+            for (let item of db.doneItems) {
+                localStorage.setItem(item.id, JSON.stringify(item));
+            }
+        }
     </script>
 </head>
 <body>
@@ -146,7 +157,7 @@
     <input type="file" id="import-file">
     <button id="import-btn">import</button>
 </form>
-<p id="json-url"></p>
+<p><button id="export-btn">export</button> <span id="json-url"></span></p>
 
 <dialog id="proj-title-dialog"
         style="width: 80%; height: 300px; position: absolute; top: 30px;">
@@ -190,11 +201,8 @@
 
 <script>
     if (!storageAvailable('localStorage')) {
-        window.alert("当前浏览器不支持 localStorage, 因此, 关闭浏览器前请先保存数据.")
+        window.alert("当前浏览器不支持 localStorage, 可能无法正常使用本网页, 请使用支持 localStorage 的浏览器.")
     }
-    const todoInput = document.getElementById('todo-input');
-    todoInput.focus();
-
     const projTitle = document.getElementById('project-title');
     const projTitleInput =  document.getElementById('project-title-input');
     const projDescription = document.getElementById('project-description');
@@ -217,22 +225,27 @@
         event.preventDefault();
         const file = document.querySelector('#import-file').files[0];
         const reader = new FileReader();
-        reader.onerror = function (event) {
+        reader.onerror = function () {
             window.alert("导入文件失败!");
         }
-        reader.onload = function (event) {
+        reader.onload = function () {
+            // noinspection
             let db = JSON.parse(reader.result);
-            console.log(db);
+            clearAndFillLocalStorage(db);
+            window.location.reload();
         }
         reader.readAsText(file);
     })
-
     function showJsonUrl() {
         let dbBlob = new Blob([JSON.stringify(getDB(), null, 2)], {type: 'application/json'});
         let jsonUrl = window.URL.createObjectURL(dbBlob);
         document.querySelector('#json-url').innerHTML
             = `<a href="${jsonUrl}" download="small-plans.json">右键点击这里, 另存为</a>`
     }
+    document.querySelector('#export-btn').addEventListener('click', function (event) {
+        event.preventDefault();
+        showJsonUrl();
+    })
 
     function insertTodoElem(todoitem) {
         let todoElem = todoTemplate.content.cloneNode(true);
@@ -266,29 +279,36 @@
         }
     }
 
+    // 以上是设置, 从这里开始使页面发生可见的变化.
     if (localStorage.getItem('projectTitle')) {
         projTitle.innerText = localStorage.getItem('projectTitle');
+    }
+    if (localStorage.getItem('projectDescription')) {
         projDescription.innerText = localStorage.getItem('projectDescription');
-        for (let i = 0; i < localStorage.length; i++) {
-            let key = localStorage.key(i);
-            if (key.startsWith('todoitem-')) {
-                let todoitem = JSON.parse(localStorage.getItem(key));
-                if (todoitem.doneAt) {
-                    doneItems.push(todoitem);
-                } else {
-                    undoneItems.push(todoitem);
-                }
+    }
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (key.startsWith('todoitem-')) {
+            let todoitem = JSON.parse(localStorage.getItem(key));
+            if (todoitem.doneAt) {
+                doneItems.push(todoitem);
+            } else {
+                undoneItems.push(todoitem);
             }
         }
-        undoneItems.sort((a, b) => {
-            return a.createdAt - b.createdAt;
-        });
-        doneItems.sort((a, b) => {
-            return a.doneAt - b.doneAt;
-        });
-        for (const item of undoneItems) insertTodoElem(item);
-        for (const item of doneItems) insertTodoElem(item);
     }
+    undoneItems.sort((a, b) => {
+        return a.createdAt - b.createdAt;
+    });
+    doneItems.sort((a, b) => {
+        return a.doneAt - b.doneAt;
+    });
+    for (const item of undoneItems) insertTodoElem(item);
+    for (const item of doneItems) insertTodoElem(item);
+
+    const todoInput = document.getElementById('todo-input');
+    todoInput.focus();
+
     const projTitleDialog = document.getElementById('proj-title-dialog');
     const projTitleBtn = document.getElementById('proj-title-btn');
     const projTitleOk = document.getElementById('proj-title-ok');
