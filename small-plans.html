@@ -142,6 +142,10 @@
 
 <h1><span id="project-title">Small Plans</span><button id="proj-title-btn">edit</button></h1>
 <h2 id="project-description"></h2>
+<form autocomplete="off">
+    <input type="file" id="import-file">
+    <button id="import-btn">import</button>
+</form>
 <p id="json-url"></p>
 
 <dialog id="proj-title-dialog"
@@ -209,6 +213,19 @@
             doneItems: doneItems,
         }
     }
+    document.querySelector('#import-btn').addEventListener('click', function(event) {
+        event.preventDefault();
+        const file = document.querySelector('#import-file').files[0];
+        const reader = new FileReader();
+        reader.onerror = function (event) {
+            window.alert("导入文件失败!");
+        }
+        reader.onload = function (event) {
+            let db = JSON.parse(reader.result);
+            console.log(db);
+        }
+        reader.readAsText(file);
+    })
 
     function showJsonUrl() {
         let dbBlob = new Blob([JSON.stringify(getDB(), null, 2)], {type: 'application/json'});
