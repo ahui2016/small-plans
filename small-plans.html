@@ -11,8 +11,11 @@
             align-items: center;
         }
         #todo-input {
-            width: 640px;
+            width: 634px;
             height: 2.5em;
+            font-size: inherit;
+            border: 1px solid blue;
+            padding: 0 3px 0 3px;
         }
         details {
             margin-bottom: 20px;
@@ -40,28 +43,25 @@
             border: 1px solid black;
         }
         details.undone summary {
-            color: blue;
             background-color: #f2f9fb;
         }
         details.done summary {
             background-color: white;
         }
-        details.done[open] summary {
-            background-color: #f2f9fb;
-        }
         details[open] {
-            background-color: #eee;
-            border: 1px solid black;
+            background-color: #fafafa;
+            border: 1px solid #9fb6ce;
         }
         details[open] summary {
             border-width: 0 0 1px 0;
             border-style: solid;
-            border-color: black;
+            border-color: #9fb6ce;
         }
         section {
             width: 640px;
         }
         .cell.buttons {
+            padding-right: 0.5em;
             text-align: right;
         }
         .cell.buttons a {
@@ -78,15 +78,15 @@
             flex: 1;
         }
         .cell.date {
-            color: gray;
-            font-size: smaller;
+            padding-left: 0.5em;
+            color: #ddd;
         }
         .cell.date a {
             color: #ddd;
             text-decoration: none;
         }
         .cell.date a:hover {
-            color: blue;
+            color: lightseagreen;
         }
     </style>
     <script>
@@ -177,26 +177,47 @@
     </form>
 </dialog>
 
-<form id="add-todo-form" autocomplete="off" style="margin-top: 1em;margin-bottom: 3em;">
-    <label for="todo-input"></label>
-    <input type="text" id="todo-input" placeholder="input here, press Enter to submit." />
-</form>
+<dialog id="todo-edit-dialog"
+        style="width: 80%; height: 300px; position: center;">
+    <form autocomplete="off">
+        <p>
+            <label for="todo-summary-input">Summary:</label><br/>
+            <input type="text" id="todo-summary-input" class="field" />
+        </p>
+        <p>
+            <label for="todo-details-input">Details:</label><br/>
+            <textarea id="todo-details-input" class="field"></textarea>
+        </p>
+        <p>
+            <input id="todo-edit-ok" type="button" value="ok">
+            <button id="todo-edit-cancel">cancel</button>
+        </p>
+    </form>
+</dialog>
 
 <template id="todo-template">
     <details class="undone">
         <summary>
             <span class="todo-summary">NEED SUMMARY</span>
-            <a href="#">edit</a>
+            <span class="more-btn"
+                  style="color: #9fb6ce;cursor: pointer;display: none;">(more)</span>
         </summary>
         <div class="DateAndButtons">
             <div class="cell date"><a href="#" class="doneBtn">(done)</a></div>
-            <div class="cell buttons"><a href="#">edit</a> . <a href="#">delete</a> . <a href="#">more</a></div>
+            <div class="cell buttons"><a href="#" class="editBtn">edit</a> . <a href="#">delete</a></div>
         </div>
         <pre class="todo-details"></pre>
     </details>
 </template>
 
 <section id="all-undone-elem"></section>
+
+<form id="add-todo-form" autocomplete="off"
+      style="width: 640px; margin-top: 1em; margin-bottom: 3em;">
+    <label for="todo-input" style="font-weight: bold;">Add Todo:</label><br/>
+    <input type="text" id="todo-input" />
+</form>
+
 <section id="all-done-elem"></section>
 
 <script>
@@ -247,32 +268,74 @@
         showJsonUrl();
     })
 
+    // 这个函数很大, 因为很多按钮也在里面.
+    // 注意: 每当修改 todoitem 的内容时, 都要更新 localStorage.
     function insertTodoElem(todoitem) {
         let todoElem = todoTemplate.content.cloneNode(true);
         let todoDetails = todoElem.querySelector('details');
         let doneOrUndone = todoElem.querySelector('.cell.date');
         todoElem.querySelector('.doneBtn').addEventListener('click', function(event) {
             event.preventDefault();
+            todoitem.doneAt = Date.now();
+            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
             let i = undoneItems.findIndex(item => item.id === todoitem.id);
-            let item = undoneItems[i];
-            item.doneAt = Date.now();
             undoneItems.splice(i, 1);
-            doneItems.push(item);
-            localStorage.setItem(todoitem.id, JSON.stringify(item));
+            doneItems.push(todoitem);
             todoDetails.setAttribute('class', 'done');
             todoDetails.removeAttribute('open');
             doneOrUndone.innerHTML
-                = `<a href="#" class="undoneBtn">done at: ${simpleDate(todoitem.doneAt)} (undone)</a>`;
+                = `done at: ${simpleDate(todoitem.doneAt)} <a href="#" class="undoneBtn">(undone)</a>`;
             let elem = allUndoneElem.removeChild(document.querySelector(`#${todoitem.id}`));
             allDoneElem.insertBefore(elem, allDoneElem.firstChild);
         });
-        todoElem.querySelector('details').setAttribute('id', todoitem.id);
-        todoElem.querySelector('.todo-summary').innerText = todoitem.summary;
-        todoElem.querySelector('.todo-details').innerText = todoitem.details;
+        todoDetails.setAttribute('id', todoitem.id);
+        let moreBtn = todoElem.querySelector('.more-btn');
+        if (todoitem.details) {
+            moreBtn.style.display = 'inline';
+        }
+        const todoSummary = todoElem.querySelector('.todo-summary');
+        todoSummary.innerText = todoitem.summary;
+        let pre = todoElem.querySelector('.todo-details');
+        pre.innerText = todoitem.details;
+        let summary = todoElem.querySelector('summary');
+        summary.addEventListener('click', function() {
+            if (todoDetails.hasAttribute('open')) {
+                moreBtn.style.display = 'inline';
+            } else if (pre.innerText) {
+                moreBtn.style.display = 'none';
+            }
+        });
+        const todoEditDialog = document.querySelector('#todo-edit-dialog');
+        const todoSummaryInput = document.querySelector('#todo-summary-input');
+        const todoDetailsInput = document.querySelector('#todo-details-input');
+        const todoEditOk = document.querySelector('#todo-edit-ok');
+        const todoEditCancel = document.querySelector('#todo-edit-cancel');
+        todoElem.querySelector('.editBtn').addEventListener('click', function (event) {
+            event.preventDefault();
+            todoSummaryInput.value = todoitem.summary;
+            todoDetailsInput.value = todoitem.details;
+            todoEditDialog.setAttribute('open', '');
+        })
+        todoEditCancel.addEventListener('click', function (event) {
+            event.preventDefault();
+            todoEditDialog.removeAttribute('open');
+        })
+        todoEditOk.addEventListener('click', function (event) {
+            event.preventDefault();
+            todoitem.summary = todoSummaryInput.value.trim();
+            todoitem.details = todoDetailsInput.value.trim();
+            todoitem.updatedAt = Date.now();
+            todoSummary.innerText = todoitem.summary;
+            pre.innerText = todoitem.details;
+            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            console.log(todoitem.id);
+            todoEditDialog.removeAttribute('open');
+        })
         if (todoitem.doneAt) {
-            todoDetails.setAttribute('class', 'done');
+            todoDetails.classList.remove('undone');
+            todoDetails.classList.add('done');
             doneOrUndone.innerHTML
-                = `<a href="#" class="undoneBtn">done at: ${simpleDate(todoitem.doneAt)} (undone)</a>`;
+                = `done at: ${simpleDate(todoitem.doneAt)} <a href="#" class="undoneBtn">(undone)</a>`;
             allDoneElem.insertBefore(todoElem, allDoneElem.firstChild);
         } else {
             allUndoneElem.appendChild(todoElem);
@@ -289,11 +352,11 @@
     for (let i = 0; i < localStorage.length; i++) {
         let key = localStorage.key(i);
         if (key.startsWith('todoitem-')) {
-            let todoitem = JSON.parse(localStorage.getItem(key));
-            if (todoitem.doneAt) {
-                doneItems.push(todoitem);
+            let item = JSON.parse(localStorage.getItem(key));
+            if (item.doneAt) {
+                doneItems.push(item);
             } else {
-                undoneItems.push(todoitem);
+                undoneItems.push(item);
             }
         }
     }
@@ -314,18 +377,19 @@
     const projTitleOk = document.getElementById('proj-title-ok');
     const projTitleCancel = document.getElementById('proj-title-cancel');
     projTitleBtn.addEventListener('click', function() {
-        projTitleInput.value = projTitle.innerText;
-        projDescriptionInput.value = projDescription.innerText;
+        projTitleInput.value = localStorage.getItem('projectTitle');
+        projDescriptionInput.value = localStorage.getItem('projectDescription');
         projTitleDialog.setAttribute('open', '');
     });
     projTitleCancel.addEventListener('click', function(event) {
         event.preventDefault();
         projTitleDialog.removeAttribute('open');
     });
-    projTitleOk.addEventListener('click', function() {
-        projTitle.innerText = projTitleInput.value;
+    projTitleOk.addEventListener('click', function(event) {
+        event.preventDefault();
+        projTitle.innerText = projTitleInput.value.trim();
         localStorage.setItem('projectTitle', projTitle.innerText);
-        projDescription.innerText = projDescriptionInput.value;
+        projDescription.innerText = projDescriptionInput.value.trim();
         localStorage.setItem('projectDescription', projDescription.innerText);
         projTitleDialog.removeAttribute('open');
     });
@@ -336,6 +400,7 @@
         if (todo) {
             let item = newTodoItem(todo);
             localStorage.setItem(item.id, JSON.stringify(item));
+            undoneItems.push(item);
             insertTodoElem(item);
             todoInput.value = '';
             todoInput.focus();
