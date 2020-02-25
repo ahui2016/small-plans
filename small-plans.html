@@ -153,11 +153,11 @@
 
 <h1><span id="project-title">Small Plans</span><button id="proj-title-btn">edit</button></h1>
 <h2 id="project-description"></h2>
-<form autocomplete="off">
+<form id="project-title-form" autocomplete="off">
     <input type="file" id="import-file">
     <button id="import-btn">import</button>
 </form>
-<p><button id="export-btn">export</button> <span id="json-url"></span></p>
+<form><button id="export-btn">export</button> <span id="json-url"></span></form>
 
 <dialog id="proj-title-dialog"
         style="width: 80%; height: 300px; position: absolute; top: 30px;">
@@ -171,6 +171,7 @@
             <textarea id="description-input" class="field"></textarea>
         </p>
         <p>
+            <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
             <input id="proj-title-ok" type="button" value="ok">
             <button id="proj-title-cancel">cancel</button>
         </p>
@@ -192,6 +193,7 @@
                     </label>
                 </p>
                 <p>
+                    <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
                     <button class="todo-edit-ok">ok</button>
                     <button class="todo-edit-cancel">cancel</button>
                 </p>
@@ -302,7 +304,7 @@
         pre.innerText = todoitem.details;
         let summary = todoTopDiv.querySelector('summary');
         summary.addEventListener('click', function() {
-            if (todoDetails.hasAttribute('open') && pre.innerText) {
+            if (todoDetails.hasAttribute('open') && pre.innerText.trim()) {
                 moreBtn.style.display = 'inline';
             } else {
                 moreBtn.style.display = 'none';
@@ -318,6 +320,7 @@
             todoSummaryInput.value = todoitem.summary;
             todoDetailsInput.value = todoitem.details;
             todoEditDialog.setAttribute('open', '');
+            todoSummaryInput.focus();
         })
         todoEditCancel.addEventListener('click', function (event) {
             event.preventDefault();
@@ -326,7 +329,12 @@
         todoEditOk.addEventListener('click', function (event) {
             event.preventDefault();
             todoitem.summary = todoSummaryInput.value.trim();
-            todoitem.details = todoDetailsInput.value.trim();
+            // pre 的内容不删除前后空格, 但当其内容只有空格时则清空.
+            let preText = todoDetailsInput.value;
+            if (preText.trim() === '') {
+                preText = '';
+            }
+            todoitem.details = preText;
             todoitem.updatedAt = Date.now();
             todoSummary.innerText = todoitem.summary;
             pre.innerText = todoitem.details;
@@ -348,6 +356,7 @@
     // 以上是设置, 从这里开始使页面发生可见的变化.
     if (localStorage.getItem('projectTitle')) {
         projTitle.innerText = localStorage.getItem('projectTitle');
+        if (projTitle.innerText === '') projTitle.innerText = 'Small Plans';
     }
     if (localStorage.getItem('projectDescription')) {
         projDescription.innerText = localStorage.getItem('projectDescription');
@@ -383,6 +392,7 @@
         projTitleInput.value = localStorage.getItem('projectTitle');
         projDescriptionInput.value = localStorage.getItem('projectDescription');
         projTitleDialog.setAttribute('open', '');
+        projTitleInput.focus();
     });
     projTitleCancel.addEventListener('click', function(event) {
         event.preventDefault();
@@ -396,6 +406,11 @@
         localStorage.setItem('projectDescription', projDescription.innerText);
         projTitleDialog.removeAttribute('open');
     });
+    // projTitleInput.addEventListener('keyup', (event) => {
+    //     if (event.key === 'Escape') {
+    //         projTitleDialog.removeAttribute('open');
+    //     }
+    // });
     const addTodoForm = document.getElementById('add-todo-form');
     addTodoForm.addEventListener('submit', function(event) {
         event.preventDefault();
