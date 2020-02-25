@@ -202,11 +202,15 @@
         <details class="undone">
             <summary>
                 <span class="todo-summary">NEED SUMMARY</span>
-                <span class="more-btn"
-                      style="color: #9fb6ce;cursor: pointer;display: none;">(more)</span>
+                <span class="more-btn" hidden
+                      style="color: #9fb6ce;cursor: pointer;">(more)</span>
             </summary>
             <div class="DateAndButtons">
-                <div class="cell date"><a href="#" class="doneBtn">(done)</a></div>
+                <div class="cell date">
+                    <span class="done-at" hidden></span>
+                    <a href="#" class="undoneBtn" hidden>(undone)</a>
+                    <a href="#" class="doneBtn">(done)</a>
+                </div>
                 <div class="cell buttons"><a href="#" class="editBtn">edit</a> . <a href="#">delete</a></div>
             </div>
             <pre class="todo-details"></pre>
@@ -278,8 +282,10 @@
         let todoElem = todoTemplate.content.cloneNode(true);
         let todoTopDiv = todoElem.querySelector('.todo-top-div');
         let todoDetails = todoTopDiv.querySelector('details');
-        let doneOrUndone = todoTopDiv.querySelector('.cell.date');
-        todoTopDiv.querySelector('.doneBtn').addEventListener('click', function(event) {
+        let doneAt = todoTopDiv.querySelector('.done-at');
+        let doneBtn = todoTopDiv.querySelector('.doneBtn');
+        let undoneBtn = todoTopDiv.querySelector('.undoneBtn');
+        doneBtn.addEventListener('click', function(event) {
             event.preventDefault();
             todoitem.doneAt = Date.now();
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
@@ -287,16 +293,32 @@
             undoneItems.splice(i, 1);
             doneItems.push(todoitem);
             todoDetails.setAttribute('class', 'done');
-            todoDetails.removeAttribute('open');
-            doneOrUndone.innerHTML
-                = `done at: ${simpleDate(todoitem.doneAt)} <a href="#" class="undoneBtn">(undone)</a>`;
+            doneAt.removeAttribute('hidden');
+            doneAt.innerText = `done at: ${simpleDate(todoitem.doneAt)}`;
+            undoneBtn.removeAttribute('hidden');
+            doneBtn.setAttribute('hidden', '');
             let elem = document.querySelector(`#${todoitem.id}`);
             allDoneElem.insertBefore(elem, allDoneElem.firstElementChild);
+        });
+        undoneBtn.addEventListener('click', event => {
+            event.preventDefault();
+            todoitem.doneAt = null;
+            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            let i = doneItems.findIndex(item => item.id === todoitem.id);
+            doneItems.splice(i, 1);
+            undoneItems.push(todoitem);
+            todoDetails.setAttribute('class', 'undone');
+            doneAt.setAttribute('hidden', '');
+            doneAt.innerText = '';
+            undoneBtn.setAttribute('hidden', '');
+            doneBtn.removeAttribute('hidden');
+            let elem = document.querySelector(`#${todoitem.id}`);
+            allUndoneElem.appendChild(elem);
         });
         todoTopDiv.setAttribute('id', todoitem.id);
         let moreBtn = todoTopDiv.querySelector('.more-btn');
         if (todoitem.details) {
-            moreBtn.style.display = 'inline';
+            moreBtn.removeAttribute('hidden');
         }
         const todoSummary = todoTopDiv.querySelector('.todo-summary');
         todoSummary.innerText = todoitem.summary;
@@ -305,9 +327,9 @@
         let summary = todoTopDiv.querySelector('summary');
         summary.addEventListener('click', function() {
             if (todoDetails.hasAttribute('open') && pre.innerText.trim()) {
-                moreBtn.style.display = 'inline';
+                moreBtn.removeAttribute('hidden');
             } else {
-                moreBtn.style.display = 'none';
+                moreBtn.setAttribute('hidden', '');
             }
         });
         const todoEditDialog = todoTopDiv.querySelector('dialog');
@@ -321,11 +343,11 @@
             todoDetailsInput.value = todoitem.details;
             todoEditDialog.setAttribute('open', '');
             todoSummaryInput.focus();
-        })
+        });
         todoEditCancel.addEventListener('click', function (event) {
             event.preventDefault();
             todoEditDialog.removeAttribute('open');
-        })
+        });
         todoEditOk.addEventListener('click', function (event) {
             event.preventDefault();
             todoitem.summary = todoSummaryInput.value.trim();
@@ -341,12 +363,14 @@
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
             console.log(todoitem.id);
             todoEditDialog.removeAttribute('open');
-        })
+        });
         if (todoitem.doneAt) {
             todoDetails.classList.remove('undone');
             todoDetails.classList.add('done');
-            doneOrUndone.innerHTML
-                = `done at: ${simpleDate(todoitem.doneAt)} <a href="#" class="undoneBtn">(undone)</a>`;
+            doneAt.removeAttribute('hidden');
+            doneAt.innerText = `done at: ${simpleDate(todoitem.doneAt)}`;
+            undoneBtn.removeAttribute('hidden');
+            doneBtn.setAttribute('hidden', '');
             allDoneElem.insertBefore(todoElem, allDoneElem.firstElementChild);
         } else {
             allUndoneElem.appendChild(todoElem);
