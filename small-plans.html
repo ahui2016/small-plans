@@ -178,7 +178,7 @@
 </dialog>
 
 <template id="todo-template">
-    <div>
+    <div class="todo-top-div">
         <dialog style="width: 550px; height: 300px; position: absolute;">
             <form autocomplete="off">
                 <p>
@@ -274,9 +274,10 @@
     // 注意: 每当修改 todoitem 的内容时, 都要更新 localStorage.
     function insertTodoElem(todoitem) {
         let todoElem = todoTemplate.content.cloneNode(true);
-        let todoDetails = todoElem.querySelector('details');
-        let doneOrUndone = todoElem.querySelector('.cell.date');
-        todoElem.querySelector('.doneBtn').addEventListener('click', function(event) {
+        let todoTopDiv = todoElem.querySelector('.todo-top-div');
+        let todoDetails = todoTopDiv.querySelector('details');
+        let doneOrUndone = todoTopDiv.querySelector('.cell.date');
+        todoTopDiv.querySelector('.doneBtn').addEventListener('click', function(event) {
             event.preventDefault();
             todoitem.doneAt = Date.now();
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
@@ -287,32 +288,32 @@
             todoDetails.removeAttribute('open');
             doneOrUndone.innerHTML
                 = `done at: ${simpleDate(todoitem.doneAt)} <a href="#" class="undoneBtn">(undone)</a>`;
-            let elem = allUndoneElem.removeChild(document.querySelector(`#${todoitem.id}`));
-            allDoneElem.insertBefore(elem, allDoneElem.firstChild);
+            let elem = document.querySelector(`#${todoitem.id}`);
+            allDoneElem.insertBefore(elem, allDoneElem.firstElementChild);
         });
-        todoDetails.setAttribute('id', todoitem.id);
-        let moreBtn = todoElem.querySelector('.more-btn');
+        todoTopDiv.setAttribute('id', todoitem.id);
+        let moreBtn = todoTopDiv.querySelector('.more-btn');
         if (todoitem.details) {
             moreBtn.style.display = 'inline';
         }
-        const todoSummary = todoElem.querySelector('.todo-summary');
+        const todoSummary = todoTopDiv.querySelector('.todo-summary');
         todoSummary.innerText = todoitem.summary;
-        let pre = todoElem.querySelector('.todo-details');
+        let pre = todoTopDiv.querySelector('.todo-details');
         pre.innerText = todoitem.details;
-        let summary = todoElem.querySelector('summary');
+        let summary = todoTopDiv.querySelector('summary');
         summary.addEventListener('click', function() {
-            if (todoDetails.hasAttribute('open')) {
+            if (todoDetails.hasAttribute('open') && pre.innerText) {
                 moreBtn.style.display = 'inline';
-            } else if (pre.innerText) {
+            } else {
                 moreBtn.style.display = 'none';
             }
         });
-        const todoEditDialog = todoElem.querySelector('dialog');
-        const todoSummaryInput = todoElem.querySelector('.todo-summary-input');
-        const todoDetailsInput = todoElem.querySelector('.todo-details-input');
-        const todoEditOk = todoElem.querySelector('.todo-edit-ok');
-        const todoEditCancel = todoElem.querySelector('.todo-edit-cancel');
-        todoElem.querySelector('.editBtn').addEventListener('click', function (event) {
+        const todoEditDialog = todoTopDiv.querySelector('dialog');
+        const todoSummaryInput = todoTopDiv.querySelector('.todo-summary-input');
+        const todoDetailsInput = todoTopDiv.querySelector('.todo-details-input');
+        const todoEditOk = todoTopDiv.querySelector('.todo-edit-ok');
+        const todoEditCancel = todoTopDiv.querySelector('.todo-edit-cancel');
+        todoTopDiv.querySelector('.editBtn').addEventListener('click', function (event) {
             event.preventDefault();
             todoSummaryInput.value = todoitem.summary;
             todoDetailsInput.value = todoitem.details;
@@ -338,7 +339,7 @@
             todoDetails.classList.add('done');
             doneOrUndone.innerHTML
                 = `done at: ${simpleDate(todoitem.doneAt)} <a href="#" class="undoneBtn">(undone)</a>`;
-            allDoneElem.insertBefore(todoElem, allDoneElem.firstChild);
+            allDoneElem.insertBefore(todoElem, allDoneElem.firstElementChild);
         } else {
             allUndoneElem.appendChild(todoElem);
         }
