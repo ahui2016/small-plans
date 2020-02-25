@@ -177,37 +177,39 @@
     </form>
 </dialog>
 
-<dialog id="todo-edit-dialog"
-        style="width: 80%; height: 300px; position: center;">
-    <form autocomplete="off">
-        <p>
-            <label for="todo-summary-input">Summary:</label><br/>
-            <input type="text" id="todo-summary-input" class="field" />
-        </p>
-        <p>
-            <label for="todo-details-input">Details:</label><br/>
-            <textarea id="todo-details-input" class="field"></textarea>
-        </p>
-        <p>
-            <input id="todo-edit-ok" type="button" value="ok">
-            <button id="todo-edit-cancel">cancel</button>
-        </p>
-    </form>
-</dialog>
-
 <template id="todo-template">
-    <details class="undone">
-        <summary>
-            <span class="todo-summary">NEED SUMMARY</span>
-            <span class="more-btn"
-                  style="color: #9fb6ce;cursor: pointer;display: none;">(more)</span>
-        </summary>
-        <div class="DateAndButtons">
-            <div class="cell date"><a href="#" class="doneBtn">(done)</a></div>
-            <div class="cell buttons"><a href="#" class="editBtn">edit</a> . <a href="#">delete</a></div>
-        </div>
-        <pre class="todo-details"></pre>
-    </details>
+    <div>
+        <dialog style="width: 550px; height: 300px; position: absolute;">
+            <form autocomplete="off">
+                <p>
+                    <label>Summary:<br/>
+                        <input type="text" class="todo-summary-input" />
+                    </label>
+                </p>
+                <p>
+                    <label>Details:<br/>
+                        <textarea class="todo-details-input"></textarea>
+                    </label>
+                </p>
+                <p>
+                    <button class="todo-edit-ok">ok</button>
+                    <button class="todo-edit-cancel">cancel</button>
+                </p>
+            </form>
+        </dialog>
+        <details class="undone">
+            <summary>
+                <span class="todo-summary">NEED SUMMARY</span>
+                <span class="more-btn"
+                      style="color: #9fb6ce;cursor: pointer;display: none;">(more)</span>
+            </summary>
+            <div class="DateAndButtons">
+                <div class="cell date"><a href="#" class="doneBtn">(done)</a></div>
+                <div class="cell buttons"><a href="#" class="editBtn">edit</a> . <a href="#">delete</a></div>
+            </div>
+            <pre class="todo-details"></pre>
+        </details>
+    </div>
 </template>
 
 <section id="all-undone-elem"></section>
@@ -305,11 +307,11 @@
                 moreBtn.style.display = 'none';
             }
         });
-        const todoEditDialog = document.querySelector('#todo-edit-dialog');
-        const todoSummaryInput = document.querySelector('#todo-summary-input');
-        const todoDetailsInput = document.querySelector('#todo-details-input');
-        const todoEditOk = document.querySelector('#todo-edit-ok');
-        const todoEditCancel = document.querySelector('#todo-edit-cancel');
+        const todoEditDialog = todoElem.querySelector('dialog');
+        const todoSummaryInput = todoElem.querySelector('.todo-summary-input');
+        const todoDetailsInput = todoElem.querySelector('.todo-details-input');
+        const todoEditOk = todoElem.querySelector('.todo-edit-ok');
+        const todoEditCancel = todoElem.querySelector('.todo-edit-cancel');
         todoElem.querySelector('.editBtn').addEventListener('click', function (event) {
             event.preventDefault();
             todoSummaryInput.value = todoitem.summary;
