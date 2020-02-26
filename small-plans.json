@@ -1,43 +1,97 @@
 {
   "projectTitle": "Small Plans II",
-  "projectDescription": "Ha ha ha!",
+  "projectDescription": "开始试用啦~",
   "undoneItems": [
     {
-      "id": "todoitem-k6xswdsa",
-      "summary": "1 1 1 faj;dj a;kdjf ;alksdjf ;akdjf ;akdj f",
+      "id": "todoitem-k720vvr5",
+      "summary": "【功能】delete button",
+      "details": " - 需要增加一个 allDeletedItems 数组\n - 对于已删除项目, 只提供 undelete 和 delete forever 按钮",
+      "createdAt": 1582643178113,
+      "updatedAt": 1582643455945,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "todoitem-k720ycmq",
+      "summary": "【改进】todo-edit-dialog 需要美化",
       "details": "",
-      "createdAt": 1582387899850,
-      "updatedAt": 1582387899850,
+      "createdAt": 1582643293298,
+      "updatedAt": 1582644839623,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "todoitem-k721xzqu",
+      "summary": "【改进】import 和 export 需要增加 dialog",
+      "details": "",
+      "createdAt": 1582644956214,
+      "updatedAt": 1582646112738,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "todoitem-k72wzm08",
+      "summary": "【功能】tags?",
+      "details": " - 增加一个简单的 tag 功能吧\n - 最多只能有一个 tag\n - 暂时不能通过 tag 来搜索 (只是为以后功能扩展埋下伏笔)\n - 特殊 tag: bug 与 fixed 自动转换",
+      "createdAt": 1582697099816,
+      "updatedAt": 1582697483513,
       "doneAt": null,
       "deletedAt": null
     }
   ],
   "doneItems": [
     {
-      "id": "todoitem-k6xswipl",
-      "summary": "2 2 2 ass;dkfja; dkl;;aj f;lakjd;llf a;kdjfa; kdjf",
+      "id": "todoitem-k721bdj5",
+      "summary": "【功能】导入文件",
       "details": "",
-      "createdAt": 1582387906233,
-      "updatedAt": 1582387906233,
-      "doneAt": 1582428601914,
+      "createdAt": 1582643900993,
+      "updatedAt": 1582643900993,
+      "doneAt": 1582643968930,
       "deletedAt": null
     },
     {
-      "id": "todoitem-k6xswo0t",
-      "summary": "3 3 3 kdfja;d jf;llakdj f;ajsd;lfkaj ;djf",
+      "id": "todoitem-k7215no0",
+      "summary": "【功能】编辑详细内容",
       "details": "",
-      "createdAt": 1582387913117,
-      "updatedAt": 1582387913117,
-      "doneAt": 1582428612835,
+      "createdAt": 1582643634192,
+      "updatedAt": 1582643634192,
+      "doneAt": 1582644023557,
       "deletedAt": null
     },
     {
-      "id": "todoitem-k6xswyzl",
-      "summary": "4 4 4 j;ajd;f kajsd;f ja;dkjf;lasdjf",
+      "id": "todoitem-k7214et2",
+      "summary": "【fixed】done 按钮的 bug",
       "details": "",
-      "createdAt": 1582387927329,
-      "updatedAt": 1582387927329,
-      "doneAt": 1582429419877,
+      "createdAt": 1582643576054,
+      "updatedAt": 1582643576054,
+      "doneAt": 1582644047839,
+      "deletedAt": null
+    },
+    {
+      "id": "todoitem-k72135g6",
+      "summary": "【功能】undone 按钮",
+      "details": "",
+      "createdAt": 1582643517270,
+      "updatedAt": 1582643517270,
+      "doneAt": 1582645140596,
+      "deletedAt": null
+    },
+    {
+      "id": "todoitem-k721711i",
+      "summary": "【fixed】对同一个 id 的按钮多次绑定 event",
+      "details": "导致按一下按钮就同时触发多个 event",
+      "createdAt": 1582643698182,
+      "updatedAt": 1582643862443,
+      "doneAt": 1582645153677,
+      "deletedAt": null
+    },
+    {
+      "id": "todoitem-k721rmpi",
+      "summary": "【fixed】按 done/undone 按钮时, 如无详细内容应删除 open 属性",
+      "details": "如有详细内容, 则应保持 open",
+      "createdAt": 1582644659382,
+      "updatedAt": 1582645507346,
+      "doneAt": 1582645186726,
       "deletedAt": null
     }
   ]

@@ -20,7 +20,8 @@
         details {
             margin-bottom: 20px;
             width: 100%;
-            font-family: sans-serif;
+            /*font-family: sans-serif;*/
+            font-family: "Palatino Linotype", Palatino, Palladio, Baskerville,Georgia, sans-serif, serif;
         }
         details pre {
             padding: 10px 20px 20px 20px;
@@ -88,6 +89,18 @@
         .cell.date a:hover {
             color: lightseagreen;
         }
+        #export-import-buttons {
+            color: #ddd;
+            margin-top: 1em;
+            margin-bottom: 3em;
+        }
+        #export-import-buttons a {
+            color: #ddd;
+            text-decoration: none;
+        }
+        #export-import-buttons a:hover {
+            color: blue;
+        }
     </style>
     <script>
         // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
@@ -153,11 +166,22 @@
 
 <h1><span id="project-title">Small Plans</span><button id="proj-title-btn">edit</button></h1>
 <h2 id="project-description"></h2>
-<form id="project-title-form" autocomplete="off">
+<div id="export-import-buttons">
+    <a href="#" id="export-btn">export</a> | <a href="#">import</a>
+</div>
+<form id="import-form" autocomplete="off" hidden>
     <input type="file" id="import-file">
     <button id="import-btn">import</button>
 </form>
-<form><button id="export-btn">export</button> <span id="json-url"></span></form>
+<dialog id="export-dialog"
+        style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
+    <p>请右键点击以下链接, 另存为文件</p>
+    <p><a href="#" id="json-url" download="small-plans.json">small-plans.json</a></p>
+    <p>建议连同 small-plans.html 一起保存在你的项目的根目录。</p>
+    <form style="margin-top: 3em; text-align: right;">
+        <button id="export-dialog-close">close</button>
+    </form>
+</dialog>
 
 <dialog id="proj-title-dialog"
         style="width: 80%; height: 300px; position: absolute; top: 30px;">
@@ -268,12 +292,17 @@
     function showJsonUrl() {
         let dbBlob = new Blob([JSON.stringify(getDB(), null, 2)], {type: 'application/json'});
         let jsonUrl = window.URL.createObjectURL(dbBlob);
-        document.querySelector('#json-url').innerHTML
-            = `<a href="${jsonUrl}" download="small-plans.json">右键点击这里, 另存为</a>`
+        document.querySelector('#json-url').setAttribute('href', jsonUrl);
     }
+    const exportDialog = document.querySelector('#export-dialog');
     document.querySelector('#export-btn').addEventListener('click', function (event) {
         event.preventDefault();
+        exportDialog.setAttribute('open', '');
         showJsonUrl();
+    });
+    document.querySelector('#export-dialog-close').addEventListener('click', event => {
+        event.preventDefault();
+        exportDialog.removeAttribute('open');
     })
 
     // 这个函数很大, 因为很多按钮也在里面.
@@ -297,6 +326,7 @@
             doneAt.innerText = `done at: ${simpleDate(todoitem.doneAt)}`;
             undoneBtn.removeAttribute('hidden');
             doneBtn.setAttribute('hidden', '');
+            if (!todoitem.details) todoDetails.removeAttribute('open');
             let elem = document.querySelector(`#${todoitem.id}`);
             allDoneElem.insertBefore(elem, allDoneElem.firstElementChild);
         });
@@ -312,6 +342,7 @@
             doneAt.innerText = '';
             undoneBtn.setAttribute('hidden', '');
             doneBtn.removeAttribute('hidden');
+            if (!todoitem.details) todoDetails.removeAttribute('open');
             let elem = document.querySelector(`#${todoitem.id}`);
             allUndoneElem.appendChild(elem);
         });
@@ -361,7 +392,6 @@
             todoSummary.innerText = todoitem.summary;
             pre.innerText = todoitem.details;
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
-            console.log(todoitem.id);
             todoEditDialog.removeAttribute('open');
         });
         if (todoitem.doneAt) {
