@@ -10,6 +10,10 @@
             justify-content: center;
             align-items: center;
         }
+        h1 a {
+            font-size: small;
+            text-decoration: none;
+        }
         #todo-input {
             width: 634px;
             height: 2.5em;
@@ -71,6 +75,7 @@
         }
         textarea {
             width: 100%;
+            resize: none;
         }
         .DateAndButtons {
             display: flex;
@@ -100,6 +105,14 @@
         }
         #export-import-buttons a:hover {
             color: blue;
+        }
+        .todo-tag {
+            font-size: smaller;
+            color: #666;
+            display: inline-block;
+            padding: 0 5px 0 5px;
+            border-radius: 5px;
+            background-color: beige;
         }
     </style>
     <script>
@@ -134,6 +147,7 @@
                 id: `todoitem-${now.toString(36)}`,
                 summary: summary,
                 details: '',
+                tag: '',
                 createdAt: now,
                 updatedAt: now,
                 doneAt: null,
@@ -164,8 +178,28 @@
 </head>
 <body>
 
-<h1><span id="project-title">Small Plans</span><button id="proj-title-btn">edit</button></h1>
+<h1><span id="project-title">Small Plans</span><a href="#" id="proj-title-btn"> 📝</a></h1>
 <h2 id="project-description"></h2>
+<!-- https://dev.to/ananyaneogi/html-can-do-that-c0n -->
+<dialog id="proj-title-dialog"
+        style="width: 450px; height: 240px; position: absolute; top: 20px; padding: 1em 2em 0 2em;">
+    <form autocomplete="off">
+        <p>
+            <label class="projectLabel" for="project-title-input">Project Title:</label><br/>
+            <input type="text" id="project-title-input" style="width: 100%; height: 2em;" />
+        </p>
+        <p>
+            <label class="projectLabel" for="description-input">Description:</label>
+            <textarea id="description-input" class="field" rows="3"></textarea>
+        </p>
+        <p style="text-align: right;">
+            <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
+            <input id="proj-title-ok" type="button" value="ok">
+            <button id="proj-title-cancel">cancel</button>
+        </p>
+    </form>
+</dialog>
+
 <div id="export-import-buttons">
     <a href="#" id="export-btn">export</a> | <a href="#" id="import-dialog-open">import</a>
 </div>
@@ -189,48 +223,35 @@
     </form>
 </dialog>
 
-<dialog id="proj-title-dialog"
-        style="width: 80%; height: 300px; position: absolute; top: 30px;">
-    <form autocomplete="off">
-        <p>
-            <label class="projectLabel" for="project-title-input">Project Title:</label>
-            <input type="text" id="project-title-input" class="field" />
-        </p>
-        <p>
-            <label class="projectLabel" for="description-input">Description:</label>
-            <textarea id="description-input" class="field"></textarea>
-        </p>
-        <p>
-            <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
-            <input id="proj-title-ok" type="button" value="ok">
-            <button id="proj-title-cancel">cancel</button>
-        </p>
-    </form>
-</dialog>
-
 <template id="todo-template">
     <div class="todo-top-div">
-        <dialog style="width: 550px; height: 300px; position: absolute;">
+        <dialog style="width: 500px; height: 300px; position: absolute; padding: 2em;">
             <form autocomplete="off">
                 <p>
+                    <label>Tag: <input type="text" class="todo-tag-input" /></label>
+                </p>
+                <p>
                     <label>Summary:<br/>
-                        <input type="text" class="todo-summary-input" />
+                        <input type="text" class="todo-summary-input" style="width: 100%; height: 2em;" />
                     </label>
                 </p>
                 <p>
                     <label>Details:<br/>
-                        <textarea class="todo-details-input"></textarea>
+                        <textarea class="todo-details-input" rows="6"></textarea>
                     </label>
                 </p>
-                <p>
+                <p style="text-align: right;">
                     <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
                     <button class="todo-edit-ok">ok</button>
                     <button class="todo-edit-cancel">cancel</button>
                 </p>
             </form>
         </dialog>
+
+        <!-- https://dev.to/ananyaneogi/html-can-do-that-c0n -->
         <details class="undone">
             <summary>
+                <span class="todo-tag"></span>
                 <span class="todo-summary">NEED SUMMARY</span>
                 <span class="more-btn" hidden
                       style="color: #9fb6ce;cursor: pointer;">(more)</span>
@@ -325,6 +346,7 @@
     function insertTodoElem(todoitem) {
         let todoElem = todoTemplate.content.cloneNode(true);
         let todoTopDiv = todoElem.querySelector('.todo-top-div');
+        let todoTag = todoTopDiv.querySelector('.todo-tag');
         let todoDetails = todoTopDiv.querySelector('details');
         let doneAt = todoTopDiv.querySelector('.done-at');
         let doneBtn = todoTopDiv.querySelector('.doneBtn');
@@ -332,6 +354,10 @@
         doneBtn.addEventListener('click', function(event) {
             event.preventDefault();
             todoitem.doneAt = Date.now();
+            if (todoitem.tag === 'bug') {
+                todoitem.tag = 'fixed';
+                todoTag.innerText = 'fixed';
+            }
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
             let i = undoneItems.findIndex(item => item.id === todoitem.id);
             undoneItems.splice(i, 1);
@@ -348,6 +374,10 @@
         undoneBtn.addEventListener('click', event => {
             event.preventDefault();
             todoitem.doneAt = null;
+            if (todoitem.tag === 'fixed') {
+                todoitem.tag = 'bug';
+                todoTag.innerText = 'bug';
+            }
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
             let i = doneItems.findIndex(item => item.id === todoitem.id);
             doneItems.splice(i, 1);
@@ -366,6 +396,7 @@
         if (todoitem.details) {
             moreBtn.removeAttribute('hidden');
         }
+        todoTag.innerText = todoitem.tag;
         const todoSummary = todoTopDiv.querySelector('.todo-summary');
         todoSummary.innerText = todoitem.summary;
         let pre = todoTopDiv.querySelector('.todo-details');
@@ -379,12 +410,14 @@
             }
         });
         const todoEditDialog = todoTopDiv.querySelector('dialog');
+        const todoTagInput = todoTopDiv.querySelector('.todo-tag-input');
         const todoSummaryInput = todoTopDiv.querySelector('.todo-summary-input');
         const todoDetailsInput = todoTopDiv.querySelector('.todo-details-input');
         const todoEditOk = todoTopDiv.querySelector('.todo-edit-ok');
         const todoEditCancel = todoTopDiv.querySelector('.todo-edit-cancel');
         todoTopDiv.querySelector('.editBtn').addEventListener('click', function (event) {
             event.preventDefault();
+            todoTagInput.value = todoitem.tag;
             todoSummaryInput.value = todoitem.summary;
             todoDetailsInput.value = todoitem.details;
             todoEditDialog.setAttribute('open', '');
@@ -396,6 +429,7 @@
         });
         todoEditOk.addEventListener('click', function (event) {
             event.preventDefault();
+            todoitem.tag = todoTagInput.value.trim();
             todoitem.summary = todoSummaryInput.value.trim();
             // pre 的内容不删除前后空格, 但当其内容只有空格时则清空.
             let preText = todoDetailsInput.value;
@@ -404,6 +438,7 @@
             }
             todoitem.details = preText;
             todoitem.updatedAt = Date.now();
+            todoTag.innerText = todoitem.tag;
             todoSummary.innerText = todoitem.summary;
             pre.innerText = todoitem.details;
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
