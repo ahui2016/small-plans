@@ -167,12 +167,18 @@
 <h1><span id="project-title">Small Plans</span><button id="proj-title-btn">edit</button></h1>
 <h2 id="project-description"></h2>
 <div id="export-import-buttons">
-    <a href="#" id="export-btn">export</a> | <a href="#">import</a>
+    <a href="#" id="export-btn">export</a> | <a href="#" id="import-dialog-open">import</a>
 </div>
-<form id="import-form" autocomplete="off" hidden>
-    <input type="file" id="import-file">
-    <button id="import-btn">import</button>
-</form>
+<dialog id="import-dialog"
+        style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
+    <p>请先选择文件, 然后点击 import 按钮.</p>
+    <p><span style="color: red">注意:</span> 一旦导入, 当前数据将被清空、覆盖!</p>
+    <form id="import-form" autocomplete="off" style="margin-top: 2em;">
+        <input type="file" id="import-file">
+        <button id="import-btn">import</button>
+        <p style="margin-top: 3em; text-align: right;"><button id="import-dialog-close">close</button></p>
+    </form>
+</dialog>
 <dialog id="export-dialog"
         style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
     <p>请右键点击以下链接, 另存为文件</p>
@@ -274,6 +280,11 @@
             doneItems: doneItems,
         }
     }
+    const importDialog = document.querySelector('#import-dialog');
+    document.querySelector('#import-dialog-open').addEventListener('click', event => {
+        event.preventDefault();
+        importDialog.setAttribute('open', '');
+    });
     document.querySelector('#import-btn').addEventListener('click', function(event) {
         event.preventDefault();
         const file = document.querySelector('#import-file').files[0];
@@ -288,6 +299,10 @@
             window.location.reload();
         }
         reader.readAsText(file);
+    });
+    document.querySelector('#import-dialog-close').addEventListener('click', event => {
+        event.preventDefault();
+        importDialog.removeAttribute('open');
     })
     function showJsonUrl() {
         let dbBlob = new Blob([JSON.stringify(getDB(), null, 2)], {type: 'application/json'});
