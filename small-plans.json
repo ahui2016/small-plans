@@ -1,5 +1,5 @@
 {
-  "projectTitle": "Small Plans II",
+  "projectTitle": "Small Plans",
   "projectDescription": "开始试用啦~",
   "undoneItems": [
     {
@@ -11,6 +11,16 @@
       "doneAt": null,
       "deletedAt": null,
       "tag": "功能"
+    },
+    {
+      "id": "todoitem-k749vbwm",
+      "summary": "新增 Todo 时, 用井号 #tag# 的形式添加 tag",
+      "details": "",
+      "tag": "功能",
+      "createdAt": 1582779201286,
+      "updatedAt": 1582779210435,
+      "doneAt": null,
+      "deletedAt": null
     }
   ],
   "doneItems": [
@@ -85,24 +95,24 @@
       "tag": "改进"
     },
     {
-      "id": "todoitem-k72wzm08",
-      "summary": "tag",
-      "details": " - 增加一个简单的 tag 功能吧\n - 最多只能有一个 tag\n - 暂时不能通过 tag 来搜索 (只是为以后功能扩展埋下伏笔)\n - 特殊 tag: bug 与 fixed 自动转换",
-      "createdAt": 1582697099816,
-      "updatedAt": 1582727561058,
-      "doneAt": 1582727328176,
-      "deletedAt": null,
-      "tag": "功能"
-    },
-    {
       "id": "todoitem-k720ycmq",
       "summary": "todo-edit-dialog 美化",
       "details": "",
       "createdAt": 1582643293298,
       "updatedAt": 1582730777534,
-      "doneAt": 1582730769471,
+      "doneAt": 1582733131282,
       "deletedAt": null,
       "tag": "改进"
+    },
+    {
+      "id": "todoitem-k72wzm08",
+      "summary": "tag",
+      "details": " - 增加一个简单的 tag 功能吧\n - 最多只能有一个 tag\n - 暂时不能通过 tag 来搜索 (只是为以后功能扩展埋下伏笔)\n - 特殊 tag: bug 与 fixed 自动转换",
+      "createdAt": 1582697099816,
+      "updatedAt": 1582727561058,
+      "doneAt": 1582733134772,
+      "deletedAt": null,
+      "tag": "功能"
     }
   ]
 }
