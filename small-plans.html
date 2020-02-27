@@ -174,6 +174,9 @@
             for (let item of db.doneItems) {
                 localStorage.setItem(item.id, JSON.stringify(item));
             }
+            for (let item of db.deletedItems) {
+                localStorage.setItem(item.id, JSON.stringify(item));
+            }
         }
         function splitTagSummary(s) {
             let summary = s.trim();
@@ -271,11 +274,17 @@
             </summary>
             <div class="DateAndButtons">
                 <div class="cell date">
+                    <span class="deleted-at" hidden></span>
                     <span class="done-at" hidden></span>
                     <a href="#" class="undoneBtn" hidden>(undone)</a>
                     <a href="#" class="doneBtn">(done)</a>
                 </div>
-                <div class="cell buttons"><a href="#" class="editBtn">edit</a> . <a href="#">delete</a></div>
+                <div class="cell buttons normal">
+                    <a href="#" class="editBtn">edit</a> . <a href="#" class="deleteBtn">delete</a>
+                </div>
+                <div class="cell buttons deleted" hidden>
+                    <a href="#" class="restoreBtn">restore</a> | <a href="#" class="deleteForeverBtn">delete forever</a>
+                </div>
             </div>
             <pre class="todo-details"></pre>
         </details>
@@ -291,6 +300,7 @@
 </form>
 
 <section id="all-done-elem"></section>
+<section id="all-deleted-elem"></section>
 
 <script>
     if (!storageAvailable('localStorage')) {
@@ -302,8 +312,10 @@
     const projDescriptionInput = document.getElementById('description-input');
     let undoneItems = [];
     let doneItems = [];
+    let deletedItems = [];
     const allUndoneElem = document.querySelector('#all-undone-elem');
     const allDoneElem = document.querySelector('#all-done-elem');
+    const allDeletedElem = document.querySelector('#all-deleted-elem');
     const todoTemplate = document.querySelector('#todo-template');
 
     function getDB() {
@@ -312,6 +324,7 @@
             projectDescription: localStorage.getItem('projectDescription'),
             undoneItems: undoneItems,
             doneItems: doneItems,
+            deletedItems: deletedItems,
         }
     }
     const importDialog = document.querySelector('#import-dialog');
@@ -327,7 +340,6 @@
             window.alert("导入文件失败!");
         }
         reader.onload = function () {
-            // noinspection
             let db = JSON.parse(reader.result);
             clearAndFillLocalStorage(db);
             window.location.reload();
@@ -357,13 +369,35 @@
     // 这个函数很大, 因为很多按钮也在里面.
     // 注意: 每当修改 todoitem 的内容时, 都要更新 localStorage.
     function insertTodoElem(todoitem) {
-        let todoElem = todoTemplate.content.cloneNode(true);
-        let todoTopDiv = todoElem.querySelector('.todo-top-div');
-        let todoTag = todoTopDiv.querySelector('.todo-tag');
-        let todoDetails = todoTopDiv.querySelector('details');
-        let doneAt = todoTopDiv.querySelector('.done-at');
-        let doneBtn = todoTopDiv.querySelector('.doneBtn');
-        let undoneBtn = todoTopDiv.querySelector('.undoneBtn');
+        const todoElem = todoTemplate.content.cloneNode(true);
+        const todoTopDiv = todoElem.querySelector('.todo-top-div');
+        const todoTag = todoTopDiv.querySelector('.todo-tag');
+        const todoDetails = todoTopDiv.querySelector('details');
+        const doneAt = todoTopDiv.querySelector('.done-at');
+        const deletedAt = todoTopDiv.querySelector('.deleted-at');
+        const doneBtn = todoTopDiv.querySelector('.doneBtn');
+        const undoneBtn = todoTopDiv.querySelector('.undoneBtn');
+        const deleteBtn = todoTopDiv.querySelector('.deleteBtn');
+        const todoButtonsNormal = todoTopDiv.querySelector('.cell.buttons.normal');
+        const todoButtonsDeleted = todoTopDiv.querySelector('.cell.buttons.deleted');
+        function setDoneAttributes(todoitem) {
+            todoDetails.setAttribute('class', 'done');
+            doneAt.removeAttribute('hidden');
+            doneAt.innerText = `done at: ${simpleDate(todoitem.doneAt)}`;
+            undoneBtn.removeAttribute('hidden');
+            doneBtn.setAttribute('hidden', '');
+        }
+        function setDeletedAttributes(todoitem) {
+            todoDetails.setAttribute('class', 'done');
+            todoSummary.style.textDecoration = 'line-through';
+            deletedAt.removeAttribute('hidden');
+            deletedAt.innerText = `deleted at: ${simpleDate(todoitem.deletedAt)}`;
+            doneAt.setAttribute('hidden', '');
+            undoneBtn.setAttribute('hidden', '');
+            doneBtn.setAttribute('hidden', '');
+            todoButtonsNormal.setAttribute('hidden', '');
+            todoButtonsDeleted.removeAttribute('hidden');
+        }
         doneBtn.addEventListener('click', function(event) {
             event.preventDefault();
             todoitem.doneAt = Date.now();
@@ -375,11 +409,7 @@
             let i = undoneItems.findIndex(item => item.id === todoitem.id);
             undoneItems.splice(i, 1);
             doneItems.push(todoitem);
-            todoDetails.setAttribute('class', 'done');
-            doneAt.removeAttribute('hidden');
-            doneAt.innerText = `done at: ${simpleDate(todoitem.doneAt)}`;
-            undoneBtn.removeAttribute('hidden');
-            doneBtn.setAttribute('hidden', '');
+            setDoneAttributes(todoitem);
             if (!todoitem.details) todoDetails.removeAttribute('open');
             let elem = document.querySelector(`#${todoitem.id}`);
             allDoneElem.insertBefore(elem, allDoneElem.firstElementChild);
@@ -403,6 +433,24 @@
             if (!todoitem.details) todoDetails.removeAttribute('open');
             let elem = document.querySelector(`#${todoitem.id}`);
             allUndoneElem.appendChild(elem);
+        });
+        deleteBtn.addEventListener('click', event => {
+            event.preventDefault();
+            todoitem.doneAt = null;
+            todoitem.deletedAt = Date.now();
+            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            if (todoitem.doneAt) {
+                let i = doneItems.findIndex(item => item.id === todoitem.id);
+                doneItems.splice(i, 1);
+            } else {
+                let i = undoneItems.findIndex(item => item.id === todoitem.id);
+                undoneItems.splice(i, 1);
+            }
+            deletedItems.push(todoitem);
+            setDeletedAttributes(todoitem);
+            if (!todoitem.details) todoDetails.removeAttribute('open');
+            let elem = document.querySelector(`#${todoitem.id}`);
+            allDeletedElem.insertBefore(elem, allDeletedElem.firstElementChild);
         });
         todoTopDiv.setAttribute('id', todoitem.id);
         let moreBtn = todoTopDiv.querySelector('.more-btn');
@@ -457,13 +505,12 @@
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
             todoEditDialog.removeAttribute('open');
         });
+        if (todoitem.deletedAt) {
+            setDeletedAttributes(todoitem);
+            allDeletedElem.insertBefore(todoElem, allDeletedElem.firstElementChild);
+        }
         if (todoitem.doneAt) {
-            todoDetails.classList.remove('undone');
-            todoDetails.classList.add('done');
-            doneAt.removeAttribute('hidden');
-            doneAt.innerText = `done at: ${simpleDate(todoitem.doneAt)}`;
-            undoneBtn.removeAttribute('hidden');
-            doneBtn.setAttribute('hidden', '');
+            setDoneAttributes(todoitem);
             allDoneElem.insertBefore(todoElem, allDoneElem.firstElementChild);
         } else {
             allUndoneElem.appendChild(todoElem);
@@ -482,7 +529,9 @@
         let key = localStorage.key(i);
         if (key.startsWith('todoitem-')) {
             let item = JSON.parse(localStorage.getItem(key));
-            if (item.doneAt) {
+            if (item.deletedAt) {
+                deletedItems.push(item);
+            } else if (item.doneAt) {
                 doneItems.push(item);
             } else {
                 undoneItems.push(item);
@@ -495,8 +544,12 @@
     doneItems.sort((a, b) => {
         return a.doneAt - b.doneAt;
     });
-    for (const item of undoneItems) insertTodoElem(item);
-    for (const item of doneItems) insertTodoElem(item);
+    deletedItems.sort((a, b) => {
+        return a.deletedAt - b.deletedAt;
+    });
+    for (let item of undoneItems) insertTodoElem(item);
+    for (let item of doneItems) insertTodoElem(item);
+    for (let item of deletedItems) insertTodoElem(item);
 
     const todoInput = document.getElementById('todo-input');
     todoInput.focus();
