@@ -378,6 +378,8 @@
         const doneBtn = todoTopDiv.querySelector('.doneBtn');
         const undoneBtn = todoTopDiv.querySelector('.undoneBtn');
         const deleteBtn = todoTopDiv.querySelector('.deleteBtn');
+        const restoreBtn = todoTopDiv.querySelector('.restoreBtn');
+        const deleteForeverBtn = todoTopDiv.querySelector('.deleteForeverBtn');
         const todoButtonsNormal = todoTopDiv.querySelector('.cell.buttons.normal');
         const todoButtonsDeleted = todoTopDiv.querySelector('.cell.buttons.deleted');
         function setDoneAttributes(todoitem) {
@@ -398,9 +400,18 @@
             todoButtonsNormal.setAttribute('hidden', '');
             todoButtonsDeleted.removeAttribute('hidden');
         }
+        function setRestoreAttributes(todoitem) {
+            todoDetails.setAttribute('class', 'done');
+            todoSummary.style.textDecoration = 'none';
+            deletedAt.setAttribute('hidden', '');
+            doneBtn.removeAttribute('hidden');
+            todoButtonsDeleted.setAttribute('hidden', '');
+            todoButtonsNormal.removeAttribute('hidden');
+        }
         doneBtn.addEventListener('click', function(event) {
             event.preventDefault();
             todoitem.doneAt = Date.now();
+            todoitem.updatedAt = todoitem.doneAt;
             if (todoitem.tag === 'bug') {
                 todoitem.tag = 'fixed';
                 todoTag.innerText = 'fixed';
@@ -421,6 +432,7 @@
                 todoitem.tag = 'bug';
                 todoTag.innerText = 'bug';
             }
+            todoitem.updatedAt = Date.now();
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
             let i = doneItems.findIndex(item => item.id === todoitem.id);
             doneItems.splice(i, 1);
@@ -438,6 +450,7 @@
             event.preventDefault();
             todoitem.doneAt = null;
             todoitem.deletedAt = Date.now();
+            todoitem.updatedAt = todoitem.deletedAt;
             localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
             if (todoitem.doneAt) {
                 let i = doneItems.findIndex(item => item.id === todoitem.id);
@@ -451,6 +464,23 @@
             if (!todoitem.details) todoDetails.removeAttribute('open');
             let elem = document.querySelector(`#${todoitem.id}`);
             allDeletedElem.insertBefore(elem, allDeletedElem.firstElementChild);
+        });
+        restoreBtn.addEventListener('click', event => {
+            event.preventDefault();
+            todoitem.deletedAt = null;
+            if (todoitem.tag === 'fixed') {
+                todoitem.tag = 'bug';
+                todoTag.innerText = 'bug';
+            }
+            todoitem.updatedAt = Date.now();
+            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            let i = deletedItems.findIndex(item => item.id === todoitem.id);
+            deletedItems.splice(i, 1);
+            undoneItems.push(todoitem);
+            setRestoreAttributes(todoitem);
+            if (!todoitem.details) todoDetails.removeAttribute('open');
+            let elem = document.querySelector(`#${todoitem.id}`);
+            allUndoneElem.appendChild(elem);
         });
         todoTopDiv.setAttribute('id', todoitem.id);
         let moreBtn = todoTopDiv.querySelector('.more-btn');
@@ -539,7 +569,7 @@
         }
     }
     undoneItems.sort((a, b) => {
-        return a.createdAt - b.createdAt;
+        return a.updatedAt - b.updatedAt;
     });
     doneItems.sort((a, b) => {
         return a.doneAt - b.doneAt;

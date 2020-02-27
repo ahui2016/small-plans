@@ -2,6 +2,7 @@
   <dictionary name="ahui">
     <words>
       <w>proj</w>
+      <w>todoitem</w>
     </words>
   </dictionary>
 </component>
