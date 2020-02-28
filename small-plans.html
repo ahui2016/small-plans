@@ -10,10 +10,12 @@
             justify-content: center;
             align-items: center;
         }
+
         h1 a {
             font-size: small;
             text-decoration: none;
         }
+
         #todo-input {
             width: 634px;
             height: 2.5em;
@@ -21,17 +23,20 @@
             border: 1px solid blue;
             padding: 0 3px 0 3px;
         }
+
         details {
             margin-bottom: 20px;
             width: 100%;
             /*font-family: sans-serif;*/
-            font-family: "Palatino Linotype", Palatino, Palladio, Baskerville,Georgia, sans-serif, serif;
+            font-family: "Palatino Linotype", Palatino, Palladio, Baskerville, Georgia, sans-serif, serif;
         }
+
         details pre {
             padding: 10px 20px 20px 20px;
             white-space: pre-wrap;
             white-space: -moz-pre-wrap;
         }
+
         summary {
             /*padding: 20px 20px 20px 38px;*/
             /*text-indent: -18px;*/
@@ -40,72 +45,91 @@
             outline: none;
             list-style: none;
         }
+
         summary::-webkit-details-marker {
             display: none;
         }
+
         summary:hover,
         summary:focus {
             border: 1px solid black;
         }
+
         details.undone summary {
             background-color: #f2f9fb;
         }
+
         details.done summary {
             background-color: white;
         }
+
         details[open] {
             background-color: #fafafa;
             border: 1px solid #9fb6ce;
         }
+
         details[open] summary {
             border-width: 0 0 1px 0;
             border-style: solid;
             border-color: #9fb6ce;
         }
+
         section {
             width: 640px;
         }
+
         .cell.buttons {
             padding-right: 0.5em;
             text-align: right;
         }
+
         .cell.buttons a {
             text-decoration: none;
             color: lightseagreen;
         }
+
         textarea {
             width: 100%;
             resize: none;
         }
+
         .DateAndButtons {
             display: flex;
         }
+
         .cell {
             flex: 1;
         }
+
         .cell.date {
             padding-left: 0.5em;
             color: #ddd;
         }
+
         .cell.date a {
             color: #ddd;
             text-decoration: none;
         }
+
         .cell.date a:hover {
             color: lightseagreen;
         }
+
         #export-import-buttons {
             color: #ddd;
             margin-top: 1em;
             margin-bottom: 3em;
         }
+
         #export-import-buttons a {
             color: #ddd;
             text-decoration: none;
         }
+
         #export-import-buttons a:hover {
             color: blue;
         }
+
         .todo-tag {
             font-size: small;
             font-weight: bold;
@@ -114,6 +138,20 @@
             padding: 0 5px 0 5px;
             border-radius: 5px;
             background-color: mediumaquamarine;
+        }
+
+        footer {
+            margin-top: 50px;
+            margin-bottom: 10px;
+        }
+
+        footer a {
+            color: gray;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: blue;
         }
     </style>
     <script>
@@ -126,8 +164,7 @@
                 storage.setItem(x, x);
                 storage.removeItem(x);
                 return true;
-            }
-            catch(e) {
+            } catch (e) {
                 return e instanceof DOMException && (
                         // everything except Firefox
                     e.code === 22 ||
@@ -142,10 +179,33 @@
                     (storage && storage.length !== 0);
             }
         }
+
+        // https://devdocs.io/dom/subtlecrypto/digest
+        // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+        function sha1(message) {
+            const msgUint8 = new TextEncoder().encode(message);
+            return crypto.subtle.digest("SHA-1", msgUint8).then(function (hashBuffer) {
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            });
+        }
+
+        // location.toString().replace(/\W/g, '')
+        sha1(location.toString()).then(digest => {
+            localStorage.setItem('todoitem-prefix', digest);
+        });
+        const projTitleKey = `projectTitle`;
+        const projDescKey = `projectDescription`;
+
+        function localID(id) {
+            const prefix = localStorage.getItem('todoitem-prefix');
+            return `${prefix}-${id}`;
+        }
+
         function newTodoItem(summary, tag) {
             let now = Date.now();
             return {
-                id: `todoitem-${now.toString(36)}`,
+                id: `${now.toString(36)}`,
                 summary: summary,
                 details: '',
                 tag: tag,
@@ -155,6 +215,7 @@
                 deletedAt: null,
             }
         }
+
         function simpleDate(timestamp) {
             const date = new Date(timestamp);
             let year = '' + date.getFullYear(),
@@ -164,20 +225,43 @@
             if (day.length < 2) day = '0' + day;
             return [year, month, day].join('-');
         }
-        function clearAndFillLocalStorage(db) {
-            localStorage.clear();
-            localStorage.setItem('projectTitle', db.projectTitle);
-            localStorage.setItem('projectDescription', db.projectDescription);
-            for (let item of db.undoneItems) {
-                localStorage.setItem(item.id, JSON.stringify(item));
+
+        function localStorageClear() {
+            const prefix = localStorage.getItem('todoitem-prefix');
+            let allKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key.startsWith(prefix)) {
+                    allKeys.push(key);
+                }
             }
-            for (let item of db.doneItems) {
-                localStorage.setItem(item.id, JSON.stringify(item));
-            }
-            for (let item of db.deletedItems) {
-                localStorage.setItem(item.id, JSON.stringify(item));
+            for (let key of allKeys) {
+                localStorage.removeItem(key);
             }
         }
+
+        // noinspection JSUnusedGlobalSymbols
+        function clearAll() {
+            localStorageClear();
+            window.location.reload();
+            // setTimeout(window.location.reload.bind(window.location), 1000);
+        }
+
+        function clearAndFillLocalStorage(db) {
+            localStorageClear();
+            localStorage.setItem(localID(projTitleKey), db.projectTitle);
+            localStorage.setItem(localID(projDescKey), db.projectDescription);
+            for (let item of db.undoneItems) {
+                localStorage.setItem(localID(item.id), JSON.stringify(item));
+            }
+            for (let item of db.doneItems) {
+                localStorage.setItem(localID(item.id), JSON.stringify(item));
+            }
+            for (let item of db.deletedItems) {
+                localStorage.setItem(localID(item.id), JSON.stringify(item));
+            }
+        }
+
         function splitTagSummary(s) {
             let summary = s.trim();
             let tag = '';
@@ -185,7 +269,7 @@
                 let i = summary.indexOf('#', 1);
                 if (i !== -1) {
                     tag = summary.substring(1, i).trim();
-                    summary = summary.substring(i+1).trim();
+                    summary = summary.substring(i + 1).trim();
                 }
             }
             return {tag, summary}
@@ -202,7 +286,7 @@
     <form autocomplete="off">
         <p>
             <label class="projectLabel" for="project-title-input">Project Title:</label><br/>
-            <input type="text" id="project-title-input" style="width: 100%; height: 2em;" />
+            <input type="text" id="project-title-input" style="width: 100%; height: 2em;"/>
         </p>
         <p>
             <label class="projectLabel" for="description-input">Description:</label>
@@ -226,7 +310,9 @@
     <form id="import-form" autocomplete="off" style="margin-top: 2em;">
         <input type="file" id="import-file">
         <button id="import-btn">import</button>
-        <p style="margin-top: 3em; text-align: right;"><button id="import-dialog-close">close</button></p>
+        <p style="margin-top: 3em; text-align: right;">
+            <button id="import-dialog-close">close</button>
+        </p>
     </form>
 </dialog>
 <dialog id="export-dialog"
@@ -244,11 +330,11 @@
         <dialog style="width: 500px; height: 300px; position: absolute; padding: 2em;">
             <form autocomplete="off">
                 <p>
-                    <label>Tag: <input type="text" class="todo-tag-input" /></label>
+                    <label>Tag: <input type="text" class="todo-tag-input"/></label>
                 </p>
                 <p>
                     <label>Summary:<br/>
-                        <input type="text" class="todo-summary-input" style="width: 100%; height: 2em;" />
+                        <input type="text" class="todo-summary-input" style="width: 100%; height: 2em;"/>
                     </label>
                 </p>
                 <p>
@@ -296,7 +382,7 @@
 <form id="add-todo-form" autocomplete="off"
       style="width: 640px; margin-top: 1em; margin-bottom: 3em;">
     <label for="todo-input" style="font-weight: bold;">Add Todo:</label><br/>
-    <input type="text" id="todo-input" />
+    <input type="text" id="todo-input"/>
 </form>
 
 <section id="all-done-elem"></section>
@@ -306,8 +392,12 @@
     if (!storageAvailable('localStorage')) {
         window.alert("当前浏览器不支持 localStorage, 可能无法正常使用本网页, 请使用支持 localStorage 的浏览器.")
     }
+
+    // 这里有 bug, 如果电脑速度足够快, 此时 prefix 仍是空.
+    const prefix = localStorage.getItem('todoitem-prefix');
+
     const projTitle = document.getElementById('project-title');
-    const projTitleInput =  document.getElementById('project-title-input');
+    const projTitleInput = document.getElementById('project-title-input');
     const projDescription = document.getElementById('project-description');
     const projDescriptionInput = document.getElementById('description-input');
     let undoneItems = [];
@@ -320,19 +410,20 @@
 
     function getDB() {
         return {
-            projectTitle: localStorage.getItem('projectTitle'),
-            projectDescription: localStorage.getItem('projectDescription'),
+            projectTitle: localStorage.getItem(localID(projTitleKey)),
+            projectDescription: localStorage.getItem(localID(projDescKey)),
             undoneItems: undoneItems,
             doneItems: doneItems,
             deletedItems: deletedItems,
         }
     }
+
     const importDialog = document.querySelector('#import-dialog');
     document.querySelector('#import-dialog-open').addEventListener('click', event => {
         event.preventDefault();
         importDialog.setAttribute('open', '');
     });
-    document.querySelector('#import-btn').addEventListener('click', function(event) {
+    document.querySelector('#import-btn').addEventListener('click', function (event) {
         event.preventDefault();
         const file = document.querySelector('#import-file').files[0];
         const reader = new FileReader();
@@ -350,11 +441,13 @@
         event.preventDefault();
         importDialog.removeAttribute('open');
     })
+
     function showJsonUrl() {
         let dbBlob = new Blob([JSON.stringify(getDB(), null, 2)], {type: 'application/json'});
         let jsonUrl = window.URL.createObjectURL(dbBlob);
         document.querySelector('#json-url').setAttribute('href', jsonUrl);
     }
+
     const exportDialog = document.querySelector('#export-dialog');
     document.querySelector('#export-btn').addEventListener('click', function (event) {
         event.preventDefault();
@@ -382,6 +475,7 @@
         const deleteForeverBtn = todoTopDiv.querySelector('.deleteForeverBtn');
         const todoButtonsNormal = todoTopDiv.querySelector('.cell.buttons.normal');
         const todoButtonsDeleted = todoTopDiv.querySelector('.cell.buttons.deleted');
+
         function setDoneAttributes(todoitem) {
             todoDetails.setAttribute('class', 'done');
             doneAt.removeAttribute('hidden');
@@ -389,6 +483,7 @@
             undoneBtn.removeAttribute('hidden');
             doneBtn.setAttribute('hidden', '');
         }
+
         function setDeletedAttributes(todoitem) {
             todoDetails.setAttribute('class', 'done');
             todoSummary.style.textDecoration = 'line-through';
@@ -400,6 +495,7 @@
             todoButtonsNormal.setAttribute('hidden', '');
             todoButtonsDeleted.removeAttribute('hidden');
         }
+
         function setRestoreAttributes() {
             todoDetails.setAttribute('class', 'done');
             todoSummary.style.textDecoration = 'none';
@@ -408,15 +504,15 @@
             todoButtonsDeleted.setAttribute('hidden', '');
             todoButtonsNormal.removeAttribute('hidden');
         }
-        doneBtn.addEventListener('click', function(event) {
+
+        doneBtn.addEventListener('click', function (event) {
             event.preventDefault();
             todoitem.doneAt = Date.now();
-            todoitem.updatedAt = todoitem.doneAt;
             if (todoitem.tag === 'bug') {
                 todoitem.tag = 'fixed';
                 todoTag.innerText = 'fixed';
             }
-            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
             let i = undoneItems.findIndex(item => item.id === todoitem.id);
             undoneItems.splice(i, 1);
             doneItems.push(todoitem);
@@ -432,8 +528,7 @@
                 todoitem.tag = 'bug';
                 todoTag.innerText = 'bug';
             }
-            todoitem.updatedAt = Date.now();
-            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
             let i = doneItems.findIndex(item => item.id === todoitem.id);
             doneItems.splice(i, 1);
             undoneItems.push(todoitem);
@@ -450,8 +545,7 @@
             event.preventDefault();
             todoitem.doneAt = null;
             todoitem.deletedAt = Date.now();
-            todoitem.updatedAt = todoitem.deletedAt;
-            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
             if (todoitem.doneAt) {
                 let i = doneItems.findIndex(item => item.id === todoitem.id);
                 doneItems.splice(i, 1);
@@ -472,8 +566,8 @@
                 todoitem.tag = 'bug';
                 todoTag.innerText = 'bug';
             }
-            todoitem.updatedAt = Date.now();
-            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            todoitem.createdAt = Date.now();
+            localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
             let i = deletedItems.findIndex(item => item.id === todoitem.id);
             deletedItems.splice(i, 1);
             undoneItems.push(todoitem);
@@ -488,7 +582,7 @@
             deletedItems.splice(i, 1);
             let elem = document.querySelector(`#${todoitem.id}`);
             allDeletedElem.removeChild(elem);
-            localStorage.removeItem(todoitem.id);
+            localStorage.removeItem(localID(todoitem.id));
         });
         todoTopDiv.setAttribute('id', todoitem.id);
         let moreBtn = todoTopDiv.querySelector('.more-btn');
@@ -501,7 +595,7 @@
         let pre = todoTopDiv.querySelector('.todo-details');
         pre.innerText = todoitem.details;
         let summary = todoTopDiv.querySelector('summary');
-        summary.addEventListener('click', function() {
+        summary.addEventListener('click', function () {
             if (todoDetails.hasAttribute('open') && pre.innerText.trim()) {
                 moreBtn.removeAttribute('hidden');
             } else {
@@ -528,19 +622,23 @@
         });
         todoEditOk.addEventListener('click', function (event) {
             event.preventDefault();
-            todoitem.tag = todoTagInput.value.trim();
-            todoitem.summary = todoSummaryInput.value.trim();
+            let tag = todoTagInput.value.trim();
+            let summary = todoSummaryInput.value.trim();
             // pre 的内容不删除前后空格, 但当其内容只有空格时则清空.
             let preText = todoDetailsInput.value;
             if (preText.trim() === '') {
                 preText = '';
             }
-            todoitem.details = preText;
-            todoitem.updatedAt = Date.now();
-            todoTag.innerText = todoitem.tag;
-            todoSummary.innerText = todoitem.summary;
-            pre.innerText = todoitem.details;
-            localStorage.setItem(todoitem.id, JSON.stringify(todoitem));
+            if (tag + summary + preText !== todoitem.tag + todoitem.summary + todoitem.details) {
+                todoitem.tag = tag;
+                todoitem.summary = summary;
+                todoitem.details = preText;
+                todoitem.updatedAt = Date.now();
+                todoTag.innerText = tag;
+                todoSummary.innerText = summary;
+                pre.innerText = preText;
+                localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
+            }
             todoEditDialog.removeAttribute('open');
         });
         if (todoitem.deletedAt) {
@@ -556,16 +654,18 @@
     }
 
     // 以上是设置, 从这里开始使页面发生可见的变化.
-    if (localStorage.getItem('projectTitle')) {
-        projTitle.innerText = localStorage.getItem('projectTitle');
+    if (localStorage.getItem(localID(projTitleKey))) {
+        projTitle.innerText = localStorage.getItem(localID(projTitleKey));
         if (projTitle.innerText === '') projTitle.innerText = 'Small Plans';
     }
-    if (localStorage.getItem('projectDescription')) {
-        projDescription.innerText = localStorage.getItem('projectDescription');
-    }
+    projDescription.innerText = localStorage.getItem(localID(projDescKey));
     for (let i = 0; i < localStorage.length; i++) {
         let key = localStorage.key(i);
-        if (key.startsWith('todoitem-')) {
+        if (key.startsWith(prefix)) {
+            let itemJson = localStorage.getItem(key);
+
+            if (itemJson.length < 100) continue;
+
             let item = JSON.parse(localStorage.getItem(key));
             if (item.deletedAt) {
                 deletedItems.push(item);
@@ -577,7 +677,7 @@
         }
     }
     undoneItems.sort((a, b) => {
-        return a.updatedAt - b.updatedAt;
+        return a.createdAt - b.createdAt;
     });
     doneItems.sort((a, b) => {
         return a.doneAt - b.doneAt;
@@ -596,22 +696,22 @@
     const projTitleBtn = document.getElementById('proj-title-btn');
     const projTitleOk = document.getElementById('proj-title-ok');
     const projTitleCancel = document.getElementById('proj-title-cancel');
-    projTitleBtn.addEventListener('click', function() {
-        projTitleInput.value = localStorage.getItem('projectTitle');
-        projDescriptionInput.value = localStorage.getItem('projectDescription');
+    projTitleBtn.addEventListener('click', function () {
+        projTitleInput.value = localStorage.getItem(localID(projTitleKey));
+        projDescriptionInput.value = localStorage.getItem(localID(projDescKey));
         projTitleDialog.setAttribute('open', '');
         projTitleInput.focus();
     });
-    projTitleCancel.addEventListener('click', function(event) {
+    projTitleCancel.addEventListener('click', function (event) {
         event.preventDefault();
         projTitleDialog.removeAttribute('open');
     });
-    projTitleOk.addEventListener('click', function(event) {
+    projTitleOk.addEventListener('click', function (event) {
         event.preventDefault();
         projTitle.innerText = projTitleInput.value.trim();
-        localStorage.setItem('projectTitle', projTitle.innerText);
+        localStorage.setItem(localID(projTitleKey), projTitle.innerText);
         projDescription.innerText = projDescriptionInput.value.trim();
-        localStorage.setItem('projectDescription', projDescription.innerText);
+        localStorage.setItem(localID(projDescKey), projDescription.innerText);
         projTitleDialog.removeAttribute('open');
     });
     // projTitleInput.addEventListener('keyup', (event) => {
@@ -620,17 +720,18 @@
     //     }
     // });
     const addTodoForm = document.getElementById('add-todo-form');
-    addTodoForm.addEventListener('submit', function(event) {
+    addTodoForm.addEventListener('submit', function (event) {
         event.preventDefault();
         let todo = todoInput.value.trim();
         let {tag, summary} = splitTagSummary(todo);
         let item = newTodoItem(summary, tag);
-        localStorage.setItem(item.id, JSON.stringify(item));
+        localStorage.setItem(localID(item.id), JSON.stringify(item));
         undoneItems.push(item);
         insertTodoElem(item);
         todoInput.value = '';
         todoInput.focus();
     });
 </script>
+<footer><a href="https://github.com/ahui2016/small-plans">https://github.com/ahui2016/small-plans</a></footer>
 </body>
 </html>
