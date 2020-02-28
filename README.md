@@ -11,18 +11,19 @@ Small Plans for small projects.
 - 不使用 Bootstrap 等任何 UI 库
 - 不使用 JQuery
 - 不需要服务器, 整个应用只有一个 HTML 文件
-- 原生 HTML, CSS, JavaScript 手工打造, 一共 650 行代码
+- 原生 HTML, CSS, JavaScript 手工打造, 一共 700 行代码
 
 ## 数据安全
 
 - 使用浏览器的 localStorage 临时保全数据, 即使页面意外关闭, 数据也不会丢失
 - 提供 export 功能, 可随时导出数据为 json 文件, 永久保存
 - 提供 import 功能, 导入 json 文件, 恢复数据
+- 建议每次关闭页面前都导出一次, 连同项目代码一起 git push
 
 ## 用途
 
 - 适用于个人小项目 (例如一名程序员自己制作的小项目)
-- 一般在做个人项目时, 突然想到一个功能可以增加, 有或者哪里可以改进, 在这个过程中又会突然发现一个 bug.
+- 一般在做个人项目时, 突然想到一个功能可以增加, 或者哪里可以改进, 在这个过程中又会突然发现一个 bug.
 此时, 通常无法立即实现全部突然冒出来的想法, 因此就需要先记录下来, 后续逐项完成.
 
 ## 为什么不直接用 markdown?
@@ -52,8 +53,12 @@ Small Plans for small projects.
 
 - 请通过 git clone 或打包下载, 获取本仓库的全部文件
 - 双击打开 small-plans.html, 点击页面上的 import 按钮, 导入 使用说明.json 文件, 即可看到使用说明
-- 另外, 仓库中还有一个 small-plans.json 文件, 那是本软件开发到一定程度时开始用于记录自身开发过程而产生的文件
+- 另外, 仓库中还有一个 small-plans.json 文件, 那是本软件开发到一定程度时开始用于记录自身开发过程而产生的文件,
+  导入到 small-plans.html 里即可查看
 - 建议在实际使用中, 每个项目都拷贝一个 small-plans.html 并更改文件名  
   因为本软件会根据 small-plans.html 所在的文件夹及自身的文件名而显示不同的内容
+
+
+截图:
 
 ![screenshot](screenshot.jpg)
