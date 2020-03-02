@@ -654,9 +654,11 @@
     }
 
     // 以上是设置, 从这里开始使页面发生可见的变化.
+    const browserTabTitle = document.querySelector('title');
     if (localStorage.getItem(localID(projTitleKey))) {
         projTitle.innerText = localStorage.getItem(localID(projTitleKey));
         if (projTitle.innerText === '') projTitle.innerText = 'Small Plans';
+        browserTabTitle.innerText = projTitle.innerText;
     }
     projDescription.innerText = localStorage.getItem(localID(projDescKey));
     for (let i = 0; i < localStorage.length; i++) {
@@ -713,6 +715,7 @@
         projDescription.innerText = projDescriptionInput.value.trim();
         localStorage.setItem(localID(projDescKey), projDescription.innerText);
         projTitleDialog.removeAttribute('open');
+        browserTabTitle.innerText = projTitle.innerText;
     });
     // projTitleInput.addEventListener('keyup', (event) => {
     //     if (event.key === 'Escape') {
