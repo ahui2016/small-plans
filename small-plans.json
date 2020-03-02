@@ -1,6 +1,6 @@
 {
-  "projectTitle": "Small Plans",
-  "projectDescription": "Small plans for small projects",
+  "projectTitle": "Qian",
+  "projectDescription": "一个书签 (收藏夹) 工具",
   "undoneItems": [
     {
       "id": "k75m83r2",
@@ -9,6 +9,16 @@
       "tag": "新版本",
       "createdAt": 1582860418814,
       "updatedAt": 1582860418814,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7a3xvzi",
+      "summary": "使用 Chrome 或相同内核的浏览器, 同时打开几个不同目录下的 small-plans.html 时, 有相互干扰的现象",
+      "details": " - 偶然发生, 未确定触发条件\n - firefox 没有这个问题\n - 用 Dart 重写时要注意这个问题",
+      "tag": "bug",
+      "createdAt": 1583132039982,
+      "updatedAt": 1583132208924,
       "doneAt": null,
       "deletedAt": null
     }
@@ -149,9 +159,19 @@
       "summary": "自动修改浏览器的 title",
       "details": "",
       "tag": "改进",
-      "createdAt": 1583130176968,
+      "createdAt": 1583131270308,
       "updatedAt": 1583130176968,
-      "doneAt": 1583130926822,
+      "doneAt": 1583131275249,
+      "deletedAt": null
+    },
+    {
+      "id": "k7a3kqnn",
+      "summary": "链接里的 href=\"#\" 会使地址栏最后多一个 # 号, 影响浏览器刷新缓存",
+      "details": "删除 href=\"#\", 避免影响缓存",
+      "tag": "fixed",
+      "createdAt": 1583131426547,
+      "updatedAt": 1583131475450,
+      "doneAt": 1583131479021,
       "deletedAt": null
     }
   ],

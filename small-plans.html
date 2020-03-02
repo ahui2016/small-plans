@@ -11,6 +11,10 @@
             align-items: center;
         }
 
+        a {
+            cursor: pointer;
+        }
+
         h1 a {
             font-size: small;
             text-decoration: none;
@@ -278,7 +282,7 @@
 </head>
 <body>
 
-<h1><span id="project-title">Small Plans</span><a href="#" id="proj-title-btn"> 📝</a></h1>
+<h1><span id="project-title">Small Plans</span><a id="proj-title-btn"> 📝</a></h1>
 <h2 id="project-description"></h2>
 <!-- https://dev.to/ananyaneogi/html-can-do-that-c0n -->
 <dialog id="proj-title-dialog"
@@ -301,7 +305,7 @@
 </dialog>
 
 <div id="export-import-buttons">
-    <a href="#" id="export-btn">export</a> | <a href="#" id="import-dialog-open">import</a>
+    <a id="export-btn">export</a> | <a id="import-dialog-open">import</a>
 </div>
 <dialog id="import-dialog"
         style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
@@ -318,7 +322,7 @@
 <dialog id="export-dialog"
         style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
     <p>请右键点击以下链接, 另存为文件</p>
-    <p><a href="#" id="json-url" download="small-plans.json">small-plans.json</a></p>
+    <p><a id="json-url" download="small-plans.json">small-plans.json</a></p>
     <p>建议连同 small-plans.html 一起保存在你的项目的根目录。</p>
     <form style="margin-top: 3em; text-align: right;">
         <button id="export-dialog-close">close</button>
@@ -362,14 +366,14 @@
                 <div class="cell date">
                     <span class="deleted-at" hidden></span>
                     <span class="done-at" hidden></span>
-                    <a href="#" class="undoneBtn" hidden>(undone)</a>
-                    <a href="#" class="doneBtn">(done)</a>
+                    <a class="undoneBtn" hidden>(undone)</a>
+                    <a class="doneBtn">(done)</a>
                 </div>
                 <div class="cell buttons normal">
-                    <a href="#" class="editBtn">edit</a> . <a href="#" class="deleteBtn">delete</a>
+                    <a class="editBtn">edit</a> . <a class="deleteBtn">delete</a>
                 </div>
                 <div class="cell buttons deleted" hidden>
-                    <a href="#" class="restoreBtn">restore</a> | <a href="#" class="deleteForeverBtn">delete forever</a>
+                    <a class="restoreBtn">restore</a> | <a class="deleteForeverBtn">delete forever</a>
                 </div>
             </div>
             <pre class="todo-details"></pre>
