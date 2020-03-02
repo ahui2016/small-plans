@@ -184,25 +184,23 @@
             }
         }
 
-        // https://devdocs.io/dom/subtlecrypto/digest
-        // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
-        function sha1(message) {
-            const msgUint8 = new TextEncoder().encode(message);
-            return crypto.subtle.digest("SHA-1", msgUint8).then(function (hashBuffer) {
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            });
+        function getPrefix() {
+            let tempPrefix = location.toString().replace(/\W/g, '');
+            tempPrefix = tempPrefix.substring(5, tempPrefix.length);
+            const len = tempPrefix.length;
+            if (len > 40) {
+                // 取 tempPrefix 的头和尾组成 prefix (为了尽可能避免重复, 又不能太长)
+                // 共 40 个字符, 相当于 SHA-1 长度.
+                // 本来是计算 SHA-1 的, 但那是个异步函数, 我不知道怎样确保它先出结果再执行后面的代码.
+                return tempPrefix.substring(0, 20) + tempPrefix.substring(len - 21, len - 1);
+            }
+            return tempPrefix;
         }
-
-        // location.toString().replace(/\W/g, '')
-        sha1(location.toString()).then(digest => {
-            localStorage.setItem('todoitem-prefix', digest);
-        });
+        const prefix = getPrefix();
         const projTitleKey = `projectTitle`;
         const projDescKey = `projectDescription`;
 
         function localID(id) {
-            const prefix = localStorage.getItem('todoitem-prefix');
             return `${prefix}-${id}`;
         }
 
@@ -231,7 +229,6 @@
         }
 
         function localStorageClear() {
-            const prefix = localStorage.getItem('todoitem-prefix');
             let allKeys = [];
             for (let i = 0; i < localStorage.length; i++) {
                 let key = localStorage.key(i);
@@ -396,9 +393,6 @@
     if (!storageAvailable('localStorage')) {
         window.alert("当前浏览器不支持 localStorage, 可能无法正常使用本网页, 请使用支持 localStorage 的浏览器.")
     }
-
-    // 这里有 bug, 如果电脑速度足够快, 此时 prefix 仍是空.
-    const prefix = localStorage.getItem('todoitem-prefix');
 
     const projTitle = document.getElementById('project-title');
     const projTitleInput = document.getElementById('project-title-input');
@@ -628,11 +622,8 @@
             event.preventDefault();
             let tag = todoTagInput.value.trim();
             let summary = todoSummaryInput.value.trim();
-            // pre 的内容不删除前后空格, 但当其内容只有空格时则清空.
-            let preText = todoDetailsInput.value;
-            if (preText.trim() === '') {
-                preText = '';
-            }
+            // pre 的内容不删除头部空格, 只删除尾部空格 (并且当其内容只有空格时全部清空)
+            let preText = todoDetailsInput.value.trimEnd();
             if (tag + summary + preText !== todoitem.tag + todoitem.summary + todoitem.details) {
                 todoitem.tag = tag;
                 todoitem.summary = summary;
@@ -658,6 +649,7 @@
     }
 
     // 以上是设置, 从这里开始使页面发生可见的变化.
+    console.log(prefix);
     const browserTabTitle = document.querySelector('title');
     if (localStorage.getItem(localID(projTitleKey))) {
         projTitle.innerText = localStorage.getItem(localID(projTitleKey));

@@ -57,6 +57,8 @@ Small Plans for small projects.
   导入到 small-plans.html 里即可查看
 - 建议在实际使用中, 每个项目都拷贝一个 small-plans.html 并更改文件名  
   因为本软件会根据 small-plans.html 所在的文件夹及自身的文件名而显示不同的内容
+- **为了避免不小心覆盖不同项目的数据, 强烈建议先改名后再使用**  
+  比如把 `small-plans.html` 改为 `xxxx-plans.html` (其中 `xxxx` 是项目名称)
 
 
 截图:
