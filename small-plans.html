@@ -328,17 +328,30 @@
         <p>请先选择文件, 然后点击 import 按钮.
             <br/><span style="color: red">注意:</span> 一旦导入, 当前数据将被清空、覆盖!</p>
         <label for="import-url">
-            (复制当前目录可在选择文件时使用 <button id="import-copy-btn">copy</button>)
-            <input type="text" id="import-url" style="width: 100%;" disabled>
+            (复制当前目录可在选择文件时使用)
+            <input type="text" id="import-url" style="width: 380px;" disabled>
+            <button id="import-copy-btn">copy</button>
         </label>
-        <br/><br/><br/>
-        <input type="file" id="import-file" accept=".json">
+        <input type="file" id="import-file" accept=".json" style="margin-top: 3em;">
         <button id="import-btn">import</button>
         <p style="margin-top: 2em; text-align: right;">
             <button id="import-dialog-close">close</button>
         </p>
     </form>
 </dialog>
+<script>
+    const importUrl = document.querySelector('#import-url');
+    const importCopyBtn = document.querySelector('#import-copy-btn');
+    importUrl.value = workingDir;
+    importCopyBtn.addEventListener('click', event => {
+        event.preventDefault();
+        new Promise(resolve => resolve(importUrl.removeAttribute('disabled')))
+            .then(() => importUrl.select())
+            .then(() => document.execCommand('copy'))
+            .then(() => importUrl.setAttribute('disabled', ''));
+    })
+</script>
+
 <dialog id="export-dialog"
         style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
     <p>请右键点击以下链接, 另存为文件</p>
