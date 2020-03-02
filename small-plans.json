@@ -15,10 +15,10 @@
     {
       "id": "k7aa5nxl",
       "summary": "提醒用户更改文件名",
-      "details": " - 在 README 里提醒\n - 在导出时提醒\n - 自动设定导出文件名",
+      "details": " - 在 README 里提醒\n - 在使用说明中提醒\n - 在导出时提醒\n - 自动设定导出文件名",
       "tag": "改进",
       "createdAt": 1583142480489,
-      "updatedAt": 1583142945463,
+      "updatedAt": 1583155629468,
       "doneAt": null,
       "deletedAt": null
     }

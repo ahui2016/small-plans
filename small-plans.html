@@ -184,6 +184,25 @@
             }
         }
 
+        function getJsonFileName() {
+            const fullName = location.toString().split('/').splice(-1)[0];
+            const i = fullName.lastIndexOf('.');
+            return fullName.substring(0, i) + '.json';
+        }
+        const jsonFileName = getJsonFileName();
+
+        function getWorkingDir() {
+            let s = location.toString();
+            s = s.substring('file:///'.length);
+            const i = s.lastIndexOf('/');
+            let wd = s.substring(0, i) + '/';
+            if (window.navigator.platform.startsWith('Win')) {
+                wd = wd.replace(/\//g, '\\');
+            }
+            return wd;
+        }
+        const workingDir = getWorkingDir();
+
         function getPrefix() {
             let tempPrefix = location.toString().replace(/\W/g, '');
             tempPrefix = tempPrefix.substring(5, tempPrefix.length);
@@ -304,14 +323,18 @@
 <div id="export-import-buttons">
     <a id="export-btn">export</a> | <a id="import-dialog-open">import</a>
 </div>
-<dialog id="import-dialog"
-        style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
-    <p>请先选择文件, 然后点击 import 按钮.</p>
-    <p><span style="color: red">注意:</span> 一旦导入, 当前数据将被清空、覆盖!</p>
-    <form id="import-form" autocomplete="off" style="margin-top: 2em;">
-        <input type="file" id="import-file">
+<dialog id="import-dialog" style="width: 450px; height: 250px; position: absolute; top: 50px; padding: 1em 2em 1em 2em;">
+    <form id="import-form" autocomplete="off">
+        <p>请先选择文件, 然后点击 import 按钮.
+            <br/><span style="color: red">注意:</span> 一旦导入, 当前数据将被清空、覆盖!</p>
+        <label for="import-url">
+            (复制当前目录可在选择文件时使用 <button id="import-copy-btn">copy</button>)
+            <input type="text" id="import-url" style="width: 100%;" disabled>
+        </label>
+        <br/><br/><br/>
+        <input type="file" id="import-file" accept=".json">
         <button id="import-btn">import</button>
-        <p style="margin-top: 3em; text-align: right;">
+        <p style="margin-top: 2em; text-align: right;">
             <button id="import-dialog-close">close</button>
         </p>
     </form>
@@ -320,11 +343,28 @@
         style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
     <p>请右键点击以下链接, 另存为文件</p>
     <p><a id="json-url" download="small-plans.json">small-plans.json</a></p>
-    <p>建议连同 small-plans.html 一起保存在你的项目的根目录。</p>
-    <form style="margin-top: 3em; text-align: right;">
+    <label for="export-url">
+        当前目录:
+        <input type="text" id="export-url" form="export-form" style="width: 300px" disabled>
+        <button id="export-copy-btn">copy</button>
+    </label>
+    <p><span style="color: red">注意:</span> 覆盖旧文件时请务必确认文件名!</p>
+    <form style="margin-top: 2em; text-align: right;" id="export-form">
         <button id="export-dialog-close">close</button>
     </form>
 </dialog>
+<script>
+    const exportUrl = document.querySelector('#export-url');
+    const exportCopyBtn = document.querySelector('#export-copy-btn');
+    exportUrl.value = workingDir;
+    exportCopyBtn.addEventListener('click', event => {
+        event.preventDefault();
+        new Promise(resolve => resolve(exportUrl.removeAttribute('disabled')))
+            .then(() => exportUrl.select())
+            .then(() => document.execCommand('copy'))
+            .then(() => exportUrl.setAttribute('disabled', ''));
+    })
+</script>
 
 <template id="todo-template">
     <div class="todo-top-div">
@@ -443,7 +483,10 @@
     function showJsonUrl() {
         let dbBlob = new Blob([JSON.stringify(getDB(), null, 2)], {type: 'application/json'});
         let jsonUrl = window.URL.createObjectURL(dbBlob);
-        document.querySelector('#json-url').setAttribute('href', jsonUrl);
+        const jsonUrlElem = document.querySelector('#json-url');
+        jsonUrlElem.setAttribute('href', jsonUrl);
+        jsonUrlElem.setAttribute('download', jsonFileName);
+        jsonUrlElem.innerText = jsonFileName;
     }
 
     const exportDialog = document.querySelector('#export-dialog');

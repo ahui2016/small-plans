@@ -73,6 +73,16 @@
       "updatedAt": 1582872615238,
       "doneAt": 1582872615238,
       "deletedAt": null
+    },
+    {
+      "id": "k7ahyfud",
+      "summary": "实际使用本软件时, 建议先更改文件名",
+      "details": " - 例如把 small-plans.html 改为 abcd-plans.html\n   (其中 `abcd` 是你的项目名称)\n\n - 改名后, 导出数据时本软件会自动设置文件名, 例如 abcd-plans.json\n\n - 因此，当不同项目使用不同的文件名, 就不容易错误地覆盖文件",
+      "tag": "建议",
+      "createdAt": 1583155580341,
+      "updatedAt": 1583158155136,
+      "doneAt": 1583155583348,
+      "deletedAt": null
     }
   ],
   "deletedItems": []
