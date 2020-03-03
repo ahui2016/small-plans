@@ -334,9 +334,9 @@
             <input type="text" id="import-url" style="width: 380px;" disabled>
             <button id="import-copy-btn">copy</button>
         </label>
-        <input type="file" id="import-file" accept=".json" style="margin-top: 3em;">
+        <input type="file" id="import-file" accept=".json" style="margin-top: 2em;border: 1px solid blue;width: 380px;">
         <button id="import-btn">import</button>
-        <p style="margin-top: 2em; text-align: right;">
+        <p style="margin-top: 3em; text-align: right;">
             <button id="import-dialog-close">close</button>
         </p>
     </form>
@@ -357,10 +357,10 @@
 <dialog id="export-dialog"
         style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
     <p>请右键点击以下链接, 另存为文件</p>
-    <p><a id="json-url" download="small-plans.json">small-plans.json</a></p>
+    <p style="text-align: center"><a id="json-url" download="small-plans.json">small-plans.json</a></p>
     <label for="export-url">
         当前目录:
-        <input type="text" id="export-url" form="export-form" style="width: 300px" disabled>
+        <input type="text" id="export-url" form="export-form" style="width: 320px" disabled>
         <button id="export-copy-btn">copy</button>
     </label>
     <p><span style="color: red">注意:</span> 覆盖旧文件时请务必确认文件名!</p>
@@ -789,6 +789,6 @@
         todoInput.focus();
     });
 </script>
-<footer><a href="https://github.com/ahui2016/small-plans">https://github.com/ahui2016/small-plans</a></footer>
+<footer><a href="https://github.com/ahui2016/small-plans" target="_blank">https://github.com/ahui2016/small-plans</a></footer>
 </body>
 </html>

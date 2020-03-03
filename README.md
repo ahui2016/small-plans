@@ -67,6 +67,6 @@ Small Plans for small projects.
   例如把 `small-plans.html` 改为 `xxxx-plans.html` (其中 `xxxx` 是项目名称)
 
 
-截图:
+## 截图
 
 ![screenshot](screenshot.jpg)
