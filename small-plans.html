@@ -184,15 +184,17 @@
             }
         }
 
+        const localLocation = decodeURI(location.toString());
+
         function getJsonFileName() {
-            const fullName = location.toString().split('/').splice(-1)[0];
+            const fullName = localLocation.split('/').splice(-1)[0];
             const i = fullName.lastIndexOf('.');
             return fullName.substring(0, i) + '.json';
         }
         const jsonFileName = getJsonFileName();
 
         function getWorkingDir() {
-            let s = location.toString();
+            let s = localLocation;
             s = s.substring('file:///'.length);
             const i = s.lastIndexOf('/');
             let wd = s.substring(0, i) + '/';
@@ -204,14 +206,14 @@
         const workingDir = getWorkingDir();
 
         function getPrefix() {
-            let tempPrefix = location.toString().replace(/\W/g, '');
-            tempPrefix = tempPrefix.substring(5, tempPrefix.length);
+            let tempPrefix = localLocation.replace(/[\/\\:]/g, '');
+            tempPrefix = tempPrefix.substring('fileD'.length, tempPrefix.length - '.html'.length);
             const len = tempPrefix.length;
             if (len > 40) {
                 // 取 tempPrefix 的头和尾组成 prefix (为了尽可能避免重复, 又不能太长)
                 // 共 40 个字符, 相当于 SHA-1 长度.
                 // 本来是计算 SHA-1 的, 但那是个异步函数, 我不知道怎样确保它先出结果再执行后面的代码.
-                return tempPrefix.substring(0, 20) + tempPrefix.substring(len - 21, len - 1);
+                return tempPrefix.substring(0, 20) + tempPrefix.substring(len - 20);
             }
             return tempPrefix;
         }

@@ -83,6 +83,16 @@
       "updatedAt": 1583158155136,
       "doneAt": 1583155583348,
       "deletedAt": null
+    },
+    {
+      "id": "k7b8x1kw",
+      "summary": "使用 export / export 功能时可方便地复制当前目录",
+      "details": " - 当前目录是指当前 html 网页所在的文件夹\n\n - 使用 export / export 功能时直接点击 copy 按钮即可 (不需要选中文字)\n\n - 以Windows系统为例, 复制当前目录后,选择文件时,可直接粘贴按回车,即可转到当前目录",
+      "tag": "新功能",
+      "createdAt": 1583200864832,
+      "updatedAt": 1583201133172,
+      "doneAt": 1583201139710,
+      "deletedAt": null
     }
   ],
   "deletedItems": []
