@@ -70,3 +70,9 @@ Small Plans for small projects.
 ## 截图
 
 ![screenshot](screenshot.jpg)
+
+## 为什么不采用类似 TiddlyWiki 的方式, 直接导出 html?
+
+- 那种方式, 升级程序太麻烦了
+- 现在我的数据与 html 文件是相互独立的, html 文件可随时被覆盖, 当需要升级时,  
+  下载新版的 small-plans.html, 直接覆盖旧版的文件即可, 升级非常方便.

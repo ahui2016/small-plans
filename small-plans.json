@@ -13,12 +13,12 @@
       "deletedAt": null
     },
     {
-      "id": "k7cq8ocy",
-      "summary": "直接改用像 TiddlyWiki 那种方式, 不再需要导入 json 文件",
-      "details": "",
-      "tag": "TiddlyPlans",
-      "createdAt": 1583290427218,
-      "updatedAt": 1583290487650,
+      "id": "k7cqib4l",
+      "summary": "用 Python/Go 做一个分发器?",
+      "details": " - 先尝试用 Python 做\n - GitHub api",
+      "tag": "tools",
+      "createdAt": 1583290876629,
+      "updatedAt": 1583293141018,
       "doneAt": null,
       "deletedAt": null
     }
@@ -205,5 +205,16 @@
       "deletedAt": null
     }
   ],
-  "deletedItems": []
+  "deletedItems": [
+    {
+      "id": "k7cq8ocy",
+      "summary": "直接改用像 TiddlyWiki 那种方式, 不再需要导入 json 文件",
+      "details": " - 但是, 这种方式有个大问题: 很难升级\n - 还是保持现状好",
+      "tag": "TiddlyPlans",
+      "createdAt": 1583290427218,
+      "updatedAt": 1583294073618,
+      "doneAt": null,
+      "deletedAt": 1583294075507
+    }
+  ]
 }
