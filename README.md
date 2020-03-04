@@ -58,8 +58,10 @@ Small Plans for small projects.
 
 ## 使用说明
 
-- 请通过 git clone 或打包下载, 获取本仓库的全部文件
-- 双击打开 small-plans.html, 点击页面上的 import 按钮, 导入 `使用说明.json` 文件, 即可获得互动版使用说明
+- 下载地址: https://github.com/ahui2016/small-plans/raw/master/releases/small-plans.zip
+  (如需升级新版, 重新下载解压后, 直接用新的 small-plans.html 覆盖旧文件即可)
+- 下载并解压缩后, 双击打开 small-plans.html, 点击页面上的 import 按钮, 导入 `使用说明.json` 文件,  
+  即可获得互动版使用说明
 - 另外, 仓库中还有一个 small-plans.json 文件, 那是本软件开发到一定程度时开始用于记录自身开发过程而产生的文件,
 - 建议在实际使用中, 每个项目都拷贝一个 small-plans.html 并更改文件名  
   因为本软件会根据 small-plans.html 所在的文件夹及自身的文件名而显示不同的内容
