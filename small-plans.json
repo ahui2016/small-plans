@@ -15,10 +15,10 @@
     {
       "id": "k7cqib4l",
       "summary": "用 Python/Go 做一个分发器?",
-      "details": " - 先尝试用 Python 做\n - GitHub api",
+      "details": " - 先尝试用 Python 做\n - GitHub api\n - 更新前检查目标文件 (必须是 small-plans 的源代码才覆盖)",
       "tag": "tools",
       "createdAt": 1583290876629,
-      "updatedAt": 1583293141018,
+      "updatedAt": 1583477382357,
       "doneAt": null,
       "deletedAt": null
     }
