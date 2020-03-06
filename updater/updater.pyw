@@ -49,7 +49,9 @@ def update():
         app.popUp("点击确定开始更新, 处理过程中本窗口会卡住, 请耐心等待")
         with request.urlopen(api_url) as resp:
             resp_obj = json.load(resp)
-            print(base64.standard_b64decode(resp_obj["content"]))
+            file_content = base64.standard_b64decode(resp_obj["content"])
+            with open(small_plans_html, mode='wb') as html_file:
+                html_file.write(file_content)
             return
         # request.urlretrieve(zip_url, temp_file_path)
         # with zipfile.ZipFile(temp_file_path) as zip_file:
