@@ -58,7 +58,7 @@ Small Plans for small projects.
 
 ## 使用说明
 
-- 下载地址: https://github.com/ahui2016/small-plans/raw/master/releases/small-plans.zip
+- 下载地址: https://github.com/ahui2016/small-plans/raw/master/releases/small-plans.zip  
   (如需升级新版, 重新下载解压后, 直接用新的 small-plans.html 覆盖旧文件即可)
 - 下载并解压缩后, 双击打开 small-plans.html, 点击页面上的 import 按钮, 导入 `使用说明.json` 文件,  
   即可获得互动版使用说明
