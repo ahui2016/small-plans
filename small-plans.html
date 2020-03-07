@@ -22,12 +22,27 @@
             text-decoration: none;
         }
 
+        #add-todo-form {
+            /*width: 100%;*/
+            margin-top: 1em;
+            margin-bottom: 3em;
+        }
+
         #todo-input {
-            width: 634px;
-            height: 2.5em;
+            /*width: 634px;*/
+            /*height: 2.5em;*/
+            width: 600px;
+            padding: 20px;
             font-size: inherit;
-            border: 1px solid blue;
-            padding: 0 3px 0 3px;
+            /*border: 1px solid blue;*/
+            /* https://github.com/tokyo-metropolitan-gov/covid19 */
+            box-shadow:0 0 2px rgba(0,0,0,.15);
+            border-radius:4px;
+            border: 1px solid blue !important;
+        }
+        #todo-input {
+            /* https://stackoverflow.com/questions/36701319/when-i-focus-my-input-with-border-radius-a-square-border-appears-out */
+            outline: none;
         }
 
         details {
@@ -47,19 +62,23 @@
             /*padding: 20px 20px 20px 38px;*/
             /*text-indent: -18px;*/
             padding: 20px;
-            border: 1px solid #9fb6ce;
+            /*border: 1px solid #9fb6ce;*/
             outline: none;
             list-style: none;
+            /* https://github.com/tokyo-metropolitan-gov/covid19 */
+            box-shadow:0 0 2px rgba(0,0,0,.15);
+            border:.5px solid #d9d9d9 !important;
+            border-radius:4px;
         }
 
         summary::-webkit-details-marker {
             display: none;
         }
 
-        summary:hover,
-        summary:focus {
-            border: 1px solid black;
-        }
+        /*summary:hover,*/
+        /*summary:focus {*/
+        /*    border: 1px solid black;*/
+        /*}*/
 
         details.undone summary {
             background-color: #f2f9fb;
@@ -71,7 +90,7 @@
 
         details[open] {
             background-color: #fafafa;
-            border: 1px solid #9fb6ce;
+            /*border: 1px solid #9fb6ce;*/
         }
 
         details[open] summary {
@@ -433,11 +452,12 @@
 
 <section id="all-undone-elem"></section>
 
-<form id="add-todo-form" autocomplete="off"
-      style="width: 640px; margin-top: 1em; margin-bottom: 3em;">
-    <label for="todo-input" style="font-weight: bold;">Add Todo:</label><br/>
-    <input type="text" id="todo-input"/>
-</form>
+<section id="add-todo-section">
+    <form id="add-todo-form" autocomplete="off">
+        <label for="todo-input" style="font-weight: bold;">Add Todo:</label><br/>
+        <input type="text" id="todo-input"/>
+    </form>
+</section>
 
 <section id="all-done-elem"></section>
 <section id="all-deleted-elem"></section>
