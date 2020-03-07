@@ -9,9 +9,9 @@ from appJar import gui
 file_list = []
 base_dir = os.path.dirname(os.path.abspath(__file__))
 cfg_path = os.path.join(base_dir, "updater.cfg")
-temp_file_path = os.path.join(base_dir, "small-plans.zip")
+# temp_file_path = os.path.join(base_dir, "small-plans.zip")
+# zip_url = "https://github.com/ahui2016/small-plans/raw/master/releases/small-plans.zip"
 small_plans_html = os.path.join(base_dir, "small-plans.html")
-zip_url = "https://github.com/ahui2016/small-plans/raw/master/releases/small-plans.zip"
 api_url = "https://api.github.com/repos/ahui2016/small-plans/contents/small-plans.html"
 
 if os.path.exists(cfg_path):
@@ -52,7 +52,6 @@ def update():
             file_content = base64.standard_b64decode(resp_obj["content"])
             with open(small_plans_html, mode='wb') as html_file:
                 html_file.write(file_content)
-            return
         # request.urlretrieve(zip_url, temp_file_path)
         # with zipfile.ZipFile(temp_file_path) as zip_file:
         #     for file_name in zip_file.namelist():
@@ -90,9 +89,10 @@ def update():
             ng_count += 1
 
     app.statusbar(text="更成结果: 成功: %d, 失败: %d" % (ok_count, ng_count))
+    app.popUp("Update Finished", message="更新结束, 结果请看底部状态栏.")
 
 
-with gui("更新助手", "640x450", font={'size': 10, 'family': 'Microsoft YaHei UI'}) as app:
+with gui("更新助手", "600x400", font={'size': 10, 'family': 'Microsoft YaHei UI'}) as app:
     app.setPadding([0, 20])
     current_row = 0
     app.label("更新助手\nan updater for small-plans", column=1, colspan=2, sticky="w")

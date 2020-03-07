@@ -3,6 +3,15 @@
 用于个人小项目的 todo 工具。  
 Small Plans for small projects.
 
+
+## 2019-03-07 增加了更新助手 (updater)
+
+- 多个项目同时使用 small-plans.html 时, 需要把 small-plans.html 复制到不同项目的目录下,  
+  如果需要更新 small-plans.html, 就比较麻烦 (需要逐一复制粘贴并改名).
+- 因此, 特意做了这个更新助手 (updater.pyw), 一键批量更新 small-plans.html
+- 使用方法详见 https://github.com/ahui2016/small-plans/blob/master/updater/README.md
+
+
 ## 2019-03-03 重要更新
 
 - 导出/导入功能增加了 "复制当前目录" 功能!
