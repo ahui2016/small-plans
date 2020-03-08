@@ -11,6 +11,26 @@
       "updatedAt": 1582860418814,
       "doneAt": null,
       "deletedAt": null
+    },
+    {
+      "id": "k7iho2rs",
+      "summary": "把 updater 的状态栏改为消息栏, 显示详细的更新结果",
+      "details": "",
+      "tag": "改进",
+      "createdAt": 1583638826248,
+      "updatedAt": 1583638841759,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7ihq124",
+      "summary": "做一个 updater2, 用于本地更新",
+      "details": "",
+      "tag": "tool",
+      "createdAt": 1583638917340,
+      "updatedAt": 1583640370174,
+      "doneAt": null,
+      "deletedAt": null
     }
   ],
   "doneItems": [

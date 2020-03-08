@@ -92,7 +92,7 @@ def update():
     app.popUp("Update Finished", message="更新结束, 结果请看底部状态栏.")
 
 
-with gui("更新助手", "600x400", font={'size': 10, 'family': 'Microsoft YaHei UI'}) as app:
+with gui("更新助手", "600x450", font={'size': 10, 'family': 'Microsoft YaHei UI'}) as app:
     app.setPadding([0, 20])
     current_row = 0
     app.label("更新助手\nan updater for small-plans", column=1, colspan=2, sticky="w")
