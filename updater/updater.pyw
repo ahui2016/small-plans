@@ -2,7 +2,6 @@ import base64
 import json
 import os
 import shutil
-import zipfile
 
 from appJar import gui
 
@@ -44,55 +43,42 @@ def delete_item():
 
 
 def update():
+    app.text("result", "开始下载...\n", replace=True)
     from urllib import request
     try:
-        app.popUp("点击确定开始更新, 处理过程中本窗口会卡住, 请耐心等待")
+        app.popUp("点击确定开始更新, 处理过程中本程序会卡住, 请耐心等待")
         with request.urlopen(api_url) as resp:
             resp_obj = json.load(resp)
             file_content = base64.standard_b64decode(resp_obj["content"])
             with open(small_plans_html, mode='wb') as html_file:
                 html_file.write(file_content)
-        # request.urlretrieve(zip_url, temp_file_path)
-        # with zipfile.ZipFile(temp_file_path) as zip_file:
-        #     for file_name in zip_file.namelist():
-        #         if file_name == "small-plans.html":
-        #             zip_file.extract(file_name, small_plans_html)
-        app.statusbar(text="下载成功")
+        app.text("result", "\n下载成功!\n")
     except Exception as err:
-        app.statusbar(text="下载失败, 更新文件: 0")
+        app.text("result", "\n下载失败!\n")
+        app.text("result", "\n%s\n" % str(err))
+        app.text("result", "\n未更新任何文件.\n")
         app.popUp("下载失败", message=err, kind="error")
         return
 
-    ok_count = 0
-    ng_count = 0
+    app.text("result", "\n开始更新...\n")
     all_items = app.getAllListItems("files")
     for item in all_items:
         if not os.path.exists(item):
-            msg = "文件不存在\n" + item
-            app.popUp("File Not Exists", message=msg, kind="warning")
-            ng_count += 1
+            app.text("result", "\n文件不存在:\n%s\n" % item)
             continue
         with open(item, encoding='utf-8') as cfg_file_update:
             first_line = cfg_file_update.readline()
             if first_line.find('<!--small-plans.html-->') < 0:
-                msg = "目标文件可能不是 small-plans 源文件: " + \
-                      item + "\n" + \
-                      "(目标文件的第一行必须是: <!--small-plans.html-->)"
-                app.popUp("Update Fail", message=msg, kind="warning")
-                ng_count += 1
+                app.text("result", "\n不是 small-plans 源文件:\n%s\n" % item)
                 continue
         try:
             shutil.copyfile(small_plans_html, item)
-            ok_count += 1
+            app.text("result", "\n更新成功:\n%s\n" % item)
         except Exception as err:
-            app.popUp("Error", message=err)
-            ng_count += 1
-
-    app.statusbar(text="更成结果: 成功: %d, 失败: %d" % (ok_count, ng_count))
-    app.popUp("Update Finished", message="更新结束, 结果请看底部状态栏.")
+            app.text("result", "\n%s:\n%s\n" % (err, item))
 
 
-with gui("更新助手", "600x450", font={'size': 10, 'family': 'Microsoft YaHei UI'}) as app:
+with gui("更新助手", "600x550", font={'size': 10, 'family': 'Microsoft YaHei UI'}) as app:
     app.setPadding([0, 20])
     current_row = 0
     app.label("更新助手\nan updater for small-plans", column=1, colspan=2, sticky="w")
@@ -114,7 +100,7 @@ with gui("更新助手", "600x450", font={'size': 10, 'family': 'Microsoft YaHei
     app.label("已添加:", row=current_row, column=1, sticky="w")
 
     current_row += 1
-    app.listbox("files", value=file_list, rows=5, row=current_row, column=1, colspan=2, sticky="ew")
+    app.listbox("files", value=file_list, rows=current_row, row=current_row, column=1, colspan=2, sticky="ew")
     app.button("删除", delete_item, row=current_row, column=3, sticky="")
 
     app.setPadding([0, 20])
@@ -122,8 +108,14 @@ with gui("更新助手", "600x450", font={'size': 10, 'family': 'Microsoft YaHei
     app.label('点击 "更新" 按钮即可批量更新', row=current_row, column=1, sticky="e")
     app.button("更新", update, row=current_row, column=3, sticky="")
 
-    app.setPadding([0, 0])
+    app.setPadding([20, 0])
     current_row += 1
-    app.statusbar(
-        text="提示: 点击更新按钮, 将会自动从 GitHub 下载最新版本覆盖如上所示的已添加文件"
-    )
+    app.label("消息栏", row=current_row, colspan=4, sticky="w")
+
+    app.setPadding([20, 0])
+    current_row += 1
+    tips = "\n提示: 点击更新按钮, 将会自动从 GitHub 下载最新版本覆盖如上所示的已添加文件"
+    app.text("result", value=tips, scroll=True, height=7, font=10, row=current_row, colspan=4, sticky="ew")
+
+    current_row += 1
+    app.label(" ", row=current_row, colspan=4)

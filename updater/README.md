@@ -34,7 +34,7 @@ an updater for small-plans
 
 ## 错误信息
 
-- 如果出现错误 "目标文件可能不是 small-plans 源文件", 那是因为:
+- 如果出现错误 "不是 small-plans 源文件", 那是因为:
   - 为了尽可能确保你的数据安全, 本程序只会覆盖 small-plans 源文件
   - 判断方法是看文件内容的第一行是否包含 `<!--small-plans.html-->`
   - 因此, 只要复制 `<!--small-plans.html-->` 粘贴到目标文件的第一行即可解决该问题

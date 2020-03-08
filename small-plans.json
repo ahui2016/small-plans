@@ -13,16 +13,6 @@
       "deletedAt": null
     },
     {
-      "id": "k7iho2rs",
-      "summary": "把 updater 的状态栏改为消息栏, 显示详细的更新结果",
-      "details": "",
-      "tag": "改进",
-      "createdAt": 1583638826248,
-      "updatedAt": 1583638841759,
-      "doneAt": null,
-      "deletedAt": null
-    },
-    {
       "id": "k7ihq124",
       "summary": "做一个 updater2, 用于本地更新",
       "details": "",
@@ -222,6 +212,16 @@
       "createdAt": 1583290876629,
       "updatedAt": 1583593640254,
       "doneAt": 1583593623296,
+      "deletedAt": null
+    },
+    {
+      "id": "k7iho2rs",
+      "summary": "把 updater 的状态栏改为消息栏, 显示详细的更新结果",
+      "details": "",
+      "tag": "改进",
+      "createdAt": 1583638826248,
+      "updatedAt": 1583638841759,
+      "doneAt": 1583674930864,
       "deletedAt": null
     }
   ],
