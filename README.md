@@ -29,6 +29,19 @@ Small Plans for small projects.
 - 不需要服务器, 整个应用只有一个 HTML 文件
 - 原生 HTML, CSS, JavaScript 手工打造, 一共 800 行代码
 
+## 使用说明
+
+- 下载地址: https://give-me-five.coding.net/p/small-plans/d/small-plans/git/raw/master/releases/small-plans.zip  
+  (如需升级新版, 重新下载解压后, 直接用新的 small-plans.html 覆盖旧文件即可)
+- 下载并解压缩后, 双击打开 small-plans.html, 点击页面上的 import 按钮, 导入 `使用说明.json` 文件,  
+  即可获得互动版使用说明
+- 另外, 仓库中还有一个 small-plans.json 文件, 那是本软件开发到一定程度时开始用于记录自身开发过程而产生的文件,
+- 建议在实际使用中, 每个项目都拷贝一个 small-plans.html 并更改文件名  
+  因为本软件会根据 small-plans.html 所在的文件夹及自身的文件名而显示不同的内容
+- **为了避免不小心覆盖不同项目的数据, 强烈建议先改名后再使用**  
+  例如把 `small-plans.html` 改为 `xxxx-plans.html` (其中 `xxxx` 是项目名称)
+
+
 ## 数据安全
 
 - 使用浏览器的 localStorage 临时保全数据, 即使页面意外关闭, 数据也不会丢失
@@ -64,18 +77,6 @@ Small Plans for small projects.
   - 另外, 虽然 commit message 也能大概记录软件开发过程, 但毕竟太简短, 会损失很多细节
   - 隔几天或隔一个月回头继续开发时 (个人项目随时中断几天的情况很常见) 也不会茫然, 不用苦苦回想,
     只要看看 Small Plans, 整个开发过程、待办事项、灵感等等都一目了然
-
-## 使用说明
-
-- 下载地址: https://give-me-five.coding.net/p/small-plans/d/small-plans/git/raw/master/releases/small-plans.zip  
-  (如需升级新版, 重新下载解压后, 直接用新的 small-plans.html 覆盖旧文件即可)
-- 下载并解压缩后, 双击打开 small-plans.html, 点击页面上的 import 按钮, 导入 `使用说明.json` 文件,  
-  即可获得互动版使用说明
-- 另外, 仓库中还有一个 small-plans.json 文件, 那是本软件开发到一定程度时开始用于记录自身开发过程而产生的文件,
-- 建议在实际使用中, 每个项目都拷贝一个 small-plans.html 并更改文件名  
-  因为本软件会根据 small-plans.html 所在的文件夹及自身的文件名而显示不同的内容
-- **为了避免不小心覆盖不同项目的数据, 强烈建议先改名后再使用**  
-  例如把 `small-plans.html` 改为 `xxxx-plans.html` (其中 `xxxx` 是项目名称)
 
 
 ## 截图
