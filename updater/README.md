@@ -19,7 +19,7 @@ an updater for small-plans
 ## 下载与安装
 
 - (如果没有安装 Python, 则需要先安装 Python)
-- 下载地址: https://github.com/ahui2016/small-plans/raw/master/releases/updater.zip
+- 下载地址: https://give-me-five.coding.net/p/small-plans/d/small-plans/git/raw/master/releases/updater.zip
 - 下载解压后, 在控制台执行命令 `python updater.pyw` 即可启动.  
   (如果是 Windows 系统, 双击 updater.pyw 即可)  
   
@@ -27,9 +27,9 @@ an updater for small-plans
 ## 使用方法
 
 - 先选择需要被覆盖更新的文件, 选择后点击 "添加" 按钮添加到列表
-- 逐一添加文件后, 点击 "更新" 按钮, 阅读提示框的内容, 再点击 "确定",  
-  会自动从 GitHub 下载最新版本的 small-plans.html, 并且自动更新列表中的每一个文件  
-- 目标文件列表会自动保存.
+- (目标文件列表会自动保存.)
+- 逐一添加文件后, 点击 "更新" 按钮, 会自动从 coding.net 下载最新版本的
+  small-plans.html, 并且自动更新列表中的每一个文件  
 
 
 ## 错误信息
@@ -39,7 +39,3 @@ an updater for small-plans
   - 判断方法是看文件内容的第一行是否包含 `<!--small-plans.html-->`
   - 因此, 只要复制 `<!--small-plans.html-->` 粘贴到目标文件的第一行即可解决该问题
   - 该问题只需要解决一次, 就不会再出现
-- 如果出现错误 "远程主机强迫关闭了一个现有的连接", 那是因为:
-  - 可能是 GitHub 为了避免滥用而对下载次数作了限制
-  - 过一段时间 (或第二天) 重新点击更新应该就可以了
-  - 以后会增加一个手动下载的功能

@@ -21,6 +21,26 @@
       "updatedAt": 1583640370174,
       "doneAt": null,
       "deletedAt": null
+    },
+    {
+      "id": "k7klw4bo",
+      "summary": "用 Go 做一个安装工具？",
+      "details": "- 自动下载 (如果下载失败则使用缓存)\n- 在有缓存的情况下优先使用缓存，提供 update 参数\n- 安装时自动记住目录，以便以后批量更新\n- 因此改名也需要使用该工具",
+      "tag": "tool",
+      "createdAt": 1583766852324,
+      "updatedAt": 1583766873967,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7kop4o0",
+      "summary": "下载地址被墙，要更改下载说明",
+      "details": "",
+      "tag": "bug",
+      "createdAt": 1583771565024,
+      "updatedAt": 1583771565024,
+      "doneAt": null,
+      "deletedAt": null
     }
   ],
   "doneItems": [
@@ -231,10 +251,10 @@
       "summary": "直接改用像 TiddlyWiki 那种方式, 不再需要导入 json 文件",
       "details": " - 但是, 这种方式有个大问题: 很难升级\n - 还是保持现状好",
       "tag": "TiddlyPlans",
-      "createdAt": 1583290427218,
+      "createdAt": 1583766684326,
       "updatedAt": 1583294073618,
       "doneAt": null,
-      "deletedAt": 1583294075507
+      "deletedAt": 1583766690082
     }
   ]
 }

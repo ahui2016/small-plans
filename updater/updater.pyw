@@ -8,10 +8,8 @@ from appJar import gui
 file_list = []
 base_dir = os.path.dirname(os.path.abspath(__file__))
 cfg_path = os.path.join(base_dir, "updater.cfg")
-# temp_file_path = os.path.join(base_dir, "small-plans.zip")
-# zip_url = "https://github.com/ahui2016/small-plans/raw/master/releases/small-plans.zip"
 small_plans_html = os.path.join(base_dir, "small-plans.html")
-api_url = "https://api.github.com/repos/ahui2016/small-plans/contents/small-plans.html"
+raw_url = "https://give-me-five.coding.net/p/small-plans/d/small-plans/git/raw/master/small-plans.html"
 
 if os.path.exists(cfg_path):
     with open(cfg_path, encoding='utf-8') as cfg_file:
@@ -46,12 +44,7 @@ def update():
     app.text("result", "开始下载...\n", replace=True)
     from urllib import request
     try:
-        app.popUp("点击确定开始更新, 处理过程中本程序会卡住, 请耐心等待")
-        with request.urlopen(api_url) as resp:
-            resp_obj = json.load(resp)
-            file_content = base64.standard_b64decode(resp_obj["content"])
-            with open(small_plans_html, mode='wb') as html_file:
-                html_file.write(file_content)
+        request.urlretrieve(raw_url, small_plans_html)
         app.text("result", "\n下载成功!\n")
     except Exception as err:
         app.text("result", "\n下载失败!\n")
@@ -76,6 +69,7 @@ def update():
             app.text("result", "\n更新成功:\n%s\n" % item)
         except Exception as err:
             app.text("result", "\n%s:\n%s\n" % (err, item))
+    app.popUp("Update Finished", message="更新结束，请查看消息栏")
 
 
 with gui("更新助手", "600x550", font={'size': 10, 'family': 'Microsoft YaHei UI'}) as app:

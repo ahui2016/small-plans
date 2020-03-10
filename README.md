@@ -9,7 +9,7 @@ Small Plans for small projects.
 - 多个项目同时使用 small-plans.html 时, 需要把 small-plans.html 复制到不同项目的目录下,  
   如果需要更新 small-plans.html, 就比较麻烦 (需要逐一复制粘贴并改名).
 - 因此, 特意做了这个更新助手 (updater.pyw), 一键批量更新 small-plans.html
-- 使用方法详见 https://github.com/ahui2016/small-plans/blob/master/updater/README.md
+- 使用方法详见 https://give-me-five.coding.net/p/small-plans/d/small-plans/git/blob/master/updater/README.md
 
 
 ## 2019-03-03 重要更新
@@ -67,7 +67,7 @@ Small Plans for small projects.
 
 ## 使用说明
 
-- 下载地址: https://github.com/ahui2016/small-plans/raw/master/releases/small-plans.zip  
+- 下载地址: https://give-me-five.coding.net/p/small-plans/d/small-plans/git/raw/master/releases/small-plans.zip  
   (如需升级新版, 重新下载解压后, 直接用新的 small-plans.html 覆盖旧文件即可)
 - 下载并解压缩后, 双击打开 small-plans.html, 点击页面上的 import 按钮, 导入 `使用说明.json` 文件,  
   即可获得互动版使用说明
