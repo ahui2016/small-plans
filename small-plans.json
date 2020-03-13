@@ -18,7 +18,7 @@
       "details": "",
       "tag": "tool",
       "createdAt": 1583638917340,
-      "updatedAt": 1583640370174,
+      "updatedAt": 1584069860958,
       "doneAt": null,
       "deletedAt": null
     },
@@ -29,16 +29,6 @@
       "tag": "tool",
       "createdAt": 1583766852324,
       "updatedAt": 1583766873967,
-      "doneAt": null,
-      "deletedAt": null
-    },
-    {
-      "id": "k7kop4o0",
-      "summary": "下载地址被墙，要更改下载说明",
-      "details": "",
-      "tag": "bug",
-      "createdAt": 1583771565024,
-      "updatedAt": 1583771565024,
       "doneAt": null,
       "deletedAt": null
     }
@@ -242,6 +232,26 @@
       "createdAt": 1583638826248,
       "updatedAt": 1583638841759,
       "doneAt": 1583674930864,
+      "deletedAt": null
+    },
+    {
+      "id": "k7kop4o0",
+      "summary": "下载地址被墙，要更改下载说明",
+      "details": "",
+      "tag": "fixed",
+      "createdAt": 1583771565024,
+      "updatedAt": 1583771565024,
+      "doneAt": 1584029984782,
+      "deletedAt": null
+    },
+    {
+      "id": "k7oyl8dr",
+      "summary": "修改详细内容时，如果把 summary 的全部内容转移到 details 里，会修改失败.",
+      "details": "找到原因了，因为我偷懒写了一个这样的判断：\n\nif (tag + summary + preText !== todoitem.tag + todoitem.summary + todoitem.details) { ... }\n\n应该分开判断的（而不是加在一起判断）",
+      "tag": "fixed",
+      "createdAt": 1584030044079,
+      "updatedAt": 1584069990992,
+      "doneAt": 1584069999841,
       "deletedAt": null
     }
   ],

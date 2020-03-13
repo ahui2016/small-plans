@@ -701,7 +701,7 @@
             let summary = todoSummaryInput.value.trim();
             // pre 的内容不删除头部空格, 只删除尾部空格 (并且当其内容只有空格时全部清空)
             let preText = todoDetailsInput.value.trimEnd();
-            if (tag + summary + preText !== todoitem.tag + todoitem.summary + todoitem.details) {
+            if (tag !== todoitem.tag || summary !== todoitem.summary || preText !== todoitem.details) {
                 todoitem.tag = tag;
                 todoitem.summary = summary;
                 todoitem.details = preText;
@@ -751,15 +751,9 @@
             }
         }
     }
-    undoneItems.sort((a, b) => {
-        return a.createdAt - b.createdAt;
-    });
-    doneItems.sort((a, b) => {
-        return a.doneAt - b.doneAt;
-    });
-    deletedItems.sort((a, b) => {
-        return a.deletedAt - b.deletedAt;
-    });
+    undoneItems.sort((a, b) => a.createdAt - b.createdAt);
+    doneItems.sort((a, b) => a.doneAt - b.doneAt);
+    deletedItems.sort((a, b) => a.deletedAt - b.deletedAt);
     for (let item of undoneItems) insertTodoElem(item);
     for (let item of doneItems) insertTodoElem(item);
     for (let item of deletedItems) insertTodoElem(item);
@@ -799,6 +793,7 @@
     addTodoForm.addEventListener('submit', function (event) {
         event.preventDefault();
         let todo = todoInput.value.trim();
+        if (todo === '') return;
         let {tag, summary} = splitTagSummary(todo);
         let item = newTodoItem(summary, tag);
         localStorage.setItem(localID(item.id), JSON.stringify(item));
