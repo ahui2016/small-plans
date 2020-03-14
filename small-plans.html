@@ -24,8 +24,7 @@
 
         #add-todo-form {
             /*width: 100%;*/
-            margin-top: 1em;
-            margin-bottom: 3em;
+            margin-bottom: 2em;
         }
 
         #todo-input {
@@ -454,13 +453,18 @@
     <p style="color:darkgrey;font-style:italic;font-weight:bolder;"></p>
 </template>
 
-<section id="all-undone-elem"></section>
-
 <section id="add-todo-section">
     <form id="add-todo-form" autocomplete="off">
-        <label for="todo-input" style="font-weight: bold;">Add Todo:</label><br/>
+        <label for="todo-input" style="color:darkgrey;font-style:italic;font-weight: bold;" >
+            Add</label><br/>
         <input type="text" id="todo-input"/>
     </form>
+</section>
+
+<section id="all-undone-elem"></section>
+
+<section>
+    <p style="color:darkgrey;font-style:italic;font-weight:bolder;">All Done Items</p>
 </section>
 
 <section id="all-done-elem"></section>
