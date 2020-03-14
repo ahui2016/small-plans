@@ -37,7 +37,7 @@ Small Plans for small projects.
 ## 使用说明
 
 - 下载地址: https://give-me-five.coding.net/p/small-plans/d/small-plans/git/raw/master/releases/small-plans.zip  
-  (如需升级新版, 重新下载解压后, 直接用新的 small-plans.html 覆盖旧文件即可)
+  (如需升级新版, 重新下载解压后, 直接用新的 small-plans.html 覆盖旧文件即可)  
   (推荐使用 updater: https://give-me-five.coding.net/p/small-plans/d/small-plans/git/tree/master/updater )
 - 下载并解压缩后, 双击打开 small-plans.html, 点击页面上的 import 按钮, 导入 `使用说明.json` 文件,  
   即可获得互动版使用说明
