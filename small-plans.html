@@ -464,7 +464,7 @@
 <section id="all-undone-elem"></section>
 
 <section>
-    <p style="color:darkgrey;font-style:italic;font-weight:bolder;">All Done Items</p>
+    <p id="done-elem-title" style="color:darkgrey;font-style:italic;font-weight:bolder;" hidden>All Done Items</p>
 </section>
 
 <section id="all-done-elem"></section>
@@ -616,6 +616,7 @@
 
         doneBtn.addEventListener('click', function (event) {
             event.preventDefault();
+            if (doneItems.length < 1) document.querySelector('#done-elem-title').removeAttribute('hidden');
             todoitem.doneAt = Date.now();
             if (todoitem.tag === 'bug') {
                 todoitem.tag = 'fixed';
@@ -650,6 +651,7 @@
             let elem = document.querySelector(`#${todoitem.id}`);
             // allUndoneElem.appendChild(elem);
             insertUndone(todoitem, elem);
+            if (doneItems.length < 1) document.querySelector('#done-elem-title').setAttribute('hidden', '');
         });
         deleteBtn.addEventListener('click', event => {
             event.preventDefault();
@@ -794,6 +796,7 @@
     for (let item of undoneItems) insertTodoElem(item);
     for (let item of doneItems) insertTodoElem(item);
     for (let item of deletedItems) insertTodoElem(item);
+    if (doneItems.length > 0) document.querySelector('#done-elem-title').removeAttribute('hidden');
 
     const todoInput = document.getElementById('todo-input');
     todoInput.focus();
