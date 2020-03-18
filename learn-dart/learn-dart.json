@@ -1,0 +1,440 @@
+{
+  "projectTitle": "Learn Dart",
+  "projectDescription": "Dart 语言学习笔记",
+  "undoneItems": [
+    {
+      "id": "k7kng1h5",
+      "summary": "https://dart.dev/guides/language/language-tour",
+      "details": "",
+      "tag": "tour",
+      "createdAt": 1583769461369,
+      "updatedAt": 1583769472121,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7r6m0dg",
+      "summary": "https://dart.dev/guides/language/sound-dart",
+      "details": "",
+      "tag": "type",
+      "createdAt": 1584164449636,
+      "updatedAt": 1584175034750,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7rcg262",
+      "summary": "We recommend that you write tests using the test package",
+      "details": "https://github.com/dart-lang/test",
+      "tag": "testing",
+      "createdAt": 1584174249722,
+      "updatedAt": 1584175000260,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7rcmxzr",
+      "summary": "You can generate API docs for your library using the dartdoc tool.",
+      "details": "- https://github.com/dart-lang/dartdoc#dartdoc\n\n- For an example of generated docs, see the shelf documentation.\n  https://pub.dev/documentation/shelf/latest/",
+      "tag": "dartdoc",
+      "createdAt": 1584174570903,
+      "updatedAt": 1584174656828,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7rcvt63",
+      "summary": "https://dartpad.cn",
+      "details": "",
+      "tag": "online",
+      "createdAt": 1584174984555,
+      "updatedAt": 1584174984555,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7rd031l",
+      "summary": "The newer library packages under the dart-lang organization tend to show best practices.",
+      "details": "https://dart.dev/guides/libraries/create-library-packages\n\nConsider studying these examples: dart_style, path, shelf, source_gen, and test.",
+      "tag": "examples",
+      "createdAt": 1584175183977,
+      "updatedAt": 1584175221300,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7ulfrlq",
+      "summary": "https://dart.dev/codelabs",
+      "details": "",
+      "tag": "Codelabs",
+      "createdAt": 1584370751102,
+      "updatedAt": 1584370751102,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7xgmz6p",
+      "summary": "A tour of the core libraries",
+      "details": "https://dart.dev/guides/libraries/library-tour",
+      "tag": "core",
+      "createdAt": 1584544087969,
+      "updatedAt": 1584544107020,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7xi01pf",
+      "summary": "https://dart.dev/guides/language/language-tour#isolates",
+      "details": "- D:\\ComputerScience\\Dart\\learn-dart\\Dart asynchronous programming_ Isolates and event loops (2020-03-18 12_01_44 AM).html\n  - https://medium.com/dartlang/dart-asynchronous-programming-isolates-and-event-loops-bffc3e296a6a",
+      "tag": "Isolates",
+      "createdAt": 1584546377379,
+      "updatedAt": 1584547430307,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k7xipgz0",
+      "summary": "https://dart.dev/guides/language/language-tour#typedefs",
+      "details": "",
+      "tag": "",
+      "createdAt": 1584547563564,
+      "updatedAt": 1584547563564,
+      "doneAt": null,
+      "deletedAt": null
+    }
+  ],
+  "doneItems": [
+    {
+      "id": "k7kjqgma",
+      "summary": "https://dart.dev/tutorials/server/get-started",
+      "details": "",
+      "tag": "Install",
+      "createdAt": 1583763229090,
+      "updatedAt": 1583763651580,
+      "doneAt": 1583769482611,
+      "deletedAt": null
+    },
+    {
+      "id": "k7kk3bsr",
+      "summary": "https://dart.dev/tools/dartanalyzer",
+      "details": "The `dartanalyzer` command performs the same static analysis that you get when you use an IDE or editor that has Dart support.",
+      "tag": "analysis",
+      "createdAt": 1583763829371,
+      "updatedAt": 1583765929285,
+      "doneAt": 1583769484395,
+      "deletedAt": null
+    },
+    {
+      "id": "k7kmpr22",
+      "summary": "https://dart.dev/tools/dartfmt",
+      "details": "",
+      "tag": "fmt",
+      "createdAt": 1583768234810,
+      "updatedAt": 1583768244844,
+      "doneAt": 1583769486835,
+      "deletedAt": null
+    },
+    {
+      "id": "k7knenz8",
+      "summary": "https://dart.dev/resources/videos",
+      "details": "",
+      "tag": "videos",
+      "createdAt": 1583769397220,
+      "updatedAt": 1583769412600,
+      "doneAt": 1583849516143,
+      "deletedAt": null
+    },
+    {
+      "id": "k7lz5ug0",
+      "summary": "Everything you can place in a variable is an object",
+      "details": " - even numbers, functions, and null are objects.\n - Dart 没有 primitive type, 全是 object, 因此即使数字的空值也是 null (而不是零)\n - All objects inherit from the Object class.",
+      "tag": "objects",
+      "createdAt": 1583849607264,
+      "updatedAt": 1583849762872,
+      "doneAt": 1583849909973,
+      "deletedAt": null
+    },
+    {
+      "id": "k7lznm5d",
+      "summary": "Production code ignores the assert() call.",
+      "details": "",
+      "tag": "assert",
+      "createdAt": 1583850436321,
+      "updatedAt": 1583850436321,
+      "doneAt": 1583850450906,
+      "deletedAt": null
+    },
+    {
+      "id": "k7lzkmy6",
+      "summary": "using var, rather than type annotations, for local variables.",
+      "details": "",
+      "tag": "style",
+      "createdAt": 1583850297390,
+      "updatedAt": 1583850297390,
+      "doneAt": 1583850453860,
+      "deletedAt": null
+    },
+    {
+      "id": "k7lzexsm",
+      "summary": "If an identifier starts with an underscore (_), it’s private to its library",
+      "details": "Dart doesn’t have the keywords public, protected, and private.",
+      "tag": "visibility",
+      "createdAt": 1583850031510,
+      "updatedAt": 1583850066086,
+      "doneAt": 1583850456068,
+      "deletedAt": null
+    },
+    {
+      "id": "k7lzt7vt",
+      "summary": "If you never intend to change a variable, use final or const",
+      "details": "- If the const variable is at the class level, mark it `static const`.\n- constant values\n- constructors that create constant values",
+      "tag": "const",
+      "createdAt": 1583850697769,
+      "updatedAt": 1583852336532,
+      "doneAt": 1583853355924,
+      "deletedAt": null
+    },
+    {
+      "id": "k7m1eata",
+      "summary": "Here’s how you turn a string into a number, or vice versa",
+      "details": "- int.parse('1');\n- double.parse('1.1');\n- 1.toString();\n- 3.14159.toStringAsFixed(2);",
+      "tag": "convert",
+      "createdAt": 1583853360958,
+      "updatedAt": 1583853466242,
+      "doneAt": 1583935223576,
+      "deletedAt": null
+    },
+    {
+      "id": "k7ne50nd",
+      "summary": "A Dart string is a sequence of UTF-16 code units.",
+      "details": "print(r'Hello,\\n ${1+1} World!' 'yes ${1+1} no');\n\n打印的结果是:\n\nHello,\\n ${1+1} World!yes 2 no",
+      "tag": "string",
+      "createdAt": 1583935229065,
+      "updatedAt": 1583935553565,
+      "doneAt": 1583935573993,
+      "deletedAt": null
+    },
+    {
+      "id": "k7oteizw",
+      "summary": "named parameters are a kind of optional parameter",
+      "details": "- but you can annotate them with @required to indicate that the parameter\n  is mandatory — that users must provide a value for the parameter.\n\n- To use the @required annotation, depend on the meta package and\n  import package:meta/meta.dart.",
+      "tag": "para",
+      "createdAt": 1584021333164,
+      "updatedAt": 1584021539563,
+      "doneAt": 1584022321558,
+      "deletedAt": null
+    },
+    {
+      "id": "k7otzxoa",
+      "summary": "All functions return a value.",
+      "details": "If no return value is specified, the statement `return null;` is implicitly appended to the function body.",
+      "tag": "return",
+      "createdAt": 1584022331962,
+      "updatedAt": 1584022378184,
+      "doneAt": 1584022858196,
+      "deletedAt": null
+    },
+    {
+      "id": "k7ou7i3u",
+      "summary": "To assign only if the assigned-to variable is null",
+      "details": "// Assign value to b if b is null; otherwise, b stays the same\n\nb ??= value;",
+      "tag": "??=",
+      "createdAt": 1584022685034,
+      "updatedAt": 1584022707046,
+      "doneAt": 1584022867647,
+      "deletedAt": null
+    },
+    {
+      "id": "k7ov5k21",
+      "summary": "Error: A for-in loop-variable can't be 'const'",
+      "details": "- 因为 const 必须在编译时就有值, \n  而 `for (const x in items)` 里的 x 需要在运行时赋值\n\n- 但在 JavaScript 里却可以是 const, 因为 JavaScript 不是编译语言.",
+      "tag": "const",
+      "createdAt": 1584024273865,
+      "updatedAt": 1584024731650,
+      "doneAt": 1584026004122,
+      "deletedAt": null
+    },
+    {
+      "id": "k7oubqpo",
+      "summary": "expr1 ?? expr2",
+      "details": "If expr1 is non-null, returns its value; otherwise, evaluates and returns the value of expr2.",
+      "tag": "??",
+      "createdAt": 1584022882812,
+      "updatedAt": 1584022896000,
+      "doneAt": 1584026005329,
+      "deletedAt": null
+    },
+    {
+      "id": "k7ow76fz",
+      "summary": "https://api.dart.dev/stable/2.7.1/dart-core/Iterable-class.html",
+      "details": "candidates\n    .where((c) => c.yearsExperience >= 5) // lazy\n    .forEach((c) => c.interview());",
+      "tag": "where",
+      "createdAt": 1584026029151,
+      "updatedAt": 1584026060081,
+      "doneAt": 1584028248801,
+      "deletedAt": null
+    },
+    {
+      "id": "k7oxh64o",
+      "summary": "Within a constant context ...",
+      "details": "Within a constant context, you can omit the `const` before a constructor or literal.",
+      "tag": "constant",
+      "createdAt": 1584028174920,
+      "updatedAt": 1584104309394,
+      "doneAt": 1584104327771,
+      "deletedAt": null
+    },
+    {
+      "id": "k7oyd94s",
+      "summary": "Use `this` only when there is a name conflict ...",
+      "details": "Use `this` only when there is a name conflict. Otherwise, Dart style omits the `this`.",
+      "tag": "this",
+      "createdAt": 1584029671804,
+      "updatedAt": 1584104404542,
+      "doneAt": 1584104428373,
+      "deletedAt": null
+    },
+    {
+      "id": "k7q7e9lf",
+      "summary": "By default, a constructor in a subclass calls the superclass’s unnamed, no-argument constructor.",
+      "details": " In summary, the order of execution is as follows:\n\n    1. initializer list\n    2. superclass’s no-arg constructor\n    3. main class’s no-arg constructor",
+      "tag": "default",
+      "createdAt": 1584105301779,
+      "updatedAt": 1584105463639,
+      "doneAt": 1584108377417,
+      "deletedAt": null
+    },
+    {
+      "id": "k7q76210",
+      "summary": "setting x and y before the constructor body runs.",
+      "details": "class Point {\n  num x, y;\n  Point(this.x, this.y);\n}",
+      "tag": "constructor",
+      "createdAt": 1584104918724,
+      "updatedAt": 1584105054449,
+      "doneAt": 1584108383159,
+      "deletedAt": null
+    },
+    {
+      "id": "k7q98dzn",
+      "summary": "Abstract classes are useful for defining interfaces.",
+      "details": "",
+      "tag": "abstract",
+      "createdAt": 1584108386771,
+      "updatedAt": 1584154487610,
+      "doneAt": 1584160024854,
+      "deletedAt": null
+    },
+    {
+      "id": "k7r40d85",
+      "summary": "If you override `==`, you should also override Object’s `hashCode` getter.",
+      "details": "",
+      "tag": "override",
+      "createdAt": 1584160080629,
+      "updatedAt": 1584160080629,
+      "doneAt": 1584162082799,
+      "deletedAt": null
+    },
+    {
+      "id": "k7r58de1",
+      "summary": "preferring `lowerCamelCase` for constant names.",
+      "details": "",
+      "tag": "style",
+      "createdAt": 1584162133705,
+      "updatedAt": 1584162147473,
+      "doneAt": 1584163535803,
+      "deletedAt": null
+    },
+    {
+      "id": "k7r5xy7n",
+      "summary": "Dart generic types are `reified`, which means that they carry their type information around at runtime.",
+      "details": "Note:\n\n  In contrast, generics in Java use `erasure`, which means that generic type parameters are removed at runtime. In Java, you can test whether an object is a `List`, but you can’t test whether it’s a `List<String>`.",
+      "tag": "",
+      "createdAt": 1584163327091,
+      "updatedAt": 1584163523480,
+      "doneAt": 1584165893389,
+      "deletedAt": null
+    },
+    {
+      "id": "k7r9ijlb",
+      "summary": "Every Dart app is a library, even if it doesn’t use a `library` directive.",
+      "details": "",
+      "tag": "library",
+      "createdAt": 1584169326767,
+      "updatedAt": 1584169326767,
+      "doneAt": 1584169390427,
+      "deletedAt": null
+    },
+    {
+      "id": "k7rc5g18",
+      "summary": "In most cases, each class should be in its own mini library, unless you have a situation where two classes are tightly coupled.",
+      "details": "https://dart.dev/guides/libraries/create-library-packages",
+      "tag": "mini",
+      "createdAt": 1584173754476,
+      "updatedAt": 1584174015685,
+      "doneAt": 1584173795964,
+      "deletedAt": null
+    },
+    {
+      "id": "k7uiqmjg",
+      "summary": "To use `await` in your app’s main() function, the body of main() must be marked as `async`:",
+      "details": "Future main() async {\n  checkVersion();\n  print('In main: version is ${await lookUpVersion()}');\n}",
+      "tag": "async",
+      "createdAt": 1584366218908,
+      "updatedAt": 1584366277565,
+      "doneAt": 1584366460205,
+      "deletedAt": null
+    },
+    {
+      "id": "k7uivj0c",
+      "summary": "If your function doesn’t return a useful value, make its return type Future<void>.",
+      "details": "",
+      "tag": "Future",
+      "createdAt": 1584366447612,
+      "updatedAt": 1584366447612,
+      "doneAt": 1584366462213,
+      "deletedAt": null
+    },
+    {
+      "id": "k7xgkbnx",
+      "summary": "usually should not use `await for` for UI event listeners, because UI frameworks sends endless streams of events.",
+      "details": "",
+      "tag": "await for",
+      "createdAt": 1584543964173,
+      "updatedAt": 1584544212980,
+      "doneAt": 1584544032099,
+      "deletedAt": null
+    },
+    {
+      "id": "k7xh7vwr",
+      "summary": "When you need to lazily produce a sequence of values, consider using a generator function.",
+      "details": "Dart has built-in support for two kinds of generator functions:\n\nSynchronous generator: Returns an Iterable object.\nAsynchronous generator: Returns a Stream object.",
+      "tag": "generator",
+      "createdAt": 1584545063499,
+      "updatedAt": 1584545118158,
+      "doneAt": 1584546215181,
+      "deletedAt": null
+    },
+    {
+      "id": "k7xhx0aw",
+      "summary": "To allow an instance of your Dart class to be called like a function, implement the call() method.",
+      "details": "",
+      "tag": "call",
+      "createdAt": 1584546235592,
+      "updatedAt": 1584546235592,
+      "doneAt": 1584547481443,
+      "deletedAt": null
+    }
+  ],
+  "deletedItems": [
+    {
+      "id": "k7uj8gue",
+      "summary": "https://dart.dev/codelabs/async-await",
+      "details": "",
+      "tag": "Asynchronous programming",
+      "createdAt": 1584367051334,
+      "updatedAt": 1584367070990,
+      "doneAt": null,
+      "deletedAt": 1584370761486
+    }
+  ]
+}

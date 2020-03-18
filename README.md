@@ -32,7 +32,7 @@ Small Plans for small projects.
 - 不使用 Bootstrap 等任何 UI 库
 - 不使用 JQuery
 - 不需要服务器, 整个应用只有一个 HTML 文件
-- 原生 HTML, CSS, JavaScript 手工打造, 一共 800 行代码
+- 原生 HTML, CSS, JavaScript 手工打造, 其中 JavaScript 部分仅 500 行代码
 
 ## 使用说明
 
