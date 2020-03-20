@@ -83,22 +83,72 @@
       "deletedAt": null
     },
     {
-      "id": "k7xi01pf",
-      "summary": "https://dart.dev/guides/language/language-tour#isolates",
-      "details": "- D:\\ComputerScience\\Dart\\learn-dart\\Dart asynchronous programming_ Isolates and event loops (2020-03-18 12_01_44 AM).html\n  - https://medium.com/dartlang/dart-asynchronous-programming-isolates-and-event-loops-bffc3e296a6a",
-      "tag": "Isolates",
-      "createdAt": 1584546377379,
-      "updatedAt": 1584547430307,
+      "id": "k7y89uxh",
+      "summary": "https://dart.dev/guides/language/effective-dart/documentation",
+      "details": "",
+      "tag": "Documentation",
+      "createdAt": 1584590505173,
+      "updatedAt": 1584590505173,
       "doneAt": null,
       "deletedAt": null
     },
     {
-      "id": "k7xipgz0",
-      "summary": "https://dart.dev/guides/language/language-tour#typedefs",
+      "id": "k7yxvwgi",
+      "summary": "https://dart.dev/guides/language/effective-dart",
+      "details": "",
+      "tag": "Effective Dart",
+      "createdAt": 1584633523986,
+      "updatedAt": 1584633523986,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k806qa0o",
+      "summary": "https://dart.dev/guides/libraries/library-tour#decoding-and-encoding-utf-8-characters",
+      "details": "",
+      "tag": "UTF-8",
+      "createdAt": 1584708844344,
+      "updatedAt": 1584708863611,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k806r4pt",
+      "summary": "https://dart.dev/guides/json",
+      "details": "",
+      "tag": "JSON",
+      "createdAt": 1584708884129,
+      "updatedAt": 1584708884129,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k808icz9",
+      "summary": "Reading a file as text",
+      "details": "https://dart.dev/guides/libraries/library-tour#dartio",
+      "tag": "file",
+      "createdAt": 1584711834165,
+      "updatedAt": 1584711862602,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k80989rm",
+      "summary": "https://dart.dev/codelabs/dart-cheatsheet",
+      "details": "",
+      "tag": "cheatsheet",
+      "createdAt": 1584713043058,
+      "updatedAt": 1584713043058,
+      "doneAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "k80emiio",
+      "summary": "https://dart.dev/codelabs/dart-cheatsheet#exceptions",
       "details": "",
       "tag": "",
-      "createdAt": 1584547563564,
-      "updatedAt": 1584547563564,
+      "createdAt": 1584722105664,
+      "updatedAt": 1584722105664,
       "doneAt": null,
       "deletedAt": null
     }
@@ -422,6 +472,86 @@
       "createdAt": 1584546235592,
       "updatedAt": 1584546235592,
       "doneAt": 1584547481443,
+      "deletedAt": null
+    },
+    {
+      "id": "k7y7m8lb",
+      "summary": "Currently, typedefs are restricted to function types.",
+      "details": "typedef Compare<T> = int Function(T a, T b);\n\nint sort(int a, int b) => a - b;\n\nvoid main() {\n  assert(sort is Compare<int>); // True!\n}",
+      "tag": "typedefs",
+      "createdAt": 1584589403135,
+      "updatedAt": 1584589435153,
+      "doneAt": 1584589453822,
+      "deletedAt": null
+    },
+    {
+      "id": "k7y7rab9",
+      "summary": "Two annotations are available to all Dart code: @deprecated and @override.",
+      "details": "- You can define your own metadata annotations.\n- You can retrieve metadata at runtime using reflection.",
+      "tag": "Metadata",
+      "createdAt": 1584589638645,
+      "updatedAt": 1584589793684,
+      "doneAt": 1584590163393,
+      "deletedAt": null
+    },
+    {
+      "id": "k7xi01pf",
+      "summary": "https://dart.dev/guides/language/language-tour#isolates",
+      "details": "- D:\\ComputerScience\\Dart\\learn-dart\\Dart asynchronous programming_ Isolates and event loops (2020-03-18 12_01_44 AM).html\n  - https://medium.com/dartlang/dart-asynchronous-programming-isolates-and-event-loops-bffc3e296a6a",
+      "tag": "Isolates",
+      "createdAt": 1584546377379,
+      "updatedAt": 1584547430307,
+      "doneAt": 1584590516671,
+      "deletedAt": null
+    },
+    {
+      "id": "k7zoxan4",
+      "summary": "DON’T create a lambda when a tear-off will do.",
+      "details": "https://dart.dev/guides/language/effective-dart/usage#dont-create-a-lambda-when-a-tear-off-will-do\n\ngood:\n\n    names.forEach(print);\n\nbad:\n\n    names.forEach((name) {\n      print(name);\n    });",
+      "tag": "tear-off",
+      "createdAt": 1584678938656,
+      "updatedAt": 1584679031994,
+      "doneAt": 1584679049703,
+      "deletedAt": null
+    },
+    {
+      "id": "k7zvlbhw",
+      "summary": "AVOID abbreviations.",
+      "details": "https://dart.dev/guides/language/effective-dart/design#avoid-abbreviations\n\nUnless the abbreviation is more common than the unabbreviated term, don’t abbreviate.",
+      "tag": "abbreviation",
+      "createdAt": 1584690137204,
+      "updatedAt": 1584690207088,
+      "doneAt": 1584691340418,
+      "deletedAt": null
+    },
+    {
+      "id": "k7zwasy4",
+      "summary": "name your members based on *what* they do for the caller, not *how* they do it.",
+      "details": "https://dart.dev/guides/language/effective-dart/design#consider-an-imperative-verb-phrase-for-a-function-or-method-if-you-want-to-draw-attention-to-the-work-it-performs",
+      "tag": "",
+      "createdAt": 1584691326220,
+      "updatedAt": 1584691426806,
+      "doneAt": 1584692289046,
+      "deletedAt": null
+    },
+    {
+      "id": "k7zwprzj",
+      "summary": "AVOID defining a class that contains only static members.",
+      "details": "If what you want is a namespace, a library is a better fit. Libraries support import *prefixes* and *show*/*hide* combinators. Those are powerful tools that let the consumer of your code handle name collisions.",
+      "tag": "namespace",
+      "createdAt": 1584692024815,
+      "updatedAt": 1584692229732,
+      "doneAt": 1584692292734,
+      "deletedAt": null
+    },
+    {
+      "id": "k805kf6h",
+      "summary": "Each object in Dart automatically provides an integer hash code, and thus can be used as a key in a map.",
+      "details": "https://dart.dev/guides/libraries/library-tour#utility-classes\n\n- Objects that are equal (via ==) must have identical hash codes.\n- A hash code doesn’t have to be unique, but it should be well distributed.\n\n  // Override hashCode using strategy from Effective Java,\n  // Chapter 11.\n  @override\n  int get hashCode {\n    int result = 17;\n    result = 37 * result + firstName.hashCode;\n    result = 37 * result + lastName.hashCode;\n    return result;\n  }",
+      "tag": "hash code",
+      "createdAt": 1584706891481,
+      "updatedAt": 1584707059927,
+      "doneAt": 1584708857540,
       "deletedAt": null
     }
   ],
