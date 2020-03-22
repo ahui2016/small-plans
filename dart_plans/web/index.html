@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="scaffolded-by" content="https://github.com/dart-lang/stagehand">
-    <title>dart_plans</title>
+    <title>Small Plans</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.ico">
     <script defer src="main.dart.js"></script>
@@ -14,7 +14,26 @@
 
 <body>
 
-  <div id="output"></div>
+<h1 id="project-title">
+    <span id="project-title">Small Plans</span>
+    <span id="proj-title-btn">📝</span>
+</h1>
+
+<div id="proj-title-dialog" hidden>
+    <form autocomplete="off">
+        <label>Project Title:<br/>
+            <input type="text" id="proj-title-input" />
+        </label>
+        <label>Description:<br/>
+            <textarea id="description-input" rows="3"></textarea>
+        </label>
+        <p id="proj-title-buttons">
+            <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
+            <button id="proj-title-ok">ok</button>
+            <button id="proj-title-cancel">cancel</button>
+        </p>
+    </form>
+</div>
 
 </body>
 </html>
