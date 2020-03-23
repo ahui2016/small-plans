@@ -1,43 +1,92 @@
 html, body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: "Palatino Linotype", Palatino, Palladio, Baskerville, Georgia, sans-serif, serif;
+}
+
+a {
+    cursor: pointer;
+    text-decoration: none;
 }
 
 input[type=text] {
-  width: 100%;
+    width: 100%;
 }
 
 textarea {
-  width: 100%;
-  resize: none;
+    width: 100%;
+    resize: none;
 }
 
-#proj-title-btn {
-  font-size: small;
-  text-decoration: none;
-  cursor: pointer;
+.dialog {
+    width: 450px;
+    height: 250px;
+    margin: 2em;
+    padding: 2em;
+    border: 3px solid black;
 }
 
-#proj-title-dialog {
-  width: 450px;
-  height: 250px;
-  margin: 2em;
-  padding: 2em;
-  border: 3px solid black;
+#proj-title-section {
+    text-align: center;
+}
+
+#project-title {
+    font-size: xx-large;
+}
+
+#proj-description {
+    font-size: large;
 }
 
 #proj-title-dialog label {
-  display: block;
-  margin-top: 1em;
+    display: block;
+    margin-top: 1em;
 }
 
 #proj-title-buttons {
-  text-align: right;
+    text-align: right;
 }
 
 #proj-title-input {
-  height: 2em;
+    height: 2em;
+}
+
+#export-import-buttons {
+    color: #ddd;
+    margin-top: 1em;
+    margin-bottom: 3em;
+}
+
+#export-import-buttons a {
+    color: #ddd;
+}
+
+#export-import-buttons a:hover {
+    color: blue;
+}
+
+#import-dialog {
+    width: 450px;
+    height: 250px;
+    margin: 2em;
+    padding: 2em;
+    border: 3px solid black;
+}
+
+#export-dir,
+#import-dir {
+    width: 380px;
+    background-color: lightgray;
+}
+
+#export-url {
+    text-decoration: underline;
+}
+
+#import-file {
+    width: 380px;
+    margin-top: 2em;
+    border: 1px solid blue;
 }

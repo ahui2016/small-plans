@@ -14,12 +14,14 @@
 
 <body>
 
-<h1 id="project-title">
-    <span id="project-title">Small Plans</span>
-    <span id="proj-title-btn">📝</span>
-</h1>
+<div id="proj-title-section">
+    <p>
+        <span id="project-title">Small Plans</span><a id="proj-title-btn">📝</a>
+    </p>
+    <p id="proj-description"></p>
+</div>
 
-<div id="proj-title-dialog" hidden>
+<div id="proj-title-dialog" class="dialog" hidden>
     <form autocomplete="off">
         <label>Project Title:<br/>
             <input type="text" id="proj-title-input" />
@@ -31,6 +33,43 @@
             <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
             <button id="proj-title-ok">ok</button>
             <button id="proj-title-cancel">cancel</button>
+        </p>
+    </form>
+</div>
+
+<div id="export-import-buttons">
+    <a id="export-button">export</a> | <a id="import-button">import</a>
+</div>
+
+<div id="export-dialog" class="dialog" hidden>
+    <form autocomplete="off">
+        <p>请右键点击以下链接, 另存为文件</p>
+        <p style="text-align: center">
+            <a id="export-url" href="#" download="small-plans.json">small-plans.json</a>
+        </p>
+        <label>当前目录:
+            <input type="text" id="export-dir" readonly>
+            <button id="export-copy-btn">copy</button>
+        </label>
+        <p><span style="color: red">注意:</span> 覆盖旧文件时请务必确认文件名!</p>
+        <p style="margin-top: 3em; text-align: right;">
+            <button id="export-dialog-close">close</button>
+        </p>
+    </form>
+</div>
+
+<div id="import-dialog" class="dialog" hidden>
+    <form autocomplete="off">
+        <p>请先选择文件, 然后点击 import 按钮.<br/>
+            <span style="color: red">注意:</span> 一旦导入, 当前数据将被清空、覆盖!</p>
+        <label>(复制当前目录可在选择文件时使用)
+            <input type="text" id="import-dir" readonly>
+            <button id="import-copy-btn">copy</button>
+        </label>
+        <input type="file" id="import-file" accept=".json" />
+        <button id="import-btn">import</button>
+        <p style="margin-top: 3em; text-align: right;">
+            <button id="import-dialog-close">close</button>
         </p>
     </form>
 </div>
