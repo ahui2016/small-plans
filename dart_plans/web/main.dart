@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html';
+import 'dart:convert';
 
 final String localLocation = Uri.decodeFull(window.location.toString());
 final String workingDir = makeWorkingDir(localLocation);
@@ -21,16 +22,48 @@ InputElement importDir = querySelector('#import-dir');
 Element exportDialog = querySelector('#export-dialog');
 InputElement exportDir = querySelector('#export-dir');
 
-/// 初始化一些东西, 比如给一些按钮添加事件.
-void init() {
-  initTitleDescription();
-  initExportDialog();
-  initImportDialog();
+InputElement todoInput = querySelector('#todo-input');
+TemplateElement todoTemplate = querySelector('#todo-template');
+
+List<TodoItem> undoneItems = [];
+Element undoneElements = querySelector('undone-elements');
+
+class TodoItem {
+  String id, summary, details, tag;
+  int createdAt, updatedAt, doneAt, deletedAt;
+
+  TodoItem(this.id, this.summary, this.details, this.tag,
+      this.createdAt, this.updatedAt, this.doneAt, this.deletedAt);
+
+  TodoItem.fromSummary(this.summary, this.tag) {
+    var now = DateTime.now().millisecondsSinceEpoch;
+    id = localId(now.toRadixString(36));
+    details = ''; createdAt = now; updatedAt = now;
+  }
+
+  // 用于 json
+  factory TodoItem.fromJson(dynamic j) => TodoItem(
+    j['id'] as String, j['summary'] as String, j['details'] as String, j['tag'] as String,
+    j['createdAt'] as int, j['updatedAt'] as int, j['doneAt'] as int, j['deletedAt'] as int);
+
+  // 用于 json
+  Map toJson() => { 'id': id,
+    'summary': summary, 'details': details, 'tag': tag, 'createdAt': createdAt,
+    'updatedAt': updatedAt, 'doneAt': doneAt, 'deletedAt': deletedAt,
+  };
 }
 
 void main() {
   init();
   window.console.log(prefix);
+}
+
+/// 初始化一些东西, 比如给一些按钮添加事件.
+void init() {
+  initTitleDescription();
+  initExportDialog();
+  initImportDialog();
+  initAddTodoForm();
 }
 
 /// 注意每当修改 `window.localStorage[projectTitleKey]` 的时候, 都要避免其值为空字符串,
@@ -92,7 +125,6 @@ void initExportDialog() {
     exportImportButtons.removeAttribute('hidden');
     exportDialog.setAttribute('hidden', '');
   });
-
 }
 
 void initImportDialog() {
@@ -119,6 +151,74 @@ void initImportDialog() {
     exportImportButtons.removeAttribute('hidden');
     importDialog.setAttribute('hidden', '');
   });
+}
+
+void initAddTodoForm() {
+  querySelector('#add-todo-form').onSubmit.listen((e) {
+    e.preventDefault();
+    var todo = todoInput.value.trim();
+    if (todo.isEmpty) return;
+    var tagSummary = splitTagSummary(todo);
+    var item = TodoItem.fromSummary(tagSummary['summary'], tagSummary['tag']);
+    window.localStorage[localId(item.id)] = json.encode(item);
+    undoneItems.add(item);
+    insertTodoElement(item);
+    todoInput.value = '';
+    todoInput.focus();
+  });
+}
+
+// 注意: 每当修改 todoitem 的内容时, 都要更新 localStorage.
+void insertTodoElement(TodoItem todoitem) {
+  Element todoNode = todoTemplate.content.clone(true);
+
+  var todoTopDiv = todoNode.querySelector('.todo-top-div');
+  todoTopDiv.setAttribute('id', todoitem.id);
+
+  var moreButton = todoTopDiv.querySelector('.more-btn');
+  if (todoitem.details.isNotEmpty) moreButton.removeAttribute('hidden');
+
+  var todoTag = todoTopDiv.querySelector('.todo-tag');
+  todoTag.text = todoitem.tag;
+
+  var todoSummary = todoTopDiv.querySelector('.todo-summary');
+  todoSummary.text = todoitem.summary;
+
+  var todoDetails = todoTopDiv.querySelector('.todo-details');
+  todoDetails.text = todoitem.details;
+
+  var summaryNode = todoTopDiv.querySelector('summary');
+  var detailsNode = todoTopDiv.querySelector('details');
+  summaryNode.onClick.listen((e) {
+    if (detailsNode.hasAttribute('open') && todoDetails.text.trim().isNotEmpty) {
+      moreButton.removeAttribute('hidden');
+    } else {
+      moreButton.setAttribute('hidden', '');
+    }
+  });
+
+  undoneElements.children.add(todoNode);
+}
+
+String simpleDate(int timestamp) =>
+    DateTime
+      .fromMillisecondsSinceEpoch(timestamp)
+      .toIso8601String()
+      .substring(0, 10);
+
+String localId(String id) => '$prefix-$id';
+
+Map<String, String> splitTagSummary(String todo) {
+  String tag, summary;
+  if (todo.startsWith('#')) {
+    var i = todo.indexOf('#', 1);
+    if (i != -1) {
+      tag = todo.substring(1, i).trim();
+      summary = todo.substring(i + 1).trim();
+    }
+    return {'tag': tag, 'summary': summary};
+  }
+  return {'tag': '', 'summary': todo};
 }
 
 String makePrefix(String localPath) {
