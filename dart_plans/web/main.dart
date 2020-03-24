@@ -26,7 +26,7 @@ InputElement todoInput = querySelector('#todo-input');
 TemplateElement todoTemplate = querySelector('#todo-template');
 
 List<TodoItem> undoneItems = [];
-Element undoneElements = querySelector('undone-elements');
+Element undoneElements = querySelector('#undone-elements');
 
 class TodoItem {
   String id, summary, details, tag;
@@ -170,8 +170,7 @@ void initAddTodoForm() {
 
 // 注意: 每当修改 todoitem 的内容时, 都要更新 localStorage.
 void insertTodoElement(TodoItem todoitem) {
-  Element todoNode = todoTemplate.content.clone(true);
-
+  DocumentFragment todoNode = todoTemplate.content.clone(true);
   var todoTopDiv = todoNode.querySelector('.todo-top-div');
   todoTopDiv.setAttribute('id', todoitem.id);
 
@@ -197,7 +196,7 @@ void insertTodoElement(TodoItem todoitem) {
     }
   });
 
-  undoneElements.children.add(todoNode);
+  undoneElements.append(todoNode);
 }
 
 String simpleDate(int timestamp) =>
