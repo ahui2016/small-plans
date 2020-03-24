@@ -104,6 +104,12 @@ textarea {
     margin-bottom: 2em;
 }
 
+.section-title {
+    color:darkgrey;
+    font-style:italic;
+    font-weight: bold;
+}
+
 details {
     margin-bottom: 20px;
     width: 100%;

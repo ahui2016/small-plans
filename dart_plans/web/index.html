@@ -76,7 +76,7 @@
 
 <section id="add-todo-section">
     <form id="add-todo-form" autocomplete="off">
-        <label style="color:darkgrey;font-style:italic;font-weight: bold;">Add
+        <label class="section-title">Add
             <input type="text" id="todo-input"/>
         </label>
         <input type="submit" hidden>
@@ -84,9 +84,14 @@
 </section>
 
 <section id="undone-elements"></section>
+<section>
+    <p id="done-elements-title" class="section-title" hidden>All Done Items</p>
+</section>
+<section id="done-elements"></section>
+<section id="deleted-elements"></section>
 
 <template id="todo-template">
-    <div class="todo-top-div">
+    <div class="todo-element">
         <div id="todo-edit-dialog" style="width: 500px; height: 300px;" hidden>
             <form autocomplete="off">
                 <p>
