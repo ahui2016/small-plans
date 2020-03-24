@@ -28,6 +28,9 @@ TemplateElement todoTemplate = querySelector('#todo-template');
 List<TodoItem> undoneItems = [];
 Element undoneElements = querySelector('#undone-elements');
 
+List<TodoItem> doneItems = [];
+List<TodoItem> deletedItems = [];
+
 class TodoItem {
   String id, summary, details, tag;
   int createdAt, updatedAt, doneAt, deletedAt;
@@ -42,9 +45,13 @@ class TodoItem {
   }
 
   // 用于 json
-  factory TodoItem.fromJson(dynamic j) => TodoItem(
-    j['id'] as String, j['summary'] as String, j['details'] as String, j['tag'] as String,
-    j['createdAt'] as int, j['updatedAt'] as int, j['doneAt'] as int, j['deletedAt'] as int);
+  factory TodoItem.fromJson(dynamic j) {
+    var _doneAt = j['doneAt'] ?? 0;
+    var _deletedAt = j['deletedAt'] ?? 0;
+    return TodoItem(
+        j['id'] as String, j['summary'] as String, j['details'] as String, j['tag'] as String,
+        j['createdAt'] as int, j['updatedAt'] as int, _doneAt as int, _deletedAt as int);
+  }
 
   // 用于 json
   Map toJson() => { 'id': id,
@@ -55,6 +62,7 @@ class TodoItem {
 
 void main() {
   init();
+  todoInput.focus();
   window.console.log(prefix);
 }
 
@@ -64,6 +72,7 @@ void init() {
   initExportDialog();
   initImportDialog();
   initAddTodoForm();
+  restoreTodos();
 }
 
 /// 注意每当修改 `window.localStorage[projectTitleKey]` 的时候, 都要避免其值为空字符串,
@@ -99,6 +108,30 @@ void initTitleDescription() {
     projectTitleSection.removeAttribute('hidden');
     projectTitleDialog.setAttribute('hidden', '');
   });
+}
+
+void restoreTodos() {
+  window.localStorage.forEach((k, v) {
+    if (k.startsWith(prefix) && k != projectTitleKey && k != descriptionKey) {
+      var todoitem = TodoItem.fromJson(json.decode(v));
+      if (todoitem.deletedAt > 0) {
+        deletedItems.add(todoitem);
+      } else if (todoitem.doneAt > 0) {
+        doneItems.add(todoitem);
+      } else {
+        undoneItems.add(todoitem);
+      }
+    }
+  });
+  undoneItems
+    ..sort((a, b) => a.createdAt - b.createdAt)
+    ..forEach(insertTodoElement);
+  doneItems
+    ..sort((a, b) => a.doneAt - b.doneAt)
+    ..forEach(insertTodoElement);
+  deletedItems
+    ..sort((a, b) => a.deletedAt - b.deletedAt)
+    ..forEach(insertTodoElement);
 }
 
 void initExportDialog() {
@@ -196,9 +229,12 @@ void insertTodoElement(TodoItem todoitem) {
     }
   });
 
-  undoneElements.append(todoNode);
+  undoneElements.insertBefore(todoNode, undoneElements.firstChild);
+//  undoneElements.append(todoNode);
 }
 
+// 返回格式为 '2020-03-23' 的字符串.
+// 如果改写为 JavaScript 要注意时区问题.
 String simpleDate(int timestamp) =>
     DateTime
       .fromMillisecondsSinceEpoch(timestamp)

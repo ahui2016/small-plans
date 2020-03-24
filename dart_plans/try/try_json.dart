@@ -9,6 +9,11 @@ void main() {
   var item = TodoItem.fromJson(json.decode(j));
   print(item);
   print(item.runtimeType);
+  if (item.deletedAt > 0) {
+    print('deleted');
+  } else {
+    print('not deleted');
+  }
 }
 
 class TodoItem {
@@ -25,9 +30,13 @@ class TodoItem {
   }
 
   // 用于 json
-  factory TodoItem.fromJson(dynamic j) => TodoItem(
+  factory TodoItem.fromJson(dynamic j) {
+    var _doneAt = j['doneAt'] ?? 0;
+    var _deletedAt = j['deletedAt'] ?? 0;
+    return TodoItem(
       j['id'] as String, j['summary'] as String, j['details'] as String, j['tag'] as String,
-      j['createdAt'] as int, j['updatedAt'] as int, j['doneAt'] as int, j['deletedAt'] as int);
+      j['createdAt'] as int, j['updatedAt'] as int, _doneAt as int, _deletedAt as int);
+  }
 
   // 用于 json
   Map toJson() => { 'id': id,
