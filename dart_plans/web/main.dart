@@ -261,6 +261,7 @@ void initDetailsButtons() {
     initUndoneButton(todoitem, todo);
     initDeleteButton(todoitem, todo);
     initRestoreButton(todoitem, todo);
+    initDeleteForeverButton(todoitem, todo);
   }
 }
 
@@ -376,6 +377,15 @@ void setRestoreAttributes(TodoItem todoitem, Element todo) {
   todo.querySelector('.doneBtn').removeAttribute('hidden');
   todo.querySelector('.cell.buttons.normal').removeAttribute('hidden');
   todo.querySelector('.cell.buttons.deleted').setAttribute('hidden', '');
+}
+
+void initDeleteForeverButton(TodoItem todoitem, Element todo) {
+  todo.querySelector('.deleteForeverBtn').onClick.listen((_) {
+    deletedItems.remove(todoitem);
+    allItems.remove(todoitem);
+    window.localStorage.remove(localId(todoitem.id));
+    todo.remove();
+  });
 }
 
 List<TodoItem> todoitemGroup(String group) {
