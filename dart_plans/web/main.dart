@@ -32,6 +32,7 @@ Element doneElements = querySelector('#done-elements');
 List<TodoItem> deletedItems = [];
 Element deletedElements = querySelector('#deleted-elements');
 
+// 为了便于检索 todoitem.
 List<TodoItem> allItems = [];
 
 class TodoItem {
@@ -259,6 +260,7 @@ void initDetailsButtons() {
     initDoneButton(todoitem, todo);
     initUndoneButton(todoitem, todo);
     initDeleteButton(todoitem, todo);
+    initRestoreButton(todoitem, todo);
   }
 }
 
@@ -338,16 +340,42 @@ void initDeleteButton(TodoItem todoitem, Element todo) {
 void setDeletedAttributes(TodoItem todoitem, Element todo) {
   todo.querySelector('details').setAttribute('class', 'deleted');
   todo.querySelector('.todo-summary').style.textDecoration = 'line-through';
-  todo.querySelector('.done-at')
-    ..setAttribute('hidden', '')
-    ..text = '';
-  todo.querySelector('.deleted-at')
-    ..removeAttribute('hidden')
+  todo.querySelector('.done-at')..setAttribute('hidden', '')..text = '';
+  todo.querySelector('.deleted-at')..removeAttribute('hidden')
     ..text = 'deleted at: ${simpleDate(todoitem.deletedAt)}';
   todo.querySelector('.undoneBtn').setAttribute('hidden', '');
   todo.querySelector('.doneBtn').setAttribute('hidden', '');
   todo.querySelector('.cell.buttons.normal').setAttribute('hidden', '');
   todo.querySelector('.cell.buttons.deleted').removeAttribute('hidden');
+}
+
+void initRestoreButton(TodoItem todoitem, Element todo) {
+  var restoreButton = todo.querySelector('.restoreBtn');
+  var details = todo.querySelector('details');
+
+  restoreButton.onClick.listen((_) {
+    todoitem.createdAt = DateTime.now().millisecondsSinceEpoch;
+    todoitem.deletedAt = null;
+    if (todoitem.tag == 'fixed') {
+      todoitem.tag = 'bug';
+      todo.querySelector('.todo-tag').text = 'bug';
+    }
+    window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+    undoneItems.add(todoitem);
+    deletedItems.remove(todoitem);
+    setRestoreAttributes(todoitem, todo);
+    if (todoitem.details.isEmpty) details.removeAttribute('open');
+    undoneElements.insertBefore(todo, undoneElements.firstChild);
+  });
+}
+
+void setRestoreAttributes(TodoItem todoitem, Element todo) {
+  todo.querySelector('details').setAttribute('class', 'undone');
+  todo.querySelector('.todo-summary').style.textDecoration = '';
+  todo.querySelector('.deleted-at')..setAttribute('hidden', '')..text = '';
+  todo.querySelector('.doneBtn').removeAttribute('hidden');
+  todo.querySelector('.cell.buttons.normal').removeAttribute('hidden');
+  todo.querySelector('.cell.buttons.deleted').setAttribute('hidden', '');
 }
 
 List<TodoItem> todoitemGroup(String group) {
