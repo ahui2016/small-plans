@@ -141,6 +141,7 @@ details.undone summary {
     background-color: #f2f9fb;
 }
 
+details.deleted summary,
 details.done summary {
     background-color: white;
 }

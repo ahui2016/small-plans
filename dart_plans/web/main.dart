@@ -27,7 +27,6 @@ TemplateElement todoTemplate = querySelector('#todo-template');
 
 List<TodoItem> undoneItems = [];
 Element undoneElements = querySelector('#undone-elements');
-Element doneElementsTitle = document.querySelector('#done-elements-title');
 List<TodoItem> doneItems = [];
 Element doneElements = querySelector('#done-elements');
 List<TodoItem> deletedItems = [];
@@ -76,8 +75,7 @@ void init() {
   initImportDialog();
   initAddTodoForm();
   restoreTodos();
-  initDoneButtons();
-  initUndoneButtons();
+  initDetailsButtons();
 }
 
 /// 注意每当修改 `window.localStorage[projectTitleKey]` 的时候, 都要避免其值为空字符串,
@@ -138,7 +136,6 @@ void restoreTodos() {
   deletedItems
     ..sort((a, b) => a.deletedAt - b.deletedAt)
     ..forEach(insertTodoElement);
-  if (doneItems.isNotEmpty) doneElementsTitle.removeAttribute('hidden');
 }
 
 void initExportDialog() {
@@ -227,7 +224,10 @@ void insertTodoElement(TodoItem todoitem) {
   initMoreButton(todoitem, todoElement, todoDetails);
   initDoneButton(todoitem, todoElement);
 
-  if (todoitem.doneAt != null) {
+  if (todoitem.deletedAt != null) {
+    setDeletedAttributes(todoitem, todoElement);
+    deletedElements.insertBefore(todoNode, deletedElements.firstChild);
+  } else if (todoitem.doneAt != null) {
     setDoneAttributes(todoitem, todoElement);
     doneElements.insertBefore(todoNode, doneElements.firstChild);
   } else {
@@ -252,11 +252,13 @@ void initMoreButton(TodoItem todoitem, Element todoElement, Element todoDetails)
   });
 }
 
-void initDoneButtons() {
+void initDetailsButtons() {
   for (var todo in querySelectorAll('.todo-element')) {
     var id = todo.getAttribute('id');
     var todoitem = allItems.firstWhere((item) => item.id == id);
     initDoneButton(todoitem, todo);
+    initUndoneButton(todoitem, todo);
+    initDeleteButton(todoitem, todo);
   }
 }
 
@@ -265,7 +267,6 @@ void initDoneButton(TodoItem todoitem, Element todo) {
   var details = todo.querySelector('details');
 
   doneButton.onClick.listen((_) {
-    if (doneItems.isEmpty) doneElementsTitle.removeAttribute('hidden');
     todoitem.doneAt = DateTime.now().millisecondsSinceEpoch;
     if (todoitem.tag == 'bug') {
       todoitem.tag = 'fixed';
@@ -274,7 +275,6 @@ void initDoneButton(TodoItem todoitem, Element todo) {
     window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
     doneItems.add(todoitem);
     undoneItems.remove(todoitem);
-
     setDoneAttributes(todoitem, todo);
     if (todoitem.details.isEmpty) details.removeAttribute('open');
     doneElements.insertBefore(todo, doneElements.firstChild);
@@ -290,14 +290,6 @@ void setDoneAttributes(TodoItem todoitem, Element todo) {
   todo.querySelector('.doneBtn').setAttribute('hidden', '');
 }
 
-void initUndoneButtons() {
-  for (var todo in querySelectorAll('.todo-element')) {
-    var id = todo.getAttribute('id');
-    var todoitem = allItems.firstWhere((item) => item.id == id);
-    initUndoneButton(todoitem, todo);
-  }
-}
-
 void initUndoneButton(TodoItem todoitem, Element todo) {
   var undoneButton = todo.querySelector('.undoneBtn');
   var details = todo.querySelector('details');
@@ -311,8 +303,6 @@ void initUndoneButton(TodoItem todoitem, Element todo) {
     window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
     undoneItems.add(todoitem);
     doneItems.remove(todoitem);
-    if (doneItems.isEmpty) doneElementsTitle.setAttribute('hidden', '');
-
     setUndoneAttributes(todoitem, todo);
     if (todoitem.details.isEmpty) details.removeAttribute('open');
     undoneElements.insertBefore(todo, undoneElements.firstChild);
@@ -326,6 +316,38 @@ void setUndoneAttributes(TodoItem todoitem, Element todo) {
     ..text = '';
   todo.querySelector('.undoneBtn').setAttribute('hidden', '');
   todo.querySelector('.doneBtn').removeAttribute('hidden');
+}
+
+void initDeleteButton(TodoItem todoitem, Element todo) {
+  var deleteButton = todo.querySelector('.deleteBtn');
+  var details = todo.querySelector('details');
+
+  deleteButton.onClick.listen((_) {
+    todoitem.doneAt = null;
+    todoitem.deletedAt = DateTime.now().millisecondsSinceEpoch;
+    window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+    deletedItems.add(todoitem);
+    undoneItems.remove(todoitem);
+    doneItems.remove(todoitem);
+    setDeletedAttributes(todoitem, todo);
+    if (todoitem.details.isEmpty) details.removeAttribute('open');
+    deletedElements.insertBefore(todo, deletedElements.firstChild);
+  });
+}
+
+void setDeletedAttributes(TodoItem todoitem, Element todo) {
+  todo.querySelector('details').setAttribute('class', 'deleted');
+  todo.querySelector('.todo-summary').style.textDecoration = 'line-through';
+  todo.querySelector('.done-at')
+    ..setAttribute('hidden', '')
+    ..text = '';
+  todo.querySelector('.deleted-at')
+    ..removeAttribute('hidden')
+    ..text = 'deleted at: ${simpleDate(todoitem.deletedAt)}';
+  todo.querySelector('.undoneBtn').setAttribute('hidden', '');
+  todo.querySelector('.doneBtn').setAttribute('hidden', '');
+  todo.querySelector('.cell.buttons.normal').setAttribute('hidden', '');
+  todo.querySelector('.cell.buttons.deleted').removeAttribute('hidden');
 }
 
 List<TodoItem> todoitemGroup(String group) {
