@@ -33,6 +33,8 @@ Element doneElements = querySelector('#done-elements');
 List<TodoItem> deletedItems = [];
 Element deletedElements = querySelector('#deleted-elements');
 
+List<TodoItem> allItems = [];
+
 class TodoItem {
   String id, summary, details, tag;
   int createdAt, updatedAt, doneAt, deletedAt;
@@ -123,6 +125,7 @@ void restoreTodos() {
       } else {
         undoneItems.add(todoitem);
       }
+      allItems.add(todoitem);
     }
   });
   undoneItems
@@ -197,6 +200,7 @@ void initAddTodoForm() {
     var tagSummary = splitTagSummary(todo);
     var item = TodoItem.fromSummary(tagSummary['summary'], tagSummary['tag']);
     window.localStorage[localId(item.id)] = json.encode(item);
+    allItems.add(item);
     undoneItems.add(item);
     insertTodoElement(item);
     todoInput.value = '';
@@ -210,9 +214,6 @@ void insertTodoElement(TodoItem todoitem) {
   var todoElement = todoNode.querySelector('.todo-element');
   todoElement.setAttribute('id', todoitem.id);
 
-  var moreButton = todoElement.querySelector('.more-btn');
-  if (todoitem.details.isNotEmpty) moreButton.removeAttribute('hidden');
-
   var todoTag = todoElement.querySelector('.todo-tag');
   todoTag.text = todoitem.tag;
 
@@ -222,57 +223,69 @@ void insertTodoElement(TodoItem todoitem) {
   var todoDetails = todoElement.querySelector('.todo-details');
   todoDetails.text = todoitem.details;
 
-  var summaryNode = todoElement.querySelector('summary');
-  var detailsNode = todoElement.querySelector('details');
-  summaryNode.onClick.listen((e) {
-    if (detailsNode.hasAttribute('open') && todoDetails.text.trim().isNotEmpty) {
-      moreButton.removeAttribute('hidden');
-    } else {
-      moreButton.setAttribute('hidden', '');
-    }
-  });
+  initMoreButton(todoitem, todoElement, todoDetails);
+  initDoneButton(todoitem, todoElement);
 
   if (todoitem.doneAt != null) {
+    setDoneAttributes(todoitem, todoElement);
     doneElements.insertBefore(todoNode, doneElements.firstChild);
   } else {
     undoneElements.insertBefore(todoNode, undoneElements.firstChild);
   }
 }
 
+void initMoreButton(TodoItem todoitem, Element todoElement, Element todoDetails) {
+  var moreButton = todoElement.querySelector('.more-btn');
+  var summaryNode = todoElement.querySelector('summary');
+  var detailsNode = todoElement.querySelector('details');
+
+  if (todoitem.details.isNotEmpty) moreButton.removeAttribute('hidden');
+
+  summaryNode.onClick.listen((_) {
+    if (detailsNode.hasAttribute('open') && todoDetails.text.trim().isNotEmpty) {
+      moreButton.removeAttribute('hidden');
+    } else {
+      moreButton.setAttribute('hidden', '');
+    }
+  });
+}
+
 void initDoneButtons() {
   for (var todo in querySelectorAll('.todo-element')) {
     var id = todo.getAttribute('id');
-//    var todoitem = undoneItems.firstWhere((item) => item.id == id);
-    var todoitem = undoneItems.firstWhere((item) {
-      window.console.log('${item.id} <-> $id');
-      return item.id == id;
-    });
-
-    var doneButton = todo.querySelector('.doneBtn');
-    var details = todo.querySelector('details');
-
-    doneButton.onClick.listen((_) {
-      if (doneItems.isEmpty) doneElementsTitle.removeAttribute('hidden');
-      todoitem.doneAt = DateTime.now().millisecondsSinceEpoch;
-      if (todoitem.tag == 'bug') {
-        todoitem.tag = 'fixed';
-        todo.querySelector('.todo-tag').text = 'fixed';
-      }
-      window.localStorage[localId(id)] = jsonEncode(todoitem);
-      doneItems.add(todoitem);
-      undoneItems.remove(todoitem);
-
-      // set attributes
-      details.setAttribute('class', 'done');
-      todo.querySelector('.done-at')
-        ..removeAttribute('hidden')
-        ..text = 'done at: ${simpleDate(todoitem.doneAt)}';
-      todo.querySelector('.undoneBtn').removeAttribute('hidden');
-      doneButton.setAttribute('hidden', '');
-      if (todoitem.details.isEmpty) details.removeAttribute('open');
-      doneElements.insertBefore(todo, doneElements.firstChild);
-    });
+    var todoitem = allItems.firstWhere((item) => item.id == id);
+    initDoneButton(todoitem, todo);
   }
+}
+
+void initDoneButton(TodoItem todoitem, Element todo) {
+  var doneButton = todo.querySelector('.doneBtn');
+  var details = todo.querySelector('details');
+
+  doneButton.onClick.listen((_) {
+    if (doneItems.isEmpty) doneElementsTitle.removeAttribute('hidden');
+    todoitem.doneAt = DateTime.now().millisecondsSinceEpoch;
+    if (todoitem.tag == 'bug') {
+      todoitem.tag = 'fixed';
+      todo.querySelector('.todo-tag').text = 'fixed';
+    }
+    window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+    doneItems.add(todoitem);
+    undoneItems.remove(todoitem);
+
+    setDoneAttributes(todoitem, todo);
+    if (todoitem.details.isEmpty) details.removeAttribute('open');
+    doneElements.insertBefore(todo, doneElements.firstChild);
+  });
+}
+
+void setDoneAttributes(TodoItem todoitem, Element todo) {
+  todo.querySelector('details').setAttribute('class', 'done');
+  todo.querySelector('.done-at')
+    ..removeAttribute('hidden')
+    ..text = 'done at: ${simpleDate(todoitem.doneAt)}';
+  todo.querySelector('.undoneBtn').removeAttribute('hidden');
+  todo.querySelector('.doneBtn').setAttribute('hidden', '');
 }
 
 List<TodoItem> todoitemGroup(String group) {
