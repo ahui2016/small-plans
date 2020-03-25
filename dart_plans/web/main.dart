@@ -77,6 +77,7 @@ void init() {
   initAddTodoForm();
   restoreTodos();
   initDoneButtons();
+  initUndoneButtons();
 }
 
 /// 注意每当修改 `window.localStorage[projectTitleKey]` 的时候, 都要避免其值为空字符串,
@@ -230,6 +231,7 @@ void insertTodoElement(TodoItem todoitem) {
     setDoneAttributes(todoitem, todoElement);
     doneElements.insertBefore(todoNode, doneElements.firstChild);
   } else {
+    setUndoneAttributes(todoitem, todoElement);
     undoneElements.insertBefore(todoNode, undoneElements.firstChild);
   }
 }
@@ -286,6 +288,44 @@ void setDoneAttributes(TodoItem todoitem, Element todo) {
     ..text = 'done at: ${simpleDate(todoitem.doneAt)}';
   todo.querySelector('.undoneBtn').removeAttribute('hidden');
   todo.querySelector('.doneBtn').setAttribute('hidden', '');
+}
+
+void initUndoneButtons() {
+  for (var todo in querySelectorAll('.todo-element')) {
+    var id = todo.getAttribute('id');
+    var todoitem = allItems.firstWhere((item) => item.id == id);
+    initUndoneButton(todoitem, todo);
+  }
+}
+
+void initUndoneButton(TodoItem todoitem, Element todo) {
+  var undoneButton = todo.querySelector('.undoneBtn');
+  var details = todo.querySelector('details');
+
+  undoneButton.onClick.listen((_) {
+    todoitem.doneAt = null;
+    if (todoitem.tag == 'fixed') {
+      todoitem.tag = 'bug';
+      todo.querySelector('.todo-tag').text = 'bug';
+    }
+    window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+    undoneItems.add(todoitem);
+    doneItems.remove(todoitem);
+    if (doneItems.isEmpty) doneElementsTitle.setAttribute('hidden', '');
+
+    setUndoneAttributes(todoitem, todo);
+    if (todoitem.details.isEmpty) details.removeAttribute('open');
+    undoneElements.insertBefore(todo, undoneElements.firstChild);
+  });
+}
+
+void setUndoneAttributes(TodoItem todoitem, Element todo) {
+  todo.querySelector('details').setAttribute('class', 'undone');
+  todo.querySelector('.done-at')
+    ..setAttribute('hidden', '')
+    ..text = '';
+  todo.querySelector('.undoneBtn').setAttribute('hidden', '');
+  todo.querySelector('.doneBtn').removeAttribute('hidden');
 }
 
 List<TodoItem> todoitemGroup(String group) {
