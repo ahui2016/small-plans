@@ -20,14 +20,6 @@ textarea {
     resize: none;
 }
 
-.dialog {
-    width: 450px;
-    height: 250px;
-    margin: 2em;
-    padding: 2em;
-    border: 3px solid black;
-}
-
 #proj-title-section {
     text-align: center;
 }
@@ -67,12 +59,23 @@ textarea {
     color: blue;
 }
 
-#import-dialog {
+.dialog {
     width: 450px;
-    height: 250px;
+    height: 220px;
     margin: 2em;
     padding: 2em;
     border: 3px solid black;
+}
+
+.dialog p {
+    margin-top: 0;
+}
+
+#import-dialog-close,
+#export-dialog-close {
+    position: relative;
+    left: 455px;
+    bottom: 31px;
 }
 
 #export-dir,

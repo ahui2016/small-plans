@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'dart:html';
 import 'dart:convert';
+import 'dart:html';
 
 final String localLocation = Uri.decodeFull(window.location.toString());
 final String workingDir = makeWorkingDir(localLocation);
 final String prefix = makePrefix(localLocation);
-final String projectTitleKey = '$prefix-projectTitle';
-final String descriptionKey = '$prefix-projectDescription';
+final String projectTitleKey = '${prefix}projectTitle';
+final String descriptionKey = '${prefix}projectDescription';
 
 Element browserTabTitle = querySelector('title');
 Element projectTitleSection = querySelector('#proj-title-section');
@@ -50,11 +50,10 @@ class TodoItem {
   }
 
   // 用于 json
-  factory TodoItem.fromJson(dynamic j) {
-    return TodoItem(j['id'] as String, j['summary'] as String,
+  factory TodoItem.fromJson(dynamic j) =>
+      TodoItem(j['id'] as String, j['summary'] as String,
         j['details'] as String, j['tag'] as String, j['createdAt'] as int,
         j['updatedAt'] as int, j['doneAt'] as int, j['deletedAt'] as int);
-  }
 
   // 用于 json
   Map toJson() => { 'id': id,
@@ -76,7 +75,7 @@ void init() {
   initImportDialog();
   initAddTodoForm();
   restoreTodos();
-  initDetailsButtons();
+  initAllDetailsButtons();
 }
 
 /// 注意每当修改 `window.localStorage[projectTitleKey]` 的时候, 都要避免其值为空字符串,
@@ -191,21 +190,20 @@ void initImportDialog() {
   });
 }
 
-void initAddTodoForm() {
-  querySelector('#add-todo-form').onSubmit.listen((e) {
-    e.preventDefault();
-    var todo = todoInput.value.trim();
-    if (todo.isEmpty) return;
-    var tagSummary = splitTagSummary(todo);
-    var item = TodoItem.fromSummary(tagSummary['summary'], tagSummary['tag']);
-    window.localStorage[localId(item.id)] = json.encode(item);
-    allItems.add(item);
-    undoneItems.add(item);
-    insertTodoElement(item);
-    todoInput.value = '';
-    todoInput.focus();
-  });
-}
+void initAddTodoForm() =>
+    querySelector('#add-todo-form').onSubmit.listen((e) {
+      e.preventDefault();
+      var todo = todoInput.value.trim();
+      if (todo.isEmpty) return;
+      var tagSummary = splitTagSummary(todo);
+      var item = TodoItem.fromSummary(tagSummary['summary'], tagSummary['tag']);
+      window.localStorage[localId(item.id)] = json.encode(item);
+      allItems.add(item);
+      undoneItems.add(item);
+      insertTodoElement(item);
+      todoInput.value = '';
+      todoInput.focus();
+    });
 
 // 注意: 每当修改 todoitem 的内容时, 都要更新 localStorage.
 void insertTodoElement(TodoItem todoitem) {
@@ -223,7 +221,7 @@ void insertTodoElement(TodoItem todoitem) {
   todoDetails.text = todoitem.details;
 
   initMoreButton(todoitem, todoElement, todoDetails);
-  initDoneButton(todoitem, todoElement);
+  initDetailsButtons(todoitem, todoElement);
 
   if (todoitem.deletedAt != null) {
     setDeletedAttributes(todoitem, todoElement);
@@ -232,7 +230,7 @@ void insertTodoElement(TodoItem todoitem) {
     setDoneAttributes(todoitem, todoElement);
     doneElements.insertBefore(todoNode, doneElements.firstChild);
   } else {
-    setUndoneAttributes(todoitem, todoElement);
+    setUndoneAttributes(todoElement);
     undoneElements.insertBefore(todoNode, undoneElements.firstChild);
   }
 }
@@ -253,36 +251,40 @@ void initMoreButton(TodoItem todoitem, Element todoElement, Element todoDetails)
   });
 }
 
-void initDetailsButtons() {
+void initAllDetailsButtons() {
   for (var todo in querySelectorAll('.todo-element')) {
     var id = todo.getAttribute('id');
     var todoitem = allItems.firstWhere((item) => item.id == id);
+    initDetailsButtons(todoitem, todo);
+  }
+}
+
+void initDetailsButtons(TodoItem todoitem, Element todo) {
     initDoneButton(todoitem, todo);
     initUndoneButton(todoitem, todo);
     initDeleteButton(todoitem, todo);
     initRestoreButton(todoitem, todo);
     initDeleteForeverButton(todoitem, todo);
-  }
+    initTodoEditButton(todoitem, todo);
+    initTodoEditCancel(todo);
 }
 
-void initDoneButton(TodoItem todoitem, Element todo) {
-  var doneButton = todo.querySelector('.doneBtn');
-  var details = todo.querySelector('details');
-
-  doneButton.onClick.listen((_) {
-    todoitem.doneAt = DateTime.now().millisecondsSinceEpoch;
-    if (todoitem.tag == 'bug') {
-      todoitem.tag = 'fixed';
-      todo.querySelector('.todo-tag').text = 'fixed';
-    }
-    window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
-    doneItems.add(todoitem);
-    undoneItems.remove(todoitem);
-    setDoneAttributes(todoitem, todo);
-    if (todoitem.details.isEmpty) details.removeAttribute('open');
-    doneElements.insertBefore(todo, doneElements.firstChild);
-  });
-}
+void initDoneButton(TodoItem todoitem, Element todo) =>
+    todo.querySelector('.doneBtn').onClick.listen((_) {
+      todoitem.doneAt = DateTime.now().millisecondsSinceEpoch;
+      if (todoitem.tag == 'bug') {
+        todoitem.tag = 'fixed';
+        todo.querySelector('.todo-tag').text = 'fixed';
+      }
+      window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+      doneItems.add(todoitem);
+      undoneItems.remove(todoitem);
+      setDoneAttributes(todoitem, todo);
+      if (todoitem.details.isEmpty) {
+        todo.querySelector('details').removeAttribute('open');
+      }
+      doneElements.insertBefore(todo, doneElements.firstChild);
+    });
 
 void setDoneAttributes(TodoItem todoitem, Element todo) {
   todo.querySelector('details').setAttribute('class', 'done');
@@ -293,26 +295,24 @@ void setDoneAttributes(TodoItem todoitem, Element todo) {
   todo.querySelector('.doneBtn').setAttribute('hidden', '');
 }
 
-void initUndoneButton(TodoItem todoitem, Element todo) {
-  var undoneButton = todo.querySelector('.undoneBtn');
-  var details = todo.querySelector('details');
+void initUndoneButton(TodoItem todoitem, Element todo) =>
+    todo.querySelector('.undoneBtn').onClick.listen((_) {
+      todoitem.doneAt = null;
+      if (todoitem.tag == 'fixed') {
+        todoitem.tag = 'bug';
+        todo.querySelector('.todo-tag').text = 'bug';
+      }
+      window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+      undoneItems.add(todoitem);
+      doneItems.remove(todoitem);
+      setUndoneAttributes(todo);
+      if (todoitem.details.isEmpty) {
+        todo.querySelector('details').removeAttribute('open');
+      }
+      undoneElements.insertBefore(todo, undoneElements.firstChild);
+    });
 
-  undoneButton.onClick.listen((_) {
-    todoitem.doneAt = null;
-    if (todoitem.tag == 'fixed') {
-      todoitem.tag = 'bug';
-      todo.querySelector('.todo-tag').text = 'bug';
-    }
-    window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
-    undoneItems.add(todoitem);
-    doneItems.remove(todoitem);
-    setUndoneAttributes(todoitem, todo);
-    if (todoitem.details.isEmpty) details.removeAttribute('open');
-    undoneElements.insertBefore(todo, undoneElements.firstChild);
-  });
-}
-
-void setUndoneAttributes(TodoItem todoitem, Element todo) {
+void setUndoneAttributes(Element todo) {
   todo.querySelector('details').setAttribute('class', 'undone');
   todo.querySelector('.done-at')
     ..setAttribute('hidden', '')
@@ -321,22 +321,20 @@ void setUndoneAttributes(TodoItem todoitem, Element todo) {
   todo.querySelector('.doneBtn').removeAttribute('hidden');
 }
 
-void initDeleteButton(TodoItem todoitem, Element todo) {
-  var deleteButton = todo.querySelector('.deleteBtn');
-  var details = todo.querySelector('details');
-
-  deleteButton.onClick.listen((_) {
-    todoitem.doneAt = null;
-    todoitem.deletedAt = DateTime.now().millisecondsSinceEpoch;
-    window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
-    deletedItems.add(todoitem);
-    undoneItems.remove(todoitem);
-    doneItems.remove(todoitem);
-    setDeletedAttributes(todoitem, todo);
-    if (todoitem.details.isEmpty) details.removeAttribute('open');
-    deletedElements.insertBefore(todo, deletedElements.firstChild);
-  });
-}
+void initDeleteButton(TodoItem todoitem, Element todo) =>
+    todo.querySelector('.deleteBtn').onClick.listen((_) {
+      todoitem.doneAt = null;
+      todoitem.deletedAt = DateTime.now().millisecondsSinceEpoch;
+      window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+      deletedItems.add(todoitem);
+      undoneItems.remove(todoitem);
+      doneItems.remove(todoitem);
+      setDeletedAttributes(todoitem, todo);
+      if (todoitem.details.isEmpty) {
+        todo.querySelector('details').removeAttribute('open');
+      }
+      deletedElements.insertBefore(todo, deletedElements.firstChild);
+    });
 
 void setDeletedAttributes(TodoItem todoitem, Element todo) {
   todo.querySelector('details').setAttribute('class', 'deleted');
@@ -364,13 +362,13 @@ void initRestoreButton(TodoItem todoitem, Element todo) {
     window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
     undoneItems.add(todoitem);
     deletedItems.remove(todoitem);
-    setRestoreAttributes(todoitem, todo);
+    setRestoreAttributes(todo);
     if (todoitem.details.isEmpty) details.removeAttribute('open');
     undoneElements.insertBefore(todo, undoneElements.firstChild);
   });
 }
 
-void setRestoreAttributes(TodoItem todoitem, Element todo) {
+void setRestoreAttributes(Element todo) {
   todo.querySelector('details').setAttribute('class', 'undone');
   todo.querySelector('.todo-summary').style.textDecoration = '';
   todo.querySelector('.deleted-at')..setAttribute('hidden', '')..text = '';
@@ -379,15 +377,31 @@ void setRestoreAttributes(TodoItem todoitem, Element todo) {
   todo.querySelector('.cell.buttons.deleted').setAttribute('hidden', '');
 }
 
-void initDeleteForeverButton(TodoItem todoitem, Element todo) {
-  todo.querySelector('.deleteForeverBtn').onClick.listen((_) {
-    deletedItems.remove(todoitem);
-    allItems.remove(todoitem);
-    window.localStorage.remove(localId(todoitem.id));
-    todo.remove();
-  });
-}
+void initDeleteForeverButton(TodoItem todoitem, Element todo) =>
+    todo.querySelector('.deleteForeverBtn').onClick.listen((_) {
+      deletedItems.remove(todoitem);
+      allItems.remove(todoitem);
+      window.localStorage.remove(localId(todoitem.id));
+      todo.remove();
+    });
 
+void initTodoEditButton(TodoItem todoitem, Element todo) =>
+    todo.querySelector('.editBtn').onClick.listen((_) {
+      todo.querySelector('.dialog.todo-edit').removeAttribute('hidden');
+      (todo.querySelector('.todo-summary-input') as InputElement).value = todoitem.summary;
+      (todo.querySelector('.todo-details-input') as TextAreaElement).value = todoitem.details;
+      (todo.querySelector('.todo-tag-input') as InputElement)
+        ..value = todoitem.tag
+        ..focus();
+    });
+
+void initTodoEditCancel(Element todo) =>
+    todo.querySelector('.todo-edit-cancel').onClick.listen((e) {
+      e.preventDefault();
+      todo.querySelector('.dialog.todo-edit').setAttribute('hidden', '');
+    });
+
+/*
 List<TodoItem> todoitemGroup(String group) {
   switch (group) {
     case 'undone': return undoneItems;
@@ -396,6 +410,7 @@ List<TodoItem> todoitemGroup(String group) {
     default: throw 'The group should be "undone", "done" or "deleted"';
   }
 }
+ */
 
 // 返回格式为 '2020-03-23' 的字符串.
 // 如果改写为 JavaScript 要注意时区问题.
@@ -405,7 +420,7 @@ String simpleDate(int timestamp) =>
       .toIso8601String()
       .substring(0, 10);
 
-String localId(String id) => '$prefix-$id';
+String localId(String id) => '$prefix$id';
 
 Map<String, String> splitTagSummary(String todo) {
   String tag, summary;
@@ -431,7 +446,7 @@ String makePrefix(String localPath) {
     // 本来是计算 SHA-1 的, 但为了与旧版 (JavaScript版本) 保持一致.
     prefix = prefix.substring(0, 20) + prefix.substring(len - 20);
   }
-  return prefix;
+  return '$prefix-'; // 注意 prefix 末尾有横杠.
 }
 
 String makeWorkingDir(String localPath) {

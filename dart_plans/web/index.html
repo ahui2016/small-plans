@@ -43,6 +43,7 @@
 
 <div id="export-dialog" class="dialog" hidden>
     <form autocomplete="off">
+        <button id="export-dialog-close">X</button>
         <p>请右键点击以下链接, 另存为文件</p>
         <p style="text-align: center">
             <a id="export-url" href="#" download="small-plans.json">small-plans.json</a>
@@ -52,14 +53,12 @@
             <button id="export-copy-btn">copy</button>
         </label>
         <p><span style="color: red">注意:</span> 覆盖旧文件时请务必确认文件名!</p>
-        <p style="margin-top: 3em; text-align: right;">
-            <button id="export-dialog-close">close</button>
-        </p>
     </form>
 </div>
 
 <div id="import-dialog" class="dialog" hidden>
     <form autocomplete="off">
+        <button id="import-dialog-close">X</button>
         <p>请先选择文件, 然后点击 import 按钮.<br/>
             <span style="color: red">注意:</span> 一旦导入, 当前数据将被清空、覆盖!</p>
         <label>(复制当前目录可在选择文件时使用)
@@ -68,9 +67,6 @@
         </label>
         <input type="file" id="import-file" accept=".json" />
         <button id="import-btn">import</button>
-        <p style="margin-top: 3em; text-align: right;">
-            <button id="import-dialog-close">close</button>
-        </p>
     </form>
 </div>
 
@@ -87,22 +83,22 @@
 
 <template id="todo-template">
     <div class="todo-element">
-        <div id="todo-edit-dialog" style="width: 500px; height: 300px;" hidden>
+        <div class="dialog todo-edit" style="width: 500px; height: 300px;" hidden>
             <form autocomplete="off">
                 <p>
-                    <label>Tag: <input type="text" class="todo-tag-input"/></label>
+                    <label style="margin-top: 0">Tag: <input type="text" class="todo-tag-input"/></label>
                 </p>
                 <p>
                     <label>Summary:<br/>
-                        <input type="text" class="todo-summary-input" style="width: 100%; height: 2em;"/>
+                        <input type="text" class="todo-summary-input" style="height: 2em;"/>
                     </label>
                 </p>
                 <p>
                     <label>Details:<br/>
-                        <textarea class="todo-details-input" rows="6"></textarea>
+                        <textarea class="todo-details-input" rows="5"></textarea>
                     </label>
                 </p>
-                <p style="text-align: right;">
+                <p style="text-align: right; margin-top: 2em;">
                     <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
                     <button class="todo-edit-ok">ok</button>
                     <button class="todo-edit-cancel">cancel</button>
