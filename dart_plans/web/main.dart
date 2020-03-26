@@ -37,28 +37,32 @@ List<TodoItem> allItems = [];
 
 class TodoItem {
   String id, summary, details, tag;
-  int createdAt, updatedAt, doneAt, deletedAt;
+  DateTime createdAt, updatedAt, doneAt, deletedAt;
 
   TodoItem(this.id, this.summary, this.details, this.tag,
       this.createdAt, this.updatedAt, this.doneAt, this.deletedAt);
 
   TodoItem.fromSummary(this.summary, this.tag) {
-    var now = DateTime.now().millisecondsSinceEpoch;
-    id = now.toRadixString(36);
+    var now = DateTime.now();
+    id = now.millisecondsSinceEpoch.toRadixString(36);
     details = ''; createdAt = now; updatedAt = now;
     // doneAt = null, deletedAt = null
   }
 
   // 用于 json
-  factory TodoItem.fromJson(dynamic j) =>
-      TodoItem(j['id'] as String, j['summary'] as String,
-        j['details'] as String, j['tag'] as String, j['createdAt'] as int,
-        j['updatedAt'] as int, j['doneAt'] as int, j['deletedAt'] as int);
+  factory TodoItem.fromJson(dynamic j) => TodoItem(
+      j['id'] as String, j['summary'] as String, j['details'] as String, j['tag'] as String,
+      DateTime.fromMillisecondsSinceEpoch(j['createdAt']),
+      DateTime.fromMillisecondsSinceEpoch(j['updatedAt']),
+      (j['doneAt'] == null) ? null : DateTime.fromMillisecondsSinceEpoch(j['doneAt']),
+      (j['deletedAt'] == null) ? null : DateTime.fromMillisecondsSinceEpoch(j['deletedAt']));
 
   // 用于 json
-  Map toJson() => { 'id': id,
-    'summary': summary, 'details': details, 'tag': tag, 'createdAt': createdAt,
-    'updatedAt': updatedAt, 'doneAt': doneAt, 'deletedAt': deletedAt,
+  Map toJson() => { 'id': id, 'summary': summary, 'details': details, 'tag': tag,
+    'createdAt': createdAt.millisecondsSinceEpoch,
+    'updatedAt': updatedAt.millisecondsSinceEpoch,
+    'doneAt': doneAt?.millisecondsSinceEpoch,
+    'deletedAt': deletedAt?.millisecondsSinceEpoch,
   };
 }
 
@@ -128,13 +132,13 @@ void restoreTodos() {
     }
   });
   undoneItems
-    ..sort((a, b) => a.createdAt - b.createdAt)
+    ..sort((a, b) => a.createdAt.compareTo(b.createdAt))
     ..forEach(insertTodoElement);
   doneItems
-    ..sort((a, b) => a.doneAt - b.doneAt)
+    ..sort((a, b) => a.doneAt.compareTo(b.doneAt))
     ..forEach(insertTodoElement);
   deletedItems
-    ..sort((a, b) => a.deletedAt - b.deletedAt)
+    ..sort((a, b) => a.deletedAt.compareTo(b.deletedAt))
     ..forEach(insertTodoElement);
 }
 
@@ -197,7 +201,7 @@ void initAddTodoForm() =>
       if (todo.isEmpty) return;
       var tagSummary = splitTagSummary(todo);
       var item = TodoItem.fromSummary(tagSummary['summary'], tagSummary['tag']);
-      window.localStorage[localId(item.id)] = json.encode(item);
+      updateLocalStorage(item);
       allItems.add(item);
       undoneItems.add(item);
       insertTodoElement(item);
@@ -267,16 +271,17 @@ void initDetailsButtons(TodoItem todoitem, Element todo) {
     initDeleteForeverButton(todoitem, todo);
     initTodoEditButton(todoitem, todo);
     initTodoEditCancel(todo);
+    initTodoEditOk(todoitem, todo);
 }
 
 void initDoneButton(TodoItem todoitem, Element todo) =>
     todo.querySelector('.doneBtn').onClick.listen((_) {
-      todoitem.doneAt = DateTime.now().millisecondsSinceEpoch;
+      todoitem.doneAt = DateTime.now();
       if (todoitem.tag == 'bug') {
         todoitem.tag = 'fixed';
         todo.querySelector('.todo-tag').text = 'fixed';
       }
-      window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+      updateLocalStorage(todoitem);
       doneItems.add(todoitem);
       undoneItems.remove(todoitem);
       setDoneAttributes(todoitem, todo);
@@ -302,7 +307,7 @@ void initUndoneButton(TodoItem todoitem, Element todo) =>
         todoitem.tag = 'bug';
         todo.querySelector('.todo-tag').text = 'bug';
       }
-      window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+      updateLocalStorage(todoitem);
       undoneItems.add(todoitem);
       doneItems.remove(todoitem);
       setUndoneAttributes(todo);
@@ -324,8 +329,8 @@ void setUndoneAttributes(Element todo) {
 void initDeleteButton(TodoItem todoitem, Element todo) =>
     todo.querySelector('.deleteBtn').onClick.listen((_) {
       todoitem.doneAt = null;
-      todoitem.deletedAt = DateTime.now().millisecondsSinceEpoch;
-      window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+      todoitem.deletedAt = DateTime.now();
+      updateLocalStorage(todoitem);
       deletedItems.add(todoitem);
       undoneItems.remove(todoitem);
       doneItems.remove(todoitem);
@@ -353,13 +358,13 @@ void initRestoreButton(TodoItem todoitem, Element todo) {
   var details = todo.querySelector('details');
 
   restoreButton.onClick.listen((_) {
-    todoitem.createdAt = DateTime.now().millisecondsSinceEpoch;
+    todoitem.createdAt = DateTime.now();
     todoitem.deletedAt = null;
     if (todoitem.tag == 'fixed') {
       todoitem.tag = 'bug';
       todo.querySelector('.todo-tag').text = 'bug';
     }
-    window.localStorage[localId(todoitem.id)] = jsonEncode(todoitem);
+    updateLocalStorage(todoitem);
     undoneItems.add(todoitem);
     deletedItems.remove(todoitem);
     setRestoreAttributes(todo);
@@ -401,6 +406,25 @@ void initTodoEditCancel(Element todo) =>
       todo.querySelector('.dialog.todo-edit').setAttribute('hidden', '');
     });
 
+void initTodoEditOk(TodoItem todoitem, Element todo) =>
+    todo.querySelector('.todo-edit-ok').onClick.listen((e) {
+      e.preventDefault();
+      var tag = (todo.querySelector('.todo-tag-input') as InputElement).value.trim();
+      var summary = (todo.querySelector('.todo-summary-input') as InputElement).value.trim();
+      var details = (todo.querySelector('.todo-details-input') as TextAreaElement).value.trimRight();
+      if (tag != todoitem.tag || summary != todoitem.summary || details != todoitem.details) {
+        todoitem.tag = tag;
+        todoitem.summary = summary;
+        todoitem.details = details;
+        todoitem.updatedAt = DateTime.now();
+        todo.querySelector('.todo-tag').text = tag;
+        todo.querySelector('.todo-summary').text = summary;
+        todo.querySelector('.todo-details').text = details;
+        updateLocalStorage(todoitem);
+      }
+      todo.querySelector('.dialog.todo-edit').setAttribute('hidden', '');
+    });
+
 /*
 List<TodoItem> todoitemGroup(String group) {
   switch (group) {
@@ -414,11 +438,7 @@ List<TodoItem> todoitemGroup(String group) {
 
 // 返回格式为 '2020-03-23' 的字符串.
 // 如果改写为 JavaScript 要注意时区问题.
-String simpleDate(int timestamp) =>
-    DateTime
-      .fromMillisecondsSinceEpoch(timestamp)
-      .toIso8601String()
-      .substring(0, 10);
+String simpleDate(DateTime dt) => dt.toIso8601String().substring(0, 10);
 
 String localId(String id) => '$prefix$id';
 
@@ -456,4 +476,8 @@ String makeWorkingDir(String localPath) {
     return workingDir.replaceAll(r'/', r'\');
   }
   return workingDir;
+}
+
+void updateLocalStorage(TodoItem todoitem) {
+  window.localStorage[localId(todoitem.id)] = json.encode(todoitem);
 }
