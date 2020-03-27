@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 
+import 'dart:math';
+
 final String localLocation = Uri.decodeFull(window.location.toString());
 final String workingDir = makeWorkingDir(localLocation);
 final String prefix = makePrefix(localLocation);
@@ -80,6 +82,7 @@ void init() {
   initAddTodoForm();
   restoreTodos();
   initAllDetailsButtons();
+  initClearAllButton();
 }
 
 /// 注意每当修改 `window.localStorage[projectTitleKey]` 的时候, 都要避免其值为空字符串,
@@ -117,6 +120,7 @@ void initTitleDescription() {
   });
 }
 
+/// 根据 localStorage 加载内容
 void restoreTodos() {
   window.localStorage.forEach((k, v) {
     if (k.startsWith(prefix) && k != projectTitleKey && k != descriptionKey) {
@@ -263,6 +267,8 @@ void initAllDetailsButtons() {
   }
 }
 
+/// 给每一个 details 里的各种按钮添加事件. 有两个地方会调用该函数:
+/// 1.每次刷新页面时; 2.添加新条目时.
 void initDetailsButtons(TodoItem todoitem, Element todo) {
     initDoneButton(todoitem, todo);
     initUndoneButton(todoitem, todo);
@@ -425,19 +431,15 @@ void initTodoEditOk(TodoItem todoitem, Element todo) =>
       todo.querySelector('.dialog.todo-edit').setAttribute('hidden', '');
     });
 
-/*
-List<TodoItem> todoitemGroup(String group) {
-  switch (group) {
-    case 'undone': return undoneItems;
-    case 'done': return doneItems;
-    case 'deleted': return deletedItems;
-    default: throw 'The group should be "undone", "done" or "deleted"';
-  }
-}
- */
+void initClearAllButton() =>
+    querySelector('#clear-all').onClick.listen((e) {
+      e.preventDefault();
+      localStorageClear();
+      window.location.reload();
+    });
 
-// 返回格式为 '2020-03-23' 的字符串.
-// 如果改写为 JavaScript 要注意时区问题.
+/// 返回格式为 '2020-03-23' 的字符串.
+/// 如果改写为 JavaScript 要注意时区问题.
 String simpleDate(DateTime dt) => dt.toIso8601String().substring(0, 10);
 
 String localId(String id) => '$prefix$id';
@@ -480,4 +482,12 @@ String makeWorkingDir(String localPath) {
 
 void updateLocalStorage(TodoItem todoitem) {
   window.localStorage[localId(todoitem.id)] = json.encode(todoitem);
+}
+
+void localStorageClear() {
+  var keys = <String>[];
+  window.localStorage.forEach((k, _) => keys.add(k));
+  for (var k in keys) {
+    if (k.startsWith(prefix)) window.localStorage.remove(k);
+  }
 }
