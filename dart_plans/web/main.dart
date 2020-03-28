@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 
-import 'dart:math';
 
 final String localLocation = Uri.decodeFull(window.location.toString());
-final String workingDir = makeWorkingDir(localLocation);
 final String prefix = makePrefix(localLocation);
 final String projectTitleKey = '${prefix}projectTitle';
 final String descriptionKey = '${prefix}projectDescription';
@@ -149,11 +147,12 @@ void restoreTodos() {
 void initExportDialog() {
   querySelector('#export-button').onClick.listen((e) {
     e.preventDefault();
+    setExportUrl();
     exportImportButtons.setAttribute('hidden', '');
     exportDialog.removeAttribute('hidden');
   });
 
-  exportDir.value = workingDir;
+  exportDir.value = workingDir(localLocation);
 
   querySelector('#export-copy-btn').onClick.listen((e) {
     e.preventDefault();
@@ -172,6 +171,24 @@ void initExportDialog() {
   });
 }
 
+void setExportUrl() {
+  var database = {
+    'projectTitle': window.localStorage[projectTitleKey],
+    'projectDescription': window.localStorage[descriptionKey],
+    'undoneItems': undoneItems,
+    'doneItems': doneItems,
+    'deletedItems': deletedItems,
+  };
+  var dbJson = JsonEncoder.withIndent('  ').convert(database);
+  var blob = Blob([dbJson], 'application/json');
+  var exportUrl = Url.createObjectUrl(blob);
+  var fileName = exportFileName(localLocation);
+  querySelector('#export-url')
+    ..setAttribute('href', exportUrl)
+    ..setAttribute('download', fileName)
+    ..text = fileName;
+}
+
 void initImportDialog() {
   querySelector('#import-button').onClick.listen((e) {
     e.preventDefault();
@@ -179,7 +196,7 @@ void initImportDialog() {
     importDialog.removeAttribute('hidden');
   });
 
-  importDir.value = workingDir;
+  importDir.value = workingDir(localLocation);
 
   querySelector('#import-copy-btn').onClick.listen((e) {
     e.preventDefault();
@@ -471,13 +488,19 @@ String makePrefix(String localPath) {
   return '$prefix-'; // 注意 prefix 末尾有横杠.
 }
 
-String makeWorkingDir(String localPath) {
+String workingDir(String localPath) {
   var i = localPath.lastIndexOf('/');
   var workingDir = localPath.substring('file:///'.length, i + 1);
   if (window.navigator.platform.startsWith('Win')) {
     return workingDir.replaceAll(r'/', r'\');
   }
   return workingDir;
+}
+
+String exportFileName(String localPath) {
+  var fileName = localPath.split('/').last;
+  var i = fileName.lastIndexOf('.');
+  return fileName.substring(0, i) + '.json';
 }
 
 void updateLocalStorage(TodoItem todoitem) {

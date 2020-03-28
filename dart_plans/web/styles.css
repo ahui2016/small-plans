@@ -76,6 +76,8 @@ textarea {
     position: relative;
     left: 455px;
     bottom: 31px;
+    color: white;
+    background-color: navy;
 }
 
 #export-dir,
