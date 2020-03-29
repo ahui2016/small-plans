@@ -101,7 +101,6 @@ void init() {
   initImportDialog();
   initAddTodoForm();
   restoreTodos();
-  initAllDetailsButtons();
   initClearAllButton();
 }
 
@@ -321,16 +320,7 @@ void initMoreButton(TodoItem todoitem, Element todoElement, Element todoDetails)
   });
 }
 
-void initAllDetailsButtons() {
-  for (var todo in querySelectorAll('.todo-element')) {
-    var id = todo.getAttribute('id');
-    var todoitem = allItems.firstWhere((item) => item.id == id);
-    initDetailsButtons(todoitem, todo);
-  }
-}
-
-/// 给每一个 details 里的各种按钮添加事件. 有两个地方会调用该函数:
-/// 1.每次刷新页面时; 2.添加新条目时.
+/// 给每一个 details 里的各种按钮添加事件.
 void initDetailsButtons(TodoItem todoitem, Element todo) {
     initDoneButton(todoitem, todo);
     initUndoneButton(todoitem, todo);

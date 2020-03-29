@@ -4,6 +4,11 @@
 Small Plans for small projects.
 
 
+## 2019-03-19 已用 Dart 重写
+
+- Dart 版本的源码在 dart_plans/web
+- 原 JavaScript 版本的已移入 old 文件夹
+
 ## 2019-03-10 新增了在线演示
 
 - http://mxzyzm.coding-pages.com/

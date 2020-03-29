@@ -57,10 +57,10 @@
     {
       "id": "k75tgl5o",
       "summary": "清空全部数据",
-      "details": "如果你需要清空全部数据, 可以按 F12 打开控制台, 在控制台输入\n\n    clearAll()\n\n按回车执行。",
+      "details": "如果你需要清空全部数据, 可以按 F12 打开控制台, 在控制台输入\n\n    clearAll()\n\n按回车执行后, 在页面底部会出现 \"clear all\" 按钮.",
       "tag": "高级功能",
       "createdAt": 1582872571932,
-      "updatedAt": 1582905636181,
+      "updatedAt": 1585495186470,
       "doneAt": 1582872611989,
       "deletedAt": null
     },

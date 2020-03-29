@@ -1,0 +1,848 @@
+<!--small-plans.html-->
+<!--请保留开头的这两行注释 Please keep this two comment lines -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Small Plans</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        a {
+            cursor: pointer;
+        }
+
+        h1 a {
+            font-size: small;
+            text-decoration: none;
+        }
+
+        #add-todo-form {
+            /*width: 100%;*/
+            margin-bottom: 2em;
+        }
+
+        #todo-input {
+            /*width: 634px;*/
+            /*height: 2.5em;*/
+            width: 600px;
+            padding: 20px;
+            font-size: inherit;
+            /*border: 1px solid blue;*/
+            /* https://github.com/tokyo-metropolitan-gov/covid19 */
+            box-shadow:0 0 2px rgba(0,0,0,.15);
+            border-radius:4px;
+            border: 1px solid blue !important;
+        }
+        #todo-input {
+            /* https://stackoverflow.com/questions/36701319/when-i-focus-my-input-with-border-radius-a-square-border-appears-out */
+            outline: none;
+        }
+
+        details {
+            margin-bottom: 20px;
+            width: 100%;
+            /*font-family: sans-serif;*/
+            font-family: "Palatino Linotype", Palatino, Palladio, Baskerville, Georgia, sans-serif, serif;
+        }
+
+        details pre {
+            padding: 10px 20px 20px 20px;
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
+        }
+
+        summary {
+            /*padding: 20px 20px 20px 38px;*/
+            /*text-indent: -18px;*/
+            padding: 20px;
+            /*border: 1px solid #9fb6ce;*/
+            outline: none;
+            list-style: none;
+            /* https://github.com/tokyo-metropolitan-gov/covid19 */
+            box-shadow:0 0 2px rgba(0,0,0,.15);
+            /*noinspection CssFloatPxLength*/
+            border:.5px solid #d9d9d9 !important;
+            border-radius:4px;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /*summary:hover,*/
+        /*summary:focus {*/
+        /*    border: 1px solid black;*/
+        /*}*/
+
+        details.undone summary {
+            background-color: #f2f9fb;
+        }
+
+        details.done summary {
+            background-color: white;
+        }
+
+        details[open] {
+            background-color: #fafafa;
+            /*border: 1px solid #9fb6ce;*/
+        }
+
+        details[open] summary {
+            border-width: 0 0 1px 0;
+            border-style: solid;
+            border-color: #9fb6ce;
+        }
+
+        section {
+            width: 640px;
+        }
+
+        .cell.buttons {
+            padding-right: 0.5em;
+            text-align: right;
+        }
+
+        .cell.buttons a {
+            text-decoration: none;
+            color: lightseagreen;
+        }
+
+        textarea {
+            width: 100%;
+            resize: none;
+        }
+
+        .DateAndButtons {
+            display: flex;
+        }
+
+        .cell {
+            flex: 1;
+        }
+
+        .cell.date {
+            padding-left: 0.5em;
+            color: #ddd;
+        }
+
+        .cell.date a {
+            color: #ddd;
+            text-decoration: none;
+        }
+
+        .cell.date a:hover {
+            color: lightseagreen;
+        }
+
+        #export-import-buttons {
+            color: #ddd;
+            margin-top: 1em;
+            margin-bottom: 3em;
+        }
+
+        #export-import-buttons a {
+            color: #ddd;
+            text-decoration: none;
+        }
+
+        #export-import-buttons a:hover {
+            color: blue;
+        }
+
+        .todo-tag {
+            font-size: small;
+            color: white;
+            display: inline-block;
+            padding: 0 5px 0 5px;
+            border-radius: 5px;
+            background-color: mediumaquamarine;
+        }
+
+        footer {
+            margin-top: 50px;
+            margin-bottom: 10px;
+        }
+
+        footer a {
+            color: gray;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: blue;
+        }
+    </style>
+    <script>
+        // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+        function storageAvailable(type) {
+            let storage;
+            try {
+                storage = window[type];
+                let x = '__storage_test__';
+                storage.setItem(x, x);
+                storage.removeItem(x);
+                return true;
+            } catch (e) {
+                return e instanceof DOMException && (
+                        // everything except Firefox
+                    e.code === 22 ||
+                    // Firefox
+                    e.code === 1014 ||
+                    // test name field too, because code might not be present
+                    // everything except Firefox
+                    e.name === 'QuotaExceededError' ||
+                    // Firefox
+                    e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+                    // acknowledge QuotaExceededError only if there's something already stored
+                    (storage && storage.length !== 0);
+            }
+        }
+
+        const localLocation = decodeURI(location.toString());
+
+        function getJsonFileName() {
+            const fullName = localLocation.split('/').splice(-1)[0];
+            const i = fullName.lastIndexOf('.');
+            return fullName.substring(0, i) + '.json';
+        }
+        const jsonFileName = getJsonFileName();
+
+        function getWorkingDir() {
+            let s = localLocation;
+            s = s.substring('file:///'.length);
+            const i = s.lastIndexOf('/');
+            let wd = s.substring(0, i) + '/';
+            if (window.navigator.platform.startsWith('Win')) {
+                wd = wd.replace(/\//g, '\\');
+            }
+            return wd;
+        }
+        const workingDir = getWorkingDir();
+
+        function getPrefix() {
+            let tempPrefix = localLocation.replace(/[\/\\:]/g, '');
+            tempPrefix = tempPrefix.substring('fileD'.length, tempPrefix.length - '.html'.length);
+            const len = tempPrefix.length;
+            if (len > 40) {
+                // 取 tempPrefix 的头和尾组成 prefix (为了尽可能避免重复, 又不能太长)
+                // 共 40 个字符, 相当于 SHA-1 长度.
+                // 本来是计算 SHA-1 的, 但那是个异步函数, 我不知道怎样确保它先出结果再执行后面的代码.
+                return tempPrefix.substring(0, 20) + tempPrefix.substring(len - 20);
+            }
+            return tempPrefix;
+        }
+        const prefix = getPrefix();
+        const projTitleKey = `projectTitle`;
+        const projDescKey = `projectDescription`;
+
+        function localID(id) {
+            return `${prefix}-${id}`;
+        }
+
+        function newTodoItem(summary, tag) {
+            let now = Date.now();
+            return {
+                id: `${now.toString(36)}`,
+                summary: summary,
+                details: '',
+                tag: tag,
+                createdAt: now,
+                updatedAt: now,
+                doneAt: null,
+                deletedAt: null,
+            }
+        }
+
+        function simpleDate(timestamp) {
+            const date = new Date(timestamp);
+            let year = '' + date.getFullYear(),
+                month = '' + (date.getMonth() + 1),
+                day = '' + date.getDate();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        function localStorageClear() {
+            let allKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key.startsWith(prefix)) {
+                    allKeys.push(key);
+                }
+            }
+            for (let key of allKeys) {
+                localStorage.removeItem(key);
+            }
+        }
+
+        // noinspection JSUnusedGlobalSymbols
+        function clearAll() {
+            localStorageClear();
+            window.location.reload();
+            // setTimeout(window.location.reload.bind(window.location), 1000);
+        }
+
+        function clearAndFillLocalStorage(db) {
+            localStorageClear();
+            localStorage.setItem(localID(projTitleKey), db.projectTitle);
+            localStorage.setItem(localID(projDescKey), db.projectDescription);
+            for (let item of db.undoneItems) {
+                localStorage.setItem(localID(item.id), JSON.stringify(item));
+            }
+            for (let item of db.doneItems) {
+                localStorage.setItem(localID(item.id), JSON.stringify(item));
+            }
+            for (let item of db.deletedItems) {
+                localStorage.setItem(localID(item.id), JSON.stringify(item));
+            }
+        }
+
+        function splitTagSummary(s) {
+            let summary = s.trim();
+            let tag = '';
+            if (summary.charAt(0) === '#') {
+                let i = summary.indexOf('#', 1);
+                if (i !== -1) {
+                    tag = summary.substring(1, i).trim();
+                    summary = summary.substring(i + 1).trim();
+                }
+            }
+            return {tag, summary}
+        }
+    </script>
+</head>
+<body>
+
+<h1><span id="project-title">Small Plans</span><a id="proj-title-btn"> 📝</a></h1>
+<h2 id="project-description"></h2>
+<!-- https://dev.to/ananyaneogi/html-can-do-that-c0n -->
+<dialog id="proj-title-dialog"
+        style="width: 450px; height: 240px; position: absolute; top: 20px; padding: 1em 2em 0 2em;">
+    <form autocomplete="off">
+        <p>
+            <label class="projectLabel" for="project-title-input">Project Title:</label><br/>
+            <input type="text" id="project-title-input" style="width: 100%; height: 2em;"/>
+        </p>
+        <p>
+            <label class="projectLabel" for="description-input">Description:</label>
+            <textarea id="description-input" class="field" rows="3"></textarea>
+        </p>
+        <p style="text-align: right;">
+            <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
+            <input id="proj-title-ok" type="button" value="ok">
+            <button id="proj-title-cancel">cancel</button>
+        </p>
+    </form>
+</dialog>
+
+<div id="export-import-buttons">
+    <a id="export-btn">export</a> | <a id="import-dialog-open">import</a>
+</div>
+<dialog id="import-dialog" style="width: 450px; height: 250px; position: absolute; top: 50px; padding: 1em 2em 1em 2em;">
+    <form id="import-form" autocomplete="off">
+        <p>请先选择文件, 然后点击 import 按钮.
+            <br/><span style="color: red">注意:</span> 一旦导入, 当前数据将被清空、覆盖!</p>
+        <label for="import-url">
+            (复制当前目录可在选择文件时使用)
+            <input type="text" id="import-url" style="width: 380px;background-color: lightgray;" readonly>
+            <button id="import-copy-btn">copy</button>
+        </label>
+        <input type="file" id="import-file" accept=".json" style="margin-top: 2em;border: 1px solid blue;width: 380px;">
+        <button id="import-btn">import</button>
+        <p style="margin-top: 3em; text-align: right;">
+            <button id="import-dialog-close">close</button>
+        </p>
+    </form>
+</dialog>
+<script>
+    const importUrl = document.querySelector('#import-url');
+    const importCopyBtn = document.querySelector('#import-copy-btn');
+    importUrl.value = workingDir;
+    importCopyBtn.addEventListener('click', event => {
+        event.preventDefault();
+        new Promise(resolve => resolve(importUrl.select()))
+            .then(() => document.execCommand('copy'));
+    })
+</script>
+
+<dialog id="export-dialog"
+        style="width: 450px; height: 200px; position: absolute; top: 50px; padding: 2em;">
+    <p>请右键点击以下链接, 另存为文件</p>
+    <p style="text-align: center"><a id="json-url" download="small-plans.json">small-plans.json</a></p>
+    <label for="export-url">
+        当前目录:
+        <input type="text" id="export-url" form="export-form" style="width: 320px;background-color: lightgray;" readonly>
+        <button id="export-copy-btn">copy</button>
+    </label>
+    <p><span style="color: red">注意:</span> 覆盖旧文件时请务必确认文件名!</p>
+    <form style="margin-top: 2em; text-align: right;" id="export-form">
+        <button id="export-dialog-close">close</button>
+    </form>
+</dialog>
+<script>
+    const exportUrl = document.querySelector('#export-url');
+    const exportCopyBtn = document.querySelector('#export-copy-btn');
+    exportUrl.value = workingDir;
+    exportCopyBtn.addEventListener('click', event => {
+        event.preventDefault();
+        new Promise(resolve => resolve(exportUrl.select()))
+            .then(() => document.execCommand('copy'));
+    })
+</script>
+
+<template id="todo-template">
+    <div class="todo-top-div">
+        <dialog style="width: 500px; height: 300px; position: absolute; padding: 2em;">
+            <form autocomplete="off">
+                <p>
+                    <label>Tag: <input type="text" class="todo-tag-input"/></label>
+                </p>
+                <p>
+                    <label>Summary:<br/>
+                        <input type="text" class="todo-summary-input" style="width: 100%; height: 2em;"/>
+                    </label>
+                </p>
+                <p>
+                    <label>Details:<br/>
+                        <textarea class="todo-details-input" rows="6"></textarea>
+                    </label>
+                </p>
+                <p style="text-align: right;">
+                    <input type="submit" disabled hidden><!--防止 enter 键提交表单-->
+                    <button class="todo-edit-ok">ok</button>
+                    <button class="todo-edit-cancel">cancel</button>
+                </p>
+            </form>
+        </dialog>
+
+        <!-- https://dev.to/ananyaneogi/html-can-do-that-c0n -->
+        <details class="undone">
+            <summary>
+                <span class="todo-tag"></span>
+                <span class="todo-summary">NEED SUMMARY</span>
+                <span class="more-btn" hidden
+                      style="color: #9fb6ce;cursor: pointer;">(more)</span>
+            </summary>
+            <div class="DateAndButtons">
+                <div class="cell date">
+                    <span class="deleted-at" hidden></span>
+                    <span class="done-at" hidden></span>
+                    <a class="undoneBtn" hidden>(undone)</a>
+                    <a class="doneBtn">(done)</a>
+                </div>
+                <div class="cell buttons normal">
+                    <a class="editBtn">edit</a> . <a class="deleteBtn">delete</a>
+                </div>
+                <div class="cell buttons deleted" hidden>
+                    <a class="restoreBtn">restore</a> | <a class="deleteForeverBtn">delete forever</a>
+                </div>
+            </div>
+            <pre class="todo-details"></pre>
+        </details>
+    </div>
+</template>
+
+<template id="date-template">
+    <p style="color:darkgrey;font-style:italic;font-weight:bolder;"></p>
+</template>
+
+<section id="add-todo-section">
+    <form id="add-todo-form" autocomplete="off">
+        <label for="todo-input" style="color:darkgrey;font-style:italic;font-weight: bold;" >
+            Add</label><br/>
+        <input type="text" id="todo-input"/>
+    </form>
+</section>
+
+<section id="all-undone-elem"></section>
+
+<section>
+    <p id="done-elem-title" style="color:darkgrey;font-style:italic;font-weight:bolder;" hidden>All Done Items</p>
+</section>
+
+<section id="all-done-elem"></section>
+<section id="all-deleted-elem"></section>
+
+<script>
+    if (!storageAvailable('localStorage')) {
+        window.alert("当前浏览器不支持 localStorage, 可能无法正常使用本网页, 请使用支持 localStorage 的浏览器.")
+    }
+
+    const projTitle = document.getElementById('project-title');
+    const projTitleInput = document.getElementById('project-title-input');
+    const projDescription = document.getElementById('project-description');
+    const projDescriptionInput = document.getElementById('description-input');
+    let undoneItems = [];
+    let doneItems = [];
+    let deletedItems = [];
+    const allUndoneElem = document.querySelector('#all-undone-elem');
+    const allDoneElem = document.querySelector('#all-done-elem');
+    const allDeletedElem = document.querySelector('#all-deleted-elem');
+    const todoTemplate = document.querySelector('#todo-template');
+
+    function getDB() {
+        return {
+            projectTitle: localStorage.getItem(localID(projTitleKey)),
+            projectDescription: localStorage.getItem(localID(projDescKey)),
+            undoneItems: undoneItems,
+            doneItems: doneItems,
+            deletedItems: deletedItems,
+        }
+    }
+
+    //date template
+    const dateTemplate = document.querySelector('#date-template');
+
+    function insertAfter(newEl, targetEl){
+        const parentEl = targetEl.parentNode;
+
+        if(parentEl.lastChild === targetEl)
+        {
+            parentEl.appendChild(newEl);
+        }else
+        {
+            parentEl.insertBefore(newEl,targetEl.nextSibling);
+        }
+    }
+
+    function insertUndone(item, elem) {
+        const date = simpleDate(item.createdAt);
+        let undoneDateElem = allUndoneElem.querySelector('#undone-' + date);
+        if(!undoneDateElem){
+            undoneDateElem = dateTemplate.content.cloneNode(true).querySelector('p');
+            undoneDateElem.innerText = date;
+            undoneDateElem.setAttribute('id', 'undone-' + date);
+            allUndoneElem.insertBefore(undoneDateElem, allUndoneElem.firstElementChild);
+        }
+        insertAfter(elem, undoneDateElem)
+    }
+
+    const importDialog = document.querySelector('#import-dialog');
+    document.querySelector('#import-dialog-open').addEventListener('click', event => {
+        event.preventDefault();
+        importDialog.setAttribute('open', '');
+    });
+    document.querySelector('#import-btn').addEventListener('click', function (event) {
+        event.preventDefault();
+        const file = document.querySelector('#import-file').files[0];
+        const reader = new FileReader();
+        reader.onerror = function () {
+            window.alert("导入文件失败!");
+        }
+        reader.onload = function () {
+            let db = JSON.parse(reader.result);
+            clearAndFillLocalStorage(db);
+            window.location.reload();
+        }
+        reader.readAsText(file);
+    });
+    document.querySelector('#import-dialog-close').addEventListener('click', event => {
+        event.preventDefault();
+        importDialog.removeAttribute('open');
+    })
+
+    function showJsonUrl() {
+        let dbBlob = new Blob([JSON.stringify(getDB(), null, 2)], {type: 'application/json'});
+        let jsonUrl = window.URL.createObjectURL(dbBlob);
+        const jsonUrlElem = document.querySelector('#json-url');
+        jsonUrlElem.setAttribute('href', jsonUrl);
+        jsonUrlElem.setAttribute('download', jsonFileName);
+        jsonUrlElem.innerText = jsonFileName;
+    }
+
+    const exportDialog = document.querySelector('#export-dialog');
+    document.querySelector('#export-btn').addEventListener('click', function (event) {
+        event.preventDefault();
+        exportDialog.setAttribute('open', '');
+        showJsonUrl();
+    });
+    document.querySelector('#export-dialog-close').addEventListener('click', event => {
+        event.preventDefault();
+        exportDialog.removeAttribute('open');
+    })
+
+    // 这个函数很大, 因为很多按钮也在里面.
+    // 注意: 每当修改 todoitem 的内容时, 都要更新 localStorage.
+    function insertTodoElem(todoitem) {
+        const todoElem = todoTemplate.content.cloneNode(true);
+        const todoTopDiv = todoElem.querySelector('.todo-top-div');
+        const todoTag = todoTopDiv.querySelector('.todo-tag');
+        const todoDetails = todoTopDiv.querySelector('details');
+        const doneAt = todoTopDiv.querySelector('.done-at');
+        const deletedAt = todoTopDiv.querySelector('.deleted-at');
+        const doneBtn = todoTopDiv.querySelector('.doneBtn');
+        const undoneBtn = todoTopDiv.querySelector('.undoneBtn');
+        const deleteBtn = todoTopDiv.querySelector('.deleteBtn');
+        const restoreBtn = todoTopDiv.querySelector('.restoreBtn');
+        const deleteForeverBtn = todoTopDiv.querySelector('.deleteForeverBtn');
+        const todoButtonsNormal = todoTopDiv.querySelector('.cell.buttons.normal');
+        const todoButtonsDeleted = todoTopDiv.querySelector('.cell.buttons.deleted');
+
+        function setDoneAttributes(todoitem) {
+            todoDetails.setAttribute('class', 'done');
+            doneAt.removeAttribute('hidden');
+            doneAt.innerText = `done at: ${simpleDate(todoitem.doneAt)}`;
+            undoneBtn.removeAttribute('hidden');
+            doneBtn.setAttribute('hidden', '');
+        }
+
+        function setDeletedAttributes(todoitem) {
+            todoDetails.setAttribute('class', 'done');
+            todoSummary.style.textDecoration = 'line-through';
+            deletedAt.removeAttribute('hidden');
+            deletedAt.innerText = `deleted at: ${simpleDate(todoitem.deletedAt)}`;
+            doneAt.setAttribute('hidden', '');
+            undoneBtn.setAttribute('hidden', '');
+            doneBtn.setAttribute('hidden', '');
+            todoButtonsNormal.setAttribute('hidden', '');
+            todoButtonsDeleted.removeAttribute('hidden');
+        }
+
+        function setRestoreAttributes() {
+            todoDetails.setAttribute('class', 'undone');
+            todoSummary.style.textDecoration = 'none';
+            deletedAt.setAttribute('hidden', '');
+            doneBtn.removeAttribute('hidden');
+            todoButtonsDeleted.setAttribute('hidden', '');
+            todoButtonsNormal.removeAttribute('hidden');
+        }
+
+        doneBtn.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (doneItems.length < 1) document.querySelector('#done-elem-title').removeAttribute('hidden');
+            todoitem.doneAt = Date.now();
+            if (todoitem.tag === 'bug') {
+                todoitem.tag = 'fixed';
+                todoTag.innerText = 'fixed';
+            }
+            localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
+            let i = undoneItems.findIndex(item => item.id === todoitem.id);
+            undoneItems.splice(i, 1);
+            doneItems.push(todoitem);
+            setDoneAttributes(todoitem);
+            if (!todoitem.details) todoDetails.removeAttribute('open');
+            let elem = document.querySelector(`#${todoitem.id}`);
+            allDoneElem.insertBefore(elem, allDoneElem.firstElementChild);
+        });
+        undoneBtn.addEventListener('click', event => {
+            event.preventDefault();
+            todoitem.doneAt = null;
+            if (todoitem.tag === 'fixed') {
+                todoitem.tag = 'bug';
+                todoTag.innerText = 'bug';
+            }
+            localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
+            let i = doneItems.findIndex(item => item.id === todoitem.id);
+            doneItems.splice(i, 1);
+            undoneItems.push(todoitem);
+            todoDetails.setAttribute('class', 'undone');
+            doneAt.setAttribute('hidden', '');
+            doneAt.innerText = '';
+            undoneBtn.setAttribute('hidden', '');
+            doneBtn.removeAttribute('hidden');
+            if (!todoitem.details) todoDetails.removeAttribute('open');
+            let elem = document.querySelector(`#${todoitem.id}`);
+            // allUndoneElem.appendChild(elem);
+            insertUndone(todoitem, elem);
+            if (doneItems.length < 1) document.querySelector('#done-elem-title').setAttribute('hidden', '');
+        });
+        deleteBtn.addEventListener('click', event => {
+            event.preventDefault();
+            todoitem.doneAt = null;
+            todoitem.deletedAt = Date.now();
+            localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
+            if (todoitem.doneAt) {
+                let i = doneItems.findIndex(item => item.id === todoitem.id);
+                doneItems.splice(i, 1);
+            } else {
+                let i = undoneItems.findIndex(item => item.id === todoitem.id);
+                undoneItems.splice(i, 1);
+            }
+            deletedItems.push(todoitem);
+            setDeletedAttributes(todoitem);
+            if (!todoitem.details) todoDetails.removeAttribute('open');
+            let elem = document.querySelector(`#${todoitem.id}`);
+            allDeletedElem.insertBefore(elem, allDeletedElem.firstElementChild);
+        });
+        restoreBtn.addEventListener('click', event => {
+            event.preventDefault();
+            todoitem.deletedAt = null;
+            if (todoitem.tag === 'fixed') {
+                todoitem.tag = 'bug';
+                todoTag.innerText = 'bug';
+            }
+            todoitem.createdAt = Date.now();
+            localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
+            let i = deletedItems.findIndex(item => item.id === todoitem.id);
+            deletedItems.splice(i, 1);
+            undoneItems.push(todoitem);
+            setRestoreAttributes();
+            if (!todoitem.details) todoDetails.removeAttribute('open');
+            let elem = document.querySelector(`#${todoitem.id}`);
+            // allUndoneElem.appendChild(elem);
+            insertUndone(todoitem, elem);
+        });
+        deleteForeverBtn.addEventListener('click', event => {
+            event.preventDefault();
+            let i = deletedItems.findIndex(item => item.id === todoitem.id);
+            deletedItems.splice(i, 1);
+            let elem = document.querySelector(`#${todoitem.id}`);
+            allDeletedElem.removeChild(elem);
+            localStorage.removeItem(localID(todoitem.id));
+        });
+        todoTopDiv.setAttribute('id', todoitem.id);
+        let moreBtn = todoTopDiv.querySelector('.more-btn');
+        if (todoitem.details) {
+            moreBtn.removeAttribute('hidden');
+        }
+        todoTag.innerText = todoitem.tag;
+        const todoSummary = todoTopDiv.querySelector('.todo-summary');
+        todoSummary.innerText = todoitem.summary;
+        let pre = todoTopDiv.querySelector('.todo-details');
+        pre.innerText = todoitem.details;
+        let summary = todoTopDiv.querySelector('summary');
+        summary.addEventListener('click', function () {
+            if (todoDetails.hasAttribute('open') && pre.innerText.trim()) {
+                moreBtn.removeAttribute('hidden');
+            } else {
+                moreBtn.setAttribute('hidden', '');
+            }
+        });
+        const todoEditDialog = todoTopDiv.querySelector('dialog');
+        const todoTagInput = todoTopDiv.querySelector('.todo-tag-input');
+        const todoSummaryInput = todoTopDiv.querySelector('.todo-summary-input');
+        const todoDetailsInput = todoTopDiv.querySelector('.todo-details-input');
+        const todoEditOk = todoTopDiv.querySelector('.todo-edit-ok');
+        const todoEditCancel = todoTopDiv.querySelector('.todo-edit-cancel');
+        todoTopDiv.querySelector('.editBtn').addEventListener('click', function (event) {
+            event.preventDefault();
+            todoTagInput.value = todoitem.tag;
+            todoSummaryInput.value = todoitem.summary;
+            todoDetailsInput.value = todoitem.details;
+            todoEditDialog.setAttribute('open', '');
+            todoSummaryInput.focus();
+        });
+        todoEditCancel.addEventListener('click', function (event) {
+            event.preventDefault();
+            todoEditDialog.removeAttribute('open');
+        });
+        todoEditOk.addEventListener('click', function (event) {
+            event.preventDefault();
+            let tag = todoTagInput.value.trim();
+            let summary = todoSummaryInput.value.trim();
+            // pre 的内容不删除头部空格, 只删除尾部空格 (并且当其内容只有空格时全部清空)
+            let preText = todoDetailsInput.value.trimEnd();
+            if (tag !== todoitem.tag || summary !== todoitem.summary || preText !== todoitem.details) {
+                todoitem.tag = tag;
+                todoitem.summary = summary;
+                todoitem.details = preText;
+                todoitem.updatedAt = Date.now();
+                todoTag.innerText = tag;
+                todoSummary.innerText = summary;
+                pre.innerText = preText;
+                localStorage.setItem(localID(todoitem.id), JSON.stringify(todoitem));
+            }
+            todoEditDialog.removeAttribute('open');
+        });
+
+        if (todoitem.deletedAt) {
+            setDeletedAttributes(todoitem);
+            allDeletedElem.insertBefore(todoElem, allDeletedElem.firstElementChild);
+        } else if (todoitem.doneAt) {
+            setDoneAttributes(todoitem);
+            allDoneElem.insertBefore(todoElem, allDoneElem.firstElementChild);
+        } else {
+            insertUndone(todoitem, todoElem);
+            //allUndoneElem.appendChild(todoElem);
+        }
+    }
+
+    // 以上是设置, 从这里开始使页面发生可见的变化.
+    console.log(prefix);
+    const browserTabTitle = document.querySelector('title');
+    if (localStorage.getItem(localID(projTitleKey))) {
+        projTitle.innerText = localStorage.getItem(localID(projTitleKey));
+        if (projTitle.innerText === '') projTitle.innerText = 'Small Plans';
+        browserTabTitle.innerText = projTitle.innerText;
+    }
+    projDescription.innerText = localStorage.getItem(localID(projDescKey));
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (key.startsWith(prefix)) {
+            let itemJson = localStorage.getItem(key);
+
+            if (itemJson.length < 100) continue;
+
+            let item = JSON.parse(localStorage.getItem(key));
+            if (item.deletedAt) {
+                deletedItems.push(item);
+            } else if (item.doneAt) {
+                doneItems.push(item);
+            } else {
+                undoneItems.push(item);
+            }
+        }
+    }
+    undoneItems.sort((a, b) => a.createdAt - b.createdAt);
+    doneItems.sort((a, b) => a.doneAt - b.doneAt);
+    deletedItems.sort((a, b) => a.deletedAt - b.deletedAt);
+    for (let item of undoneItems) insertTodoElem(item);
+    for (let item of doneItems) insertTodoElem(item);
+    for (let item of deletedItems) insertTodoElem(item);
+    if (doneItems.length > 0) document.querySelector('#done-elem-title').removeAttribute('hidden');
+
+    const todoInput = document.getElementById('todo-input');
+    todoInput.focus();
+
+    const projTitleDialog = document.getElementById('proj-title-dialog');
+    const projTitleBtn = document.getElementById('proj-title-btn');
+    const projTitleOk = document.getElementById('proj-title-ok');
+    const projTitleCancel = document.getElementById('proj-title-cancel');
+    projTitleBtn.addEventListener('click', function () {
+        projTitleInput.value = localStorage.getItem(localID(projTitleKey));
+        projDescriptionInput.value = localStorage.getItem(localID(projDescKey));
+        projTitleDialog.setAttribute('open', '');
+        projTitleInput.focus();
+    });
+    projTitleCancel.addEventListener('click', function (event) {
+        event.preventDefault();
+        projTitleDialog.removeAttribute('open');
+    });
+    projTitleOk.addEventListener('click', function (event) {
+        event.preventDefault();
+        projTitle.innerText = projTitleInput.value.trim();
+        localStorage.setItem(localID(projTitleKey), projTitle.innerText);
+        projDescription.innerText = projDescriptionInput.value.trim();
+        localStorage.setItem(localID(projDescKey), projDescription.innerText);
+        projTitleDialog.removeAttribute('open');
+        browserTabTitle.innerText = projTitle.innerText;
+    });
+    // projTitleInput.addEventListener('keyup', (event) => {
+    //     if (event.key === 'Escape') {
+    //         projTitleDialog.removeAttribute('open');
+    //     }
+    // });
+    const addTodoForm = document.getElementById('add-todo-form');
+    addTodoForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        let todo = todoInput.value.trim();
+        if (todo === '') return;
+        let {tag, summary} = splitTagSummary(todo);
+        let item = newTodoItem(summary, tag);
+        localStorage.setItem(localID(item.id), JSON.stringify(item));
+        undoneItems.push(item);
+        insertTodoElem(item);
+        todoInput.value = '';
+        todoInput.focus();
+    });
+</script>
+<footer><a href="https://github.com/ahui2016/small-plans" target="_blank">https://github.com/ahui2016/small-plans</a></footer>
+</body>
+</html>
