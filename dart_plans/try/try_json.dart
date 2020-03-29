@@ -14,6 +14,11 @@ void main() {
   } else {
     print('not deleted');
   }
+
+  var db = TodoDatabase([todo, item]);
+  var dbJson = json.encode(db);
+  var all = TodoDatabase.fromJson(json.decode(dbJson));
+  all.items.forEach(printTodoId);
 }
 
 class TodoItem {
@@ -44,3 +49,18 @@ class TodoItem {
     'updatedAt': updatedAt, 'doneAt': doneAt, 'deletedAt': deletedAt,
   };
 }
+
+class TodoDatabase {
+  List<TodoItem> items;
+
+  TodoDatabase(this.items);
+
+  factory TodoDatabase.fromJson(Map<String, dynamic> j) {
+    var db = (j['items'] as List).map((item) => TodoItem.fromJson(item)).toList();
+    return TodoDatabase(db);
+  }
+
+  Map toJson() => {'items': items};
+}
+
+void printTodoId(TodoItem item) => print(item.id);

@@ -66,6 +66,28 @@ class TodoItem {
   };
 }
 
+class TodoDatabase {
+  String projectTitle, projectDescription;
+  List<TodoItem> undoneItems, doneItems, deletedItems;
+
+  TodoDatabase(this.projectTitle, this.projectDescription,
+      this.undoneItems, this.doneItems, this.deletedItems);
+
+  factory TodoDatabase.fromJson(Map<String, dynamic> j) {
+    var undoneItems = (j['undoneItems'] as List).map(todoitemFromJson).toList();
+    var doneItems = (j['doneItems'] as List).map(todoitemFromJson).toList();
+    var deletedItems = (j['deletedItems'] as List).map(todoitemFromJson).toList();
+
+    return TodoDatabase(j['projectTitle'], j['projectDescription'],
+        undoneItems, doneItems, deletedItems);
+  }
+
+  Map toJson() => {'projectTitle': projectTitle, 'projectDescription': projectDescription,
+        'undoneItems': undoneItems, 'doneItems': doneItems, 'deletedItems': deletedItems};
+}
+
+TodoItem todoitemFromJson(dynamic item) => TodoItem.fromJson(item);
+
 void main() {
   init();
   todoInput.focus();
@@ -172,14 +194,11 @@ void initExportDialog() {
 }
 
 void setExportUrl() {
-  var database = {
-    'projectTitle': window.localStorage[projectTitleKey],
-    'projectDescription': window.localStorage[descriptionKey],
-    'undoneItems': undoneItems,
-    'doneItems': doneItems,
-    'deletedItems': deletedItems,
-  };
-  var dbJson = JsonEncoder.withIndent('  ').convert(database);
+  var todoDatabase = TodoDatabase(
+    window.localStorage[projectTitleKey], window.localStorage[descriptionKey],
+    undoneItems, doneItems, deletedItems,
+  );
+  var dbJson = JsonEncoder.withIndent('  ').convert(todoDatabase);
   var blob = Blob([dbJson], 'application/json');
   var exportUrl = Url.createObjectUrl(blob);
   var fileName = exportFileName(localLocation);
@@ -208,11 +227,37 @@ void initImportDialog() {
     });
   });
 
+  querySelector('#import-do').onClick.listen((e) {
+    e.preventDefault();
+    var files = (querySelector('#import-file') as FileUploadInputElement).files;
+    if (files.isEmpty) return;
+    var reader = FileReader();
+
+    reader
+      ..onAbort.listen((_) => window.alert('导入文件被中止!'))
+      ..onError.listen((_) => window.alert('导入文件失败!'))
+      ..onLoad.listen((_) {
+        var todoDatabase = TodoDatabase.fromJson(json.decode(reader.result));
+        localStorageClear();
+        reFillLocalStorage(todoDatabase);
+        window.location.reload();
+      })
+      ..readAsText(files[0]);
+  });
+
   querySelector('#import-dialog-close').onClick.listen((e) {
     e.preventDefault();
     exportImportButtons.removeAttribute('hidden');
     importDialog.setAttribute('hidden', '');
   });
+}
+
+void reFillLocalStorage(TodoDatabase database) {
+  window.localStorage[projectTitleKey] = database.projectTitle;
+  window.localStorage[descriptionKey] = database.projectDescription;
+  database.undoneItems.forEach(updateLocalStorage);
+  database.doneItems.forEach(updateLocalStorage);
+  database.deletedItems.forEach(updateLocalStorage);
 }
 
 void initAddTodoForm() =>
