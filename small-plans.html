@@ -3557,6 +3557,7 @@ $1:function(a){var u,t
 H.h(a,"$ik")
 u=this.a
 u.querySelector(".dialog.todo-edit").removeAttribute("hidden")
+u.querySelector("details").setAttribute("hidden","")
 t=this.b
 H.ar(u.querySelector(".todo-summary-input"),"$iK").value=t.b
 H.ar(u.querySelector(".todo-details-input"),"$ia9").value=t.c
@@ -3565,8 +3566,11 @@ u.value=t.d
 u.focus()},
 $S:0}
 F.dK.prototype={
-$1:function(a){H.h(a,"$ik").preventDefault()
-this.a.querySelector(".dialog.todo-edit").setAttribute("hidden","")},
+$1:function(a){var u
+H.h(a,"$ik").preventDefault()
+u=this.a
+u.querySelector(".dialog.todo-edit").setAttribute("hidden","")
+u.querySelector("details").removeAttribute("hidden")},
 $S:0}
 F.dL.prototype={
 $1:function(a){var u,t,s,r,q
@@ -3583,7 +3587,8 @@ q.f=new P.J(Date.now(),!1)
 u.querySelector(".todo-tag").textContent=t
 u.querySelector(".todo-summary").textContent=s
 u.querySelector(".todo-details").textContent=r
-F.at(q)}u.querySelector(".dialog.todo-edit").setAttribute("hidden","")},
+F.at(q)}u.querySelector(".dialog.todo-edit").setAttribute("hidden","")
+u.querySelector("details").removeAttribute("hidden")},
 $S:0}
 F.di.prototype={
 $1:function(a){H.h(a,"$ik").preventDefault()

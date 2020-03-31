@@ -451,6 +451,7 @@ void initDeleteForeverButton(TodoItem todoitem, Element todo) =>
 void initTodoEditButton(TodoItem todoitem, Element todo) =>
     todo.querySelector('.editBtn').onClick.listen((_) {
       todo.querySelector('.dialog.todo-edit').removeAttribute('hidden');
+      todo.querySelector('details').setAttribute('hidden', '');
       (todo.querySelector('.todo-summary-input') as InputElement).value = todoitem.summary;
       (todo.querySelector('.todo-details-input') as TextAreaElement).value = todoitem.details;
       (todo.querySelector('.todo-tag-input') as InputElement)
@@ -462,6 +463,7 @@ void initTodoEditCancel(Element todo) =>
     todo.querySelector('.todo-edit-cancel').onClick.listen((e) {
       e.preventDefault();
       todo.querySelector('.dialog.todo-edit').setAttribute('hidden', '');
+      todo.querySelector('details').removeAttribute('hidden');
     });
 
 void initTodoEditOk(TodoItem todoitem, Element todo) =>
@@ -481,6 +483,7 @@ void initTodoEditOk(TodoItem todoitem, Element todo) =>
         updateLocalStorage(todoitem);
       }
       todo.querySelector('.dialog.todo-edit').setAttribute('hidden', '');
+      todo.querySelector('details').removeAttribute('hidden');
     });
 
 void initClearAllButton() =>
