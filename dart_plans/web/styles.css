@@ -20,6 +20,10 @@ textarea {
     resize: none;
 }
 
+.todo-details-input {
+    resize: vertical;
+}
+
 #proj-title-section {
     text-align: center;
 }
